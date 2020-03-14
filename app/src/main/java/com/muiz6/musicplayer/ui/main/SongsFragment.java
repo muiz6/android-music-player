@@ -6,28 +6,27 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.muiz6.musicplayer.R;
-import com.muiz6.musicplayer.adapters.SongListAdapter;
-import com.muiz6.musicplayer.models.SongData;
+import com.muiz6.musicplayer.models.SongDataModel;
+import com.muiz6.musicplayer.ui.adapters.SongListAdapter;
 import com.muiz6.musicplayer.viewmodels.SongDataViewModel;
 
 import java.util.ArrayList;
 
+// TODO: may need to extend from LifecycleFragment for viewmodel provider
 public class SongsFragment extends Fragment {
 
-//    private SongListAdapter songItemsAdapter;
-    private ListView listView;
-//    private final ArrayList<SongData> items;
-    private SongDataViewModel songDataViewModel;
-    private SongListAdapter songItemsAdapter;
+    private RecyclerView mRecyclerView;
+    private SongDataViewModel mSongDataViewModel;
+    private SongListAdapter mSongListAdapter;
 
     public SongsFragment() {
 //        this.items = items;
@@ -37,33 +36,39 @@ public class SongsFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        // initialize empty
-        songItemsAdapter = new SongListAdapter(context, R.layout.widget_song_item, new ArrayList<SongData>());
+        // initializing
+        mSongListAdapter = new SongListAdapter();
 
         // attaching fragment to view model
-//        songDataViewModel = ViewModelProviders.of(this).get(SongDataViewModel.class);
-        songDataViewModel = new SongDataViewModel(getActivity());
-        songDataViewModel.getSongList().observe(this, new Observer<ArrayList<SongData>>() {
+        // TODO: use viewmodel provider
+        // mSongDataViewModel = ViewModelProviders.of(this).get(SongDataViewModel.class);
+        mSongDataViewModel = new SongDataViewModel(context);
+
+        mSongDataViewModel = new SongDataViewModel(getActivity());
+        mSongDataViewModel.getSongList().observe(this, new Observer<ArrayList<SongDataModel>>() {
             @Override
-            public void onChanged(ArrayList<SongData> songList) {
-                songItemsAdapter.clear();
-                songItemsAdapter.addAll(songList);
+            public void onChanged(ArrayList<SongDataModel> songList) {
+
+                // songList will be null until ready
+                if (songList != null) {
+                    mSongListAdapter.setSongList(songList);
+                }
             }
         });
 
-        this.listView = new ListView(context);
-        listView.setLayoutParams(new FrameLayout.LayoutParams(
+        mRecyclerView = new RecyclerView(context);
+        mRecyclerView.setLayoutParams(new FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
             FrameLayout.LayoutParams.MATCH_PARENT
         ));
-        listView.setNestedScrollingEnabled(true);
-        listView.setAdapter(songItemsAdapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        mRecyclerView.setNestedScrollingEnabled(true);
+        mRecyclerView.setAdapter(mSongListAdapter);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-//        this.listView.setAdapter(this.songItemsAdapter);
-        return this.listView;
+        return mRecyclerView;
     }
 }

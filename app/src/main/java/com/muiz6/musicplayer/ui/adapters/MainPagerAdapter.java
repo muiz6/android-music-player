@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.adapters;
+package com.muiz6.musicplayer.ui.adapters;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -6,7 +6,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import com.muiz6.musicplayer.models.SongData;
+import com.google.android.material.tabs.TabLayout;
+import com.muiz6.musicplayer.R;
+import com.muiz6.musicplayer.models.SongDataModel;
 import com.muiz6.musicplayer.ui.main.MainFragment;
 import com.muiz6.musicplayer.ui.main.SongsFragment;
 
@@ -14,7 +16,7 @@ import java.util.ArrayList;
 
 public class MainPagerAdapter extends FragmentPagerAdapter {
 
-    private final ArrayList<SongData> items;
+    private final ArrayList<SongDataModel> items;
 
     public MainPagerAdapter(FragmentManager fm) {
         super(fm);
@@ -38,22 +40,24 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
     @Nullable
     @Override
     public CharSequence getPageTitle(int position) {
-        switch (position) {
-            case 0:
-                return "Songs";
-            case 1:
-                return "Albums";
-            case 2:
-                return "Artists";
-            case 3:
-                return "Folders";
-            case 4:
-                return "Playlists";
-            case 5:
-                return "Genres";
-        }
+        return null;
+    }
 
-        // default case
-        return "Tab " + position;
+    /// must be called after setupWithViewPager()
+    public void setTabIcons(TabLayout tabLayout) {
+
+        // resource ids of desired icons
+        int icons[] = {
+            R.drawable.ic_library_music_black_24dp,
+            R.drawable.ic_album_black_24dp,
+            R.drawable.ic_face_black_24dp,
+            R.drawable.ic_folder_black_24dp,
+            R.drawable.ic_queue_music_black_24dp,
+            R.drawable.ic_equalizer_black_24dp
+        };
+
+        for (int i =0; i < getCount(); i++) {
+            tabLayout.getTabAt(i).setIcon(icons[i]);;
+        }
     }
 }

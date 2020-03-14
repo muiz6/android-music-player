@@ -1,8 +1,10 @@
 package com.muiz6.musicplayer.models;
 
-public class SongData {
+public class SongDataModel {
+
     private String title;
     private String path;
+    private String artist;
 
     public void setTitle(String title) {
         this.title = title;
@@ -12,11 +14,19 @@ public class SongData {
         this.path = path;
     }
 
+    public void setArtist(String artist) {
+        this.artist = artist;
+    }
+
     public String getTitle() {
         return title;
     }
 
     public String getPath() {
         return path;
+    }
+
+    public String getArtist() {
+        return artist;
     }
 }
