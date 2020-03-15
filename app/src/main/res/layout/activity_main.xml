@@ -7,7 +7,7 @@
     android:fitsSystemWindows="true"
     android:orientation="vertical"
     android:gravity="center_horizontal"
-    tools:context="com.muiz6.musicplayer.MainActivity"
+    tools:context="com.muiz6.musicplayer.ui.MainActivity"
     >
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
@@ -66,6 +66,7 @@
             android:layout_height="wrap_content"
             app:tabGravity="fill"
             android:elevation="0dp"
+            app:tabIconTint="@color/textSecondary"
             />
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -74,12 +75,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:paddingBottom="@dimen/bottom_appbar_height"
         />
 
     <com.google.android.material.bottomappbar.BottomAppBar
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="@dimen/bottom_appbar_height"
         android:layout_gravity="bottom"
+        android:theme="@style/AppTheme.BottomAppBar"
         >
         <LinearLayout
             android:layout_width="match_parent"

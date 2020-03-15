@@ -2,83 +2,49 @@ package com.muiz6.musicplayer.services;
 
 import android.app.Service;
 import android.content.Intent;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 
 import androidx.annotation.Nullable;
 
-// singleton pattern
-public class AudioService extends Service implements MediaPlayer.OnCompletionListener,
-        MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnSeekCompleteListener,
-        MediaPlayer.OnInfoListener, MediaPlayer.OnBufferingUpdateListener,
+public class AudioService extends Service {
 
-        AudioManager.OnAudioFocusChangeListener {
-    // private static AudioService instance;
-    private MediaPlayer player;
+    public class MyBinder extends Binder {
 
-    // private AudioService() {}
+        public AudioService getService() {
+            return AudioService.this;
+        }
+    }
 
-    // public static AudioService getInstance() {
-    //     if (instance == null) {
-    //         instance = new AudioService();
-    //     }
-    //     return instance;
-    // }
+    private  IBinder mBinder;
+    private Handler mHandler;
+    private boolean mIsPlaying;
+    MediaPlayer mPlayer;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-
+        mBinder = new MyBinder();
+        mIsPlaying = false;
+        mPlayer = new MediaPlayer();
     }
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return mBinder;
     }
 
     @Override
-    public void onAudioFocusChange(int focusChange) {
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
 
-    }
+        // mPlayer.release();
 
-    @Override
-    public void onBufferingUpdate(MediaPlayer mp, int percent) {
-
-    }
-
-    @Override
-    public void onCompletion(MediaPlayer mp) {
-
-    }
-
-    @Override
-    public boolean onError(MediaPlayer mp, int what, int extra) {
-        return false;
-    }
-
-    @Override
-    public boolean onInfo(MediaPlayer mp, int what, int extra) {
-        return false;
-    }
-
-    @Override
-    public void onPrepared(MediaPlayer mp) {
-
-    }
-
-    @Override
-    public void onSeekComplete(MediaPlayer mp) {
-
-    }
-
-    // internal class
-    private class MyBinder extends Binder {
-        public AudioService getService() {
-            return AudioService.this;
-        }
+        // end the service when application is closed
+        stopSelf();
     }
 }

@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.ui.main;
+package com.muiz6.musicplayer.ui.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,38 +21,30 @@ import com.muiz6.musicplayer.viewmodels.SongDataViewModel;
 
 import java.util.ArrayList;
 
-// TODO: may need to extend from LifecycleFragment for viewmodel provider
-public class SongsFragment extends Fragment {
+public class SongFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
-    private SongDataViewModel mSongDataViewModel;
     private SongListAdapter mSongListAdapter;
 
-    public SongsFragment() {
-//        this.items = items;
-    }
+    public SongFragment() {}
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        // initializing
+        // initializing empty songlist
         mSongListAdapter = new SongListAdapter();
 
         // attaching fragment to view model
-        // TODO: use viewmodel provider
-        // mSongDataViewModel = ViewModelProviders.of(this).get(SongDataViewModel.class);
-        mSongDataViewModel = new SongDataViewModel(context);
-
-        mSongDataViewModel = new SongDataViewModel(getActivity());
+        final SongDataViewModel mSongDataViewModel = new ViewModelProvider(this).get(SongDataViewModel.class);
         mSongDataViewModel.getSongList().observe(this, new Observer<ArrayList<SongDataModel>>() {
             @Override
             public void onChanged(ArrayList<SongDataModel> songList) {
 
-                // songList will be null until ready
-                if (songList != null) {
-                    mSongListAdapter.setSongList(songList);
-                }
+            // songList will be null until ready
+            if (songList != null) {
+                mSongListAdapter.setSongList(songList);
+            }
             }
         });
 

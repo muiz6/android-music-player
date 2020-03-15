@@ -1,5 +1,7 @@
-package com.muiz6.musicplayer;
+package com.muiz6.musicplayer.ui;
 
+import com.muiz6.musicplayer.R;
+import com.muiz6.musicplayer.Repository;
 import com.muiz6.musicplayer.ui.adapters.MainPagerAdapter;
 
 import com.google.android.material.tabs.TabLayout;
@@ -30,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
         this.viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(this.viewPager);
         pagerAdapter.setTabIcons(tabLayout);
+
+        // color tab bar icons
         tabLayout.getTabAt(0).getIcon().setColorFilter(ContextCompat.getColor(this, R.color.colorAccent), PorterDuff.Mode.SRC_IN);
         tabLayout.setOnTabSelectedListener(
             new TabLayout.ViewPagerOnTabSelectedListener(viewPager) {

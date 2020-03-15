@@ -2,16 +2,19 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimaryDark</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColor">@color/textPrimary</item>
 
-<!--        color at the back of icons-->
+<!--        color at the back of icon buttons-->
         <item name="backgroundTint">@color/transparent</item>
         <item name="android:colorBackground">@color/colorPrimaryDark</item>
-        <item name="iconTint">@color/textSecondary</item>
+
+<!--        for app comact icons only will not work on custom icons-->
+        <item name="iconTint">@color/textPrimary</item>
+        <item name="tabIconTint">@color/textSecondary</item>
+        <item name="bottomAppBarStyle">@style/AppTheme.BottomAppBar</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -22,5 +25,10 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="AppTheme.BottomAppBar" parent="Widget.MaterialComponents.BottomAppBar.Colored">
+        <item name="backgroundTint">@color/colorDarkSecondary</item>
+        <item name="iconTint">@color/textPrimary</item>
+    </style>
 
 </resources>

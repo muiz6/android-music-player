@@ -3,6 +3,7 @@
     <color name="transparent">#00000000</color>
 
     <color name="colorBlack">#000000</color>
+    <color name="colorDarkSecondary">#23272A</color>
 
     <color name="textPrimary">#FFFFFF</color>
     <color name="textSecondary">#CCCCCC</color>
