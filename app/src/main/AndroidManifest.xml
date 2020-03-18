@@ -25,7 +25,8 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".services.AudioService"/>
+        <service android:name=".services.AudioService"
+            android:stopWithTask="false"/>
     </application>
 
 </manifest>

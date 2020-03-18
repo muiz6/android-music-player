@@ -1,5 +1,6 @@
 package com.muiz6.musicplayer.ui.adapters;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,13 +13,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.muiz6.musicplayer.R;
 import com.muiz6.musicplayer.models.SongDataModel;
+import com.muiz6.musicplayer.services.AudioService;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.MyViewHolder> {
-
-    private ArrayList<SongDataModel> mSongList;
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView songTitle;
@@ -33,7 +33,13 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.MyView
         }
     }
 
-    public SongListAdapter() {}
+    private ArrayList<SongDataModel> mSongList;
+
+    public SongListAdapter() {
+
+        // initialize with empty list
+        mSongList = new ArrayList<>();
+    }
 
     // @Override
     // public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
@@ -50,29 +56,26 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.MyView
         // MyViewHolder vh = new MyViewHolder(layout, songTitle, songArtist);
 
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.widget_song_item, parent, false);
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Intent intent = new Intent(v.getContext(), AudioService.class);
+                // intent.putExtra(mSongList.get(0).getPath(), 0);
+                // intent.getAction();
+            }
+        });
         return new MyViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        try {
-            holder.songTitle.setText(mSongList.get(position).getTitle());
-            holder.songArtist.setText(mSongList.get(position).getArtist());
-        }
-        catch (Exception e) {
-            holder.songTitle.setText("Title");
-            holder.songArtist.setText("Artist");
-        }
+        holder.songTitle.setText(mSongList.get(position).getTitle());
+        holder.songArtist.setText(mSongList.get(position).getArtist());
     }
 
     @Override
     public int getItemCount() {
-        try {
-            return mSongList.size();
-        }
-        catch (Exception e) {
-            return 20;
-        }
+        return mSongList.size();
     }
 
     // copied from:
