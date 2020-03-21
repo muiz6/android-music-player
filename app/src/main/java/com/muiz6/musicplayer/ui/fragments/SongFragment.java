@@ -47,10 +47,10 @@ public class SongFragment extends Fragment {
             @Override
             public void onChanged(ArrayList<SongDataModel> songList) {
 
-            // songList may be null until ready
-            if (songList != null) {
-                mSongListAdapter.setSongList(songList);
-            }
+                // songList may be null until ready
+                if (songList != null) {
+                    mSongListAdapter.setSongList(songList);
+                }
             }
         });
 

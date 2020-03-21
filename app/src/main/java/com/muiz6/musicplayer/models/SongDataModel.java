@@ -1,5 +1,6 @@
 package com.muiz6.musicplayer.models;
 
+// fragile: handle with care
 public class SongDataModel {
 
     private String title;

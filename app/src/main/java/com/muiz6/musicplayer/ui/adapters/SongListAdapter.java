@@ -59,9 +59,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.MyView
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Intent intent = new Intent(v.getContext(), AudioService.class);
-                // intent.putExtra(mSongList.get(0).getPath(), 0);
-                // intent.getAction();
+
             }
         });
         return new MyViewHolder(view);

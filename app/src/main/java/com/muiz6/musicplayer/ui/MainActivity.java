@@ -5,23 +5,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.PorterDuff;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.muiz6.musicplayer.R;
 import com.muiz6.musicplayer.Repository;
@@ -33,26 +28,76 @@ import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class MainActivity extends AppCompatActivity {
+
+    private class MyServiceConnection implements ServiceConnection {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            AudioService.MyBinder binder = (AudioService.MyBinder) service;
+            mService = binder.getService();
+            mBound = true;
+
+            // bind progressbar to service
+            final ProgressBar progressBar = findViewById(R.id.main_bottom_appbar_progressbar);
+            mService.getProgressPercentage().observe(MainActivity.this, new Observer<Integer>() {
+                @Override
+                public void onChanged(Integer integer) {
+                    if (integer != null) {
+                        progressBar.setProgress(integer);
+                    }
+                    else {
+                        progressBar.setProgress(0);
+                    }
+                }
+            });
+
+            // bind play button to service
+            final ImageButton playButton = findViewById(R.id.main_bottom_appbar_play_btn);
+            mService.getPlayState().observe(MainActivity.this, new Observer<Boolean>(){
+                @Override
+                public void onChanged(Boolean bool) {
+                    if (bool != null) {
+                        if (bool) {
+                            playButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause_black_24dp));
+                            int color = ContextCompat.getColor(MainActivity.this, R.color.colorAccent);
+                            playButton.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+                        }
+                        else {
+                            playButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_arrow_black_24dp));
+                            int color = ContextCompat.getColor(MainActivity.this, R.color.textPrimary);
+                            playButton.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+                        }
+                    }
+                }
+            });
+
+            // bind current song text to service
+            final TextView view = findViewById(R.id.main_bottom_appbar_song_title);
+            view.setSelected(true);
+            mService.getCurrentSong().observe(MainActivity.this, new Observer<SongDataModel>() {
+                @Override
+                public void onChanged(SongDataModel data) {
+                    if (data != null) {
+
+                        view.setText(data.getTitle() + " | " + data.getArtist());
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            // mBinder.postValue(null);
+            mBound = false;
+        }
+    }
+
     private ViewPager viewPager;
     private AudioService mService;
     private boolean mBound;
     private final ServiceConnection mServiceConnection;
 
     public MainActivity() {
-        mServiceConnection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                AudioService.MyBinder binder = (AudioService.MyBinder) service;
-                mService = binder.getService();
-                mBound = true;
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-                // mBinder.postValue(null);
-                mBound = false;
-            }
-        };
+        mServiceConnection = new MyServiceConnection();
     }
 
     @Override
@@ -62,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Instantiate ViewPager, PagerAdapter and TabLayout
         this.viewPager = findViewById(R.id.pager);
-        TabLayout tabLayout = findViewById(R.id.tabs);
+        TabLayout tabLayout = findViewById(R.id.main_tabs);
         MainPagerAdapter pagerAdapter = new MainPagerAdapter(getSupportFragmentManager());
         this.viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(this.viewPager);
@@ -94,18 +139,19 @@ public class MainActivity extends AppCompatActivity {
             }
         );
 
-        FloatingActionButton fab = findViewById(R.id.main_fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        // FloatingActionButton fab = findViewById(R.id.main_fab);
+
+        ImageButton playBtn = findViewById(R.id.main_bottom_appbar_play_btn);
+        playBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mBound) {
-                    ArrayList<SongDataModel> data = Repository.getInstance(MainActivity.this).getSongList().getValue();
+            if(mBound) {
+                ArrayList<SongDataModel> data = Repository.getInstance(MainActivity.this).getSongList().getValue();
 
-                    // generate a random number
-                    int rand = ThreadLocalRandom.current().nextInt(0, data.size());
-                    String path = data.get(rand).getPath();
-                    mService.playAudio(Uri.parse(path));
-                }
+                // generate a random number
+                int rand = ThreadLocalRandom.current().nextInt(0, data.size());
+                mService.playAudio(data.get(rand));
+            }
             }
         });
     }
@@ -116,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
 
         // start the service and bind to it
         Intent intent = new Intent(this, AudioService.class);
-        // startService(intent);
+        ContextCompat.startForegroundService(this, intent);
         bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
     }
 

@@ -3,6 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:src="@drawable/ic_shuffle_black_24dp"
-    android:layout_gravity="bottom|end"
-    android:layout_margin="16dp"/>
+    android:src="@drawable/ic_play_arrow_black_24dp"
+    android:backgroundTint="?attr/colorAccent"
+    android:tint="?android:attr/textColor"/>

@@ -9,7 +9,7 @@
     <color name="textSecondary">#CCCCCC</color>
 
 <!--    default-->
-    <color name="colorPrimary">#F0F571</color>
-    <color name="colorPrimaryDark">#2C2F33</color>
+    <color name="colorPrimary">#2C2F33</color>
+    <color name="colorPrimaryDark">#23272A</color>
     <color name="colorAccent">#F0F571</color>
 </resources>
