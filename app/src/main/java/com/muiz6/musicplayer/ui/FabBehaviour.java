@@ -9,7 +9,7 @@ import androidx.viewpager.widget.ViewPager;
 
 public class FabBehaviour extends CoordinatorLayout.Behavior<View> {
 
-    private float max = 0;
+    private float _max = 0;
 
     // necessary constructors
     public FabBehaviour() {}
@@ -27,9 +27,9 @@ public class FabBehaviour extends CoordinatorLayout.Behavior<View> {
     public boolean onDependentViewChanged(CoordinatorLayout parent, final View child, final View dependency) {
         if (dependency != null) {
             float translation = dependency.getY();
-            if (translation > max) max = translation;
+            if (translation > _max) _max = translation;
 
-            if (translation < max) {
+            if (translation < _max) {
                 child.setVisibility(View.INVISIBLE);
             }
             else {

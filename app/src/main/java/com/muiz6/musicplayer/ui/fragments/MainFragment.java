@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 public class MainFragment extends Fragment {
-    private LinearLayout view;
+    private LinearLayout _view;
 
     public MainFragment() {
 //        required public constructor
@@ -23,16 +23,16 @@ public class MainFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        this.view = new LinearLayout(context);
-        this.view.setLayoutParams(new LinearLayout.LayoutParams(
+        this._view = new LinearLayout(context);
+        this._view.setLayoutParams(new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT
         ));
-        this.view.setGravity(Gravity.CENTER);
+        this._view.setGravity(Gravity.CENTER);
         TextView txt = new TextView(context);
         txt.setText("Text");
         txt.setTextColor(0xFFFFFFFF);
-        this.view.addView(txt);
+        this._view.addView(txt);
     }
 
     @Nullable
@@ -40,6 +40,6 @@ public class MainFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 //        return super.onCreateView(inflater, container, savedInstanceState);
 
-        return this.view;
+        return this._view;
     }
 }

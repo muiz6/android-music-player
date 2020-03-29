@@ -3,31 +3,31 @@ package com.muiz6.musicplayer.models;
 // fragile: handle with care
 public class SongDataModel {
 
-    private String title;
-    private String path;
-    private String artist;
+    private String _title;
+    private String _path;
+    private String _artist;
 
     public void setTitle(String title) {
-        this.title = title;
+        _title = title;
     }
 
     public void setPath(String path) {
-        this.path = path;
+        _path = path;
     }
 
     public void setArtist(String artist) {
-        this.artist = artist;
+        _artist = artist;
     }
 
     public String getTitle() {
-        return title;
+        return _title;
     }
 
     public String getPath() {
-        return path;
+        return _path;
     }
 
     public String getArtist() {
-        return artist;
+        return _artist;
     }
 }

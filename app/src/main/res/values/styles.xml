@@ -6,6 +6,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColor">@color/textPrimary</item>
+        <item name="android:textColorSecondary">@color/textSecondary</item>
 
 <!--        color at the back of icon buttons-->
         <item name="backgroundTint">@color/transparent</item>

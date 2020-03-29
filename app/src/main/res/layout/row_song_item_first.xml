@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".ui.fragments.SongFragment"
+    android:paddingTop="@dimen/padding_container">
+
+    <TextView
+        android:id="@+id/row_song_item_first_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="?attr/colorAccent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:paddingStart="@dimen/padding_container"/>
+
+    <Button
+        android:id="@+id/shuffle_btn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:drawableStart="@drawable/ic_shuffle_black_24dp"
+        android:text="@string/row_song_item_shuffle_all"
+        style="?android:attr/borderlessButtonStyle"
+        app:layout_constraintEnd_toStartOf="@+id/play_btn"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/row_song_item_first_header" />
+
+    <Button
+        android:id="@+id/play_btn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:drawableStart="@drawable/ic_play_arrow_black_24dp"
+        android:text="@string/row_song_item_play_all"
+        style="?android:attr/borderlessButtonStyle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/shuffle_btn"
+        app:layout_constraintTop_toBottomOf="@id/row_song_item_first_header" />
+</androidx.constraintlayout.widget.ConstraintLayout>

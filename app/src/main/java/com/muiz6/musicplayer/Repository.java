@@ -18,8 +18,8 @@ import java.util.ArrayList;
 // TODO: async task should be static
 public class Repository {
 
-    private static Repository repo;
-    private final MutableLiveData<ArrayList<SongDataModel>> data = new MutableLiveData<>();
+    private static Repository _repo;
+    private final MutableLiveData<ArrayList<SongDataModel>> _data = new MutableLiveData<>();
 
     private Repository(Context context) {
 
@@ -28,32 +28,18 @@ public class Repository {
     }
 
     public static Repository getInstance(Context context) {
-        if (repo == null) {
-            repo = new Repository(context);
+        if (_repo == null) {
+            _repo = new Repository(context);
         }
-        return repo;
+        return _repo;
     }
 
     public LiveData<ArrayList<SongDataModel>> getSongList() {
-        return data;
+        return _data;
     }
 
     public void refresh(final Context context) {
         final ArrayList<SongDataModel> items = new ArrayList<>();
-
-//        AsyncQueryHandler handler = new AsyncQueryHandler(context.getContentResolver()) {
-//            @Override
-//            public void startQuery(int token, Object cookie, Uri uri, String[] projection, String selection, String[] selectionArgs, String orderBy) {
-//                super.startQuery(token, cookie, uri, projection, selection, selectionArgs, orderBy);
-//            }
-//
-//            @Override
-//            protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
-//                super.onQueryComplete(token, cookie, cursor);
-//            }
-//        };
-
-//        handler.startQuery(0, new Object(), uri);
 
         // TODO: asynnc task should be static
         new AsyncTask<Void, Void, String>() {
@@ -100,7 +86,7 @@ public class Repository {
             protected void onPostExecute(String str) {
                 super.onPostExecute(str);
 
-                data.setValue(items);
+                _data.setValue(items);
                 Toast.makeText(context, str, Toast.LENGTH_SHORT).show();
             }
         }.execute();

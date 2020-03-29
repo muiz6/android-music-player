@@ -8,7 +8,7 @@ import android.os.Build;
 public class App extends Application {
 
     public static final String CHANNEL_ID = "MyServiceChannel";
-    public static final int AUDIO_SERVICE_ID = 1;
+    public static final int AUDIO_SERVICE_NOTIFICATION_ID = 1;
 
     @Override
     public void onCreate() {

@@ -16,11 +16,11 @@ import java.util.ArrayList;
 
 public class MainPagerAdapter extends FragmentPagerAdapter {
 
-    private final ArrayList<SongDataModel> items;
+    private final ArrayList<SongDataModel> _items;
 
     public MainPagerAdapter(FragmentManager fm) {
         super(fm);
-        items = new ArrayList<>();
+        _items = new ArrayList<>();
     }
 
     @NonNull
@@ -43,7 +43,9 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
         return null;
     }
 
-    /// must be called after setupWithViewPager()
+    /**
+    * must be called after TabLayout.setupWithViewPager()
+    */
     public void setTabIcons(TabLayout tabLayout) {
 
         // resource ids of desired icons
@@ -53,7 +55,7 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
             R.drawable.ic_face_black_24dp,
             R.drawable.ic_folder_black_24dp,
             R.drawable.ic_queue_music_black_24dp,
-            R.drawable.ic_equalizer_black_24dp
+            R.drawable.ic_local_offer_black_24dp
         };
 
         for (int i =0; i < getCount(); i++) {

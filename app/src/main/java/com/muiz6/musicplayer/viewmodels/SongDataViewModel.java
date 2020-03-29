@@ -12,15 +12,15 @@ import java.util.ArrayList;
 
 public class SongDataViewModel extends AndroidViewModel {
 
-    private LiveData<ArrayList<SongDataModel>> mSongList;
+    private LiveData<ArrayList<SongDataModel>> _songList;
 
     public SongDataViewModel(Application application) {
         super(application);
 
-        mSongList = Repository.getInstance(application).getSongList();
+        _songList = Repository.getInstance(application).getSongList();
     }
 
     public LiveData<ArrayList<SongDataModel>> getSongList() {
-        return mSongList;
+        return _songList;
     }
 }
