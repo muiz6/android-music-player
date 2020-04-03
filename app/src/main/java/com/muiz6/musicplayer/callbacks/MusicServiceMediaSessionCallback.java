@@ -9,13 +9,13 @@ import android.util.Log;
 
 import com.muiz6.musicplayer.MusicService;
 
-public class MediaSessionCallback extends MediaSessionCompat.Callback {
+public class MusicServiceMediaSessionCallback extends MediaSessionCompat.Callback {
 
     private final MusicService _service;
     private final PlaybackStateCompat.Builder _stateBuilder;
     private final MediaSessionCompat _session;
 
-    public MediaSessionCallback(MusicService service) {
+    public MusicServiceMediaSessionCallback(MusicService service) {
         _service = service;
         _stateBuilder = service.getPlaybackStateBuilder();
         _session = service.getMediaSession();
@@ -49,7 +49,7 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback {
     public void onPlay() {
         super.onPlay();
 
-        // call startservice here
+        // TODO: call startservice here
         // display notification here
 
         _service.getMediaPlayer().pause();
@@ -108,6 +108,7 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback {
     public void onPause() {
         super.onPause();
 
+        _service.getMediaPlayer().pause();
         _stateBuilder.setState(PlaybackStateCompat.STATE_PAUSED,0,0);
         _session.setPlaybackState(_stateBuilder.build());
     }
@@ -120,6 +121,8 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback {
         _session.setPlaybackState(_stateBuilder.build());
 
         _service.getMediaPlayer().release();
-        // call stopSelf here
+
+        // TODO: call stopSelf here
+        _service.stopSelf();
     }
 }

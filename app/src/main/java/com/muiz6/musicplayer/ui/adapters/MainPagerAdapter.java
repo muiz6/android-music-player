@@ -8,7 +8,6 @@ import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.google.android.material.tabs.TabLayout;
 import com.muiz6.musicplayer.R;
-import com.muiz6.musicplayer.models.SongDataModel;
 import com.muiz6.musicplayer.ui.fragments.MainFragment;
 import com.muiz6.musicplayer.ui.fragments.SongFragment;
 
@@ -16,20 +15,23 @@ import java.util.ArrayList;
 
 public class MainPagerAdapter extends FragmentPagerAdapter {
 
-    private final ArrayList<SongDataModel> _items;
+    private final SongFragment _songFragment;
 
-    public MainPagerAdapter(FragmentManager fm) {
+    public MainPagerAdapter(@NonNull FragmentManager fm) {
         super(fm);
-        _items = new ArrayList<>();
+
+        _songFragment = new SongFragment();
     }
 
     @NonNull
     @Override
     public Fragment getItem(int position) {
         if (position == 0) {
-            return new SongFragment();
+            return _songFragment;
         }
-        return new MainFragment();
+        else {
+            return new MainFragment();
+        }
     }
 
     @Override

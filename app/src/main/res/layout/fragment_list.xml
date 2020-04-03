@@ -2,10 +2,11 @@
 <androidx.recyclerview.widget.RecyclerView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.MainActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:nestedScrollingEnabled="true"
     android:clipToPadding="false"
     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-    android:scrollbars="vertical"
-    android:scrollbarThumbVertical="?android:attr/textColorSecondary"/>
+    android:scrollbars="vertical" />

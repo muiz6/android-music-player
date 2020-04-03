@@ -1,7 +1,5 @@
 package com.muiz6.musicplayer.callbacks;
 
-import android.app.Activity;
-import android.net.Uri;
 import android.os.RemoteException;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.session.MediaControllerCompat;
@@ -15,26 +13,19 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.muiz6.musicplayer.R;
-import com.muiz6.musicplayer.Repository;
-import com.muiz6.musicplayer.models.SongDataModel;
+import com.muiz6.musicplayer.ui.MainActivity;
 
-import java.util.ArrayList;
-import java.util.concurrent.ThreadLocalRandom;
-
-public class MediaBrowserConnectionCallback extends MediaBrowserCompat.ConnectionCallback {
+public class MainActivityMediaBrowserConnectionCallback extends MediaBrowserCompat.ConnectionCallback {
 
     private static final String _TAG = "mbConnectionCallback";
-    private final Activity _activity;
+    private final MainActivity _activity;
     private final MediaControllerCompat.Callback _controllerCallback;
     private MediaBrowserCompat _mediaBrowser;
 
-    public MediaBrowserConnectionCallback(Activity activity,
-        // MediaBrowserCompat mediaBrowser,
-        MediaControllerCompat.Callback controllerCallBack) {
+    public MainActivityMediaBrowserConnectionCallback(MainActivity activity) {
 
         _activity = activity;
-        // _mediaBrowser = mediaBrowser;
-        _controllerCallback = controllerCallBack;
+        _controllerCallback = activity.getMediaControllerCallback();
     }
 
     @Override
@@ -62,6 +53,8 @@ public class MediaBrowserConnectionCallback extends MediaBrowserCompat.Connectio
     @Override
     public void onConnectionSuspended() {
         super.onConnectionSuspended();
+
+        Log.d(_TAG, "onConnectionSuspended: suspended ;(");
     }
 
     @Override
@@ -98,13 +91,15 @@ public class MediaBrowserConnectionCallback extends MediaBrowserCompat.Connectio
                 //
                 // }
                 else {
-                    ArrayList<SongDataModel> data = Repository.getInstance(_activity).getSongList().getValue();
-                    int rand = ThreadLocalRandom.current().nextInt(0, data.size());
-                    Uri path = Uri.parse(data.get(rand).getPath());
-
-                    MediaControllerCompat.getMediaController(_activity)
-                        .getTransportControls()
-                        .playFromUri(path, null);
+                    // ArrayList<SongDataModel> data = Repository.getInstance(_activity)
+                    //     .getSongList().getValue();
+                    //
+                    // int rand = ThreadLocalRandom.current().nextInt(0, data.size());
+                    // Uri path = Uri.parse(data.get(rand).getPath());
+                    //
+                    // MediaControllerCompat.getMediaController(_activity)
+                    //     .getTransportControls()
+                    //     .playFromUri(path, null);
                 }
             }
         });

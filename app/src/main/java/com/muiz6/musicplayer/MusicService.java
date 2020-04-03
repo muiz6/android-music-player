@@ -3,43 +3,42 @@ package com.muiz6.musicplayer;
 import android.content.Intent;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 import androidx.media.MediaBrowserServiceCompat;
 
-import com.muiz6.musicplayer.R;
-import com.muiz6.musicplayer.callbacks.MediaSessionCallback;
-import com.muiz6.musicplayer.models.SongDataModel;
+import com.muiz6.musicplayer.callbacks.MusicServiceMediaSessionCallback;
+import com.muiz6.musicplayer.misc.MusicServiceAsyncTaskFetchAllSongs;
+import com.muiz6.musicplayer.util.Constants;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 // overriding onBind() will result in media browser not binding to service
 public class MusicService extends MediaBrowserServiceCompat {
 
-    private enum _LoopOptions {
-        LOOP_OFF, LOOP_CURRENT, LOOP_ALL
-    }
-
-    private static final String _TAG = "Audio Service";
+    private static final String _TAG = "MusicService";
+    private final ArrayList<MediaBrowserCompat.MediaItem> _result;
+    private final MediaDescriptionCompat.Builder _itemDescriptionBuilder;
     private MediaSessionCompat _session;
     private PlaybackStateCompat.Builder _stateBuilder;
     private MediaPlayer _player;
-    // private NotificationManagerCompat mNotificationManager;
+    private MusicServiceAsyncTaskFetchAllSongs _taskFetchAllSongs;
+
+    public MusicService() {
+        super();
+
+        _itemDescriptionBuilder =  new MediaDescriptionCompat.Builder();
+        _result =  new ArrayList<>();
+
+    }
 
     @Override
     public void onCreate() {
@@ -53,6 +52,7 @@ public class MusicService extends MediaBrowserServiceCompat {
 
         // initializing media session
         _session = new MediaSessionCompat(this, _TAG);
+        this.setSessionToken(_session.getSessionToken());
         _stateBuilder = new PlaybackStateCompat.Builder()
             .setActions(PlaybackStateCompat.ACTION_PLAY
                 | PlaybackStateCompat.ACTION_PLAY_PAUSE
@@ -63,9 +63,9 @@ public class MusicService extends MediaBrowserServiceCompat {
 
         _session.setPlaybackState(_stateBuilder.build());
         // mSession.setMetadata(mMetadataBuilder.build());
-        _session.setCallback(new MediaSessionCallback(this));
+        _session.setCallback(new MusicServiceMediaSessionCallback(this));
 
-        setSessionToken(_session.getSessionToken());
+        _taskFetchAllSongs = new MusicServiceAsyncTaskFetchAllSongs(this);
     }
 
     // TODO: perform long running operation in bg
@@ -95,49 +95,54 @@ public class MusicService extends MediaBrowserServiceCompat {
         @Nullable Bundle rootHints) {
 
         // let everyone connect ;)
-        return new BrowserRoot(getString(R.string.app_name), null);
+        return new BrowserRoot(Constants.MEDIA_ID_ROOT, null);
     }
 
     @Override
     public void onLoadChildren(@NonNull String parentId,
         @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
 
-        ArrayList<MediaBrowserCompat.MediaItem> items = new ArrayList<>();
-        MediaDescriptionCompat.Builder builder = new MediaDescriptionCompat.Builder();
-
-        // final Map<String,String> rootItems = new HashMap<>();
-        // rootItems.put("","");
-
         // if accessing from root
-        if (parentId.equals(getString(R.string.app_name))) {
-            final String arr[] = {"All Songs", "Playlists", "Albums", "Artists", "Folders", "Genres"};
+        if (parentId.equals(Constants.MEDIA_ID_ROOT)) {
 
-            for (int i = 0; i < arr.length; i++) {
+            final ArrayList<Pair<String,String>> rootItems = new ArrayList<>();
+            rootItems.add(new Pair<>(Constants.MEDIA_ID_ALL_SONGS, "All Songs"));
 
-                builder.setMediaId("" + i)
-                    .setTitle(arr[i]);
+            for (int i = 0; i < rootItems.size(); i++) {
+                final String id = rootItems.get(i).first;
+                final String title = rootItems.get(i).second;
+                final int flag;
 
-                MediaBrowserCompat.MediaItem item = new MediaBrowserCompat.MediaItem(builder.build(),
-                    MediaBrowserCompat.MediaItem.FLAG_BROWSABLE);
+                // all songs item is also playable while rest are only browsable
+                if (id.equals(Constants.MEDIA_ID_ALL_SONGS)) {
+                    flag = MediaBrowserCompat.MediaItem.FLAG_BROWSABLE
+                            | MediaBrowserCompat.MediaItem.FLAG_PLAYABLE;
+                }
+                else {
+                    flag = MediaBrowserCompat.MediaItem.FLAG_BROWSABLE;
+                }
 
-                items.add(item);
+                _itemDescriptionBuilder.setMediaId(id)
+                        .setTitle(title)
+                        .setSubtitle(title);
+                MediaBrowserCompat.MediaItem item =
+                        new MediaBrowserCompat.MediaItem(_itemDescriptionBuilder.build(), flag);
+                _result.add(item);
             }
         }
-        else if(parentId.equals("0")) {
-            ArrayList<SongDataModel> data = Repository.getInstance(this).getSongList().getValue();
+        else if(parentId.equals(Constants.MEDIA_ID_ALL_SONGS)) {
 
-            for (int i = 0; i < data.size(); i++) {
-                builder.setMediaId(parentId + "_" + i)
-                    .setTitle(data.get(i).getTitle());
-
-                MediaBrowserCompat.MediaItem item = new MediaBrowserCompat.MediaItem(builder.build(),
-                    MediaBrowserCompat.MediaItem.FLAG_PLAYABLE);
-
-                items.add(item);
+            try {
+                _taskFetchAllSongs.execute();
             }
+            catch (Exception e) {
+                // do nothing
+            }
+
+            new MusicServiceAsyncTaskFetchAllSongs(this);
         }
 
-        result.sendResult(items);
+        result.sendResult(_result);
     }
 
     @Override
@@ -147,13 +152,6 @@ public class MusicService extends MediaBrowserServiceCompat {
         // end the service when application is closed
         // mNotificationManager.cancel(AUDIO_SERVICE_NOTIFICATION_ID);
         stopSelf();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        // mNotificationManager.cancel(AUDIO_SERVICE_NOTIFICATION_ID);;
     }
 
     public MediaPlayer getMediaPlayer() {
@@ -166,5 +164,13 @@ public class MusicService extends MediaBrowserServiceCompat {
 
     public PlaybackStateCompat.Builder getPlaybackStateBuilder() {
         return _stateBuilder;
+    }
+
+    public ArrayList<MediaBrowserCompat.MediaItem> getMediaItems() {
+        return _result;
+    }
+
+    public MediaDescriptionCompat.Builder getItemDescriptionBuilder() {
+        return _itemDescriptionBuilder;
     }
 }

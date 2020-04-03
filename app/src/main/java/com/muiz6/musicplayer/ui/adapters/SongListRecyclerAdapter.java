@@ -3,12 +3,10 @@ package com.muiz6.musicplayer.ui.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.net.Uri;
-import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.MediaBrowserCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,20 +14,25 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.muiz6.musicplayer.R;
-import com.muiz6.musicplayer.Repository;
-import com.muiz6.musicplayer.models.SongDataModel;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class SongListAdapter extends RecyclerView.Adapter {
+public class SongListRecyclerAdapter extends RecyclerView.Adapter {
 
-    private ArrayList<SongDataModel> _songList;
+    public interface OnItemClickListener {
+        void onItemClick(int position);
+    }
 
-    public SongListAdapter() {
+    private ArrayList<MediaBrowserCompat.MediaItem> _songList;
+    private OnItemClickListener _clickListener;
+
+    public SongListRecyclerAdapter(ArrayList<MediaBrowserCompat.MediaItem> list,
+                                   OnItemClickListener listener) {
 
         // initialize with empty list
-        _songList = new ArrayList<>();
+        _songList = list;
+        _clickListener = listener;
     }
 
     @NonNull
@@ -45,7 +48,14 @@ public class SongListAdapter extends RecyclerView.Adapter {
         else {
             view = inflator.inflate(R.layout.row_song_item, parent, false);
         }
-        return new RecyclerView.ViewHolder(view) {};
+        final RecyclerView.ViewHolder holder = new RecyclerView.ViewHolder(view) {};
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                _clickListener.onItemClick(holder.getAdapterPosition());
+            }
+        });
+        return holder;
     }
 
     @Override
@@ -57,26 +67,10 @@ public class SongListAdapter extends RecyclerView.Adapter {
         else {
             TextView songTitle = holder.itemView.findViewById(R.id.row_song_item_title);
             TextView songArtist = holder.itemView.findViewById(R.id.row_song_item_artist);
-            final View clickable = holder.itemView.findViewById(R.id.row_song_item_clickable);
 
             // -1 bcz index 0 is occupied by header and item positions are no longer in sync
-            songTitle.setText(_songList.get(position - 1).getTitle());
-            songArtist.setText(_songList.get(position - 1).getArtist());
-
-            // TODO: get rid of this abomination ;C
-            clickable.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    SongDataModel data = Repository.getInstance(clickable.getContext())
-                        .getSongList().getValue().get(position - 1);
-
-                    MediaControllerCompat.getMediaController(_getActivity(clickable))
-                        .getTransportControls()
-                        .playFromUri(Uri.parse(data.getPath()), null);
-
-                }
-            });
+            songTitle.setText(_songList.get(position - 1).getDescription().getTitle());
+            songArtist.setText(_songList.get(position - 1).getDescription().getSubtitle());
         }
     }
 
@@ -98,7 +92,7 @@ public class SongListAdapter extends RecyclerView.Adapter {
     // copied from:
     // https://github.com/hazems/mvvm-sample-app/blob/part1/app/src/main/java/com/example/test/mvvmsampleapp/view/adapter/ProjectAdapter.java
     // TODO: try to understand this
-    public void setSongList(final ArrayList<SongDataModel> songList) {
+    public void setSongList(final ArrayList<MediaBrowserCompat.MediaItem> songList) {
         if (_songList == null) {
             _songList = songList;
             notifyDataSetChanged();
@@ -110,7 +104,7 @@ public class SongListAdapter extends RecyclerView.Adapter {
             DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
                 @Override
                 public int getOldListSize() {
-                    return SongListAdapter.this._songList.size();
+                    return SongListRecyclerAdapter.this._songList.size();
                 }
 
                 @Override
@@ -120,17 +114,19 @@ public class SongListAdapter extends RecyclerView.Adapter {
 
                 @Override
                 public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                    return SongListAdapter.this._songList.get(oldItemPosition).getTitle()
-                            .equals(songList.get(newItemPosition).getTitle());
+                    return SongListRecyclerAdapter.this._songList.get(oldItemPosition)
+                            .getDescription().getTitle()
+                            .equals(songList.get(newItemPosition).getDescription().getSubtitle());
                 }
 
                 @Override
                 public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-                    SongDataModel project = songList.get(newItemPosition);
-                    SongDataModel old = songList.get(oldItemPosition);
-                    return project.getTitle().equals(old.getTitle())
-                            && Objects.equals(project.getArtist(), old.getArtist())
-                            && Objects.equals(project.getPath(), old.getPath());
+                    MediaBrowserCompat.MediaItem project = songList.get(newItemPosition);
+                    MediaBrowserCompat.MediaItem old = songList.get(oldItemPosition);
+                    return project.getDescription().getTitle()
+                            .equals(old.getDescription().getTitle())
+                            && Objects.equals(project.getDescription().getSubtitle(),
+                            old.getDescription().getSubtitle());
                 }
             });
             _songList = songList;

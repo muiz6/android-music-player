@@ -8,13 +8,15 @@
         <item name="android:textColor">@color/textPrimary</item>
         <item name="android:textColorSecondary">@color/textSecondary</item>
 
+        <item name="android:scrollbarThumbVertical">?android:attr/textColorSecondary</item>
+
 <!--        color at the back of icon buttons-->
         <item name="backgroundTint">@color/transparent</item>
         <item name="android:colorBackground">@color/colorPrimary</item>
 
-<!--        for app compact icons only will not work on custom icons-->
+<!--        for app compact icons only will not work on custom icons unless explicitly applied-->
         <item name="iconTint">?android:attr/textColor</item>
-        <item name="tabIconTint">@color/textSecondary</item>
+        <item name="tabIconTint">?android:attr/textColorSecondary</item>
         <item name="bottomAppBarStyle">@style/AppTheme.BottomAppBar</item>
     </style>
 
