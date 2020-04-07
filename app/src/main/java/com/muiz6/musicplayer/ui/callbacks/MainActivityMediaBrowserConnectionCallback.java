@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.callbacks;
+package com.muiz6.musicplayer.ui.callbacks;
 
 import android.os.RemoteException;
 import android.support.v4.media.MediaBrowserCompat;
@@ -10,22 +10,19 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-
 import com.muiz6.musicplayer.R;
-import com.muiz6.musicplayer.ui.MainActivity;
+import com.muiz6.musicplayer.ui.activities.MainActivity;
 
 public class MainActivityMediaBrowserConnectionCallback extends MediaBrowserCompat.ConnectionCallback {
 
-    private static final String _TAG = "mbConnectionCallback";
+    private static final String _TAG = "MainActivityMBCC";
     private final MainActivity _activity;
-    private final MediaControllerCompat.Callback _controllerCallback;
-    private MediaBrowserCompat _mediaBrowser;
 
     public MainActivityMediaBrowserConnectionCallback(MainActivity activity) {
 
+        // do not call activity.getMediaBrowser() or activity.getMediaControllerCallback()
+        // here as they are null when ConnectionCallback is created
         _activity = activity;
-        _controllerCallback = activity.getMediaControllerCallback();
     }
 
     @Override
@@ -33,7 +30,7 @@ public class MainActivityMediaBrowserConnectionCallback extends MediaBrowserComp
         Log.d(_TAG,"Connected!");
 
         // Get the token for the MediaSession
-        MediaSessionCompat.Token token = _mediaBrowser.getSessionToken();
+        MediaSessionCompat.Token token = _activity.getMediaBrowser().getSessionToken();
 
         // Create a MediaController
         try {
@@ -44,10 +41,15 @@ public class MainActivityMediaBrowserConnectionCallback extends MediaBrowserComp
             MediaControllerCompat.setMediaController(_activity, mediaController);
         }
         catch (RemoteException e) {
-            Log.e("mbConnectionCallback", "Error creating controller", e);
+            Log.e(_TAG, "Error creating controller", e);
+            return;
         }
 
         _buildTransportControls();
+
+        // Register a Callback to stay in sync
+        MediaControllerCompat.getMediaController(_activity)
+                .registerCallback(_activity.getMediaControllerCallback());
     }
 
     @Override
@@ -107,23 +109,14 @@ public class MainActivityMediaBrowserConnectionCallback extends MediaBrowserComp
         MediaControllerCompat mediaController =
                 MediaControllerCompat.getMediaController(_activity);
 
-        // Display the initial state
-        // MediaMetadataCompat metadata = mediaController.getMetadata();
-        PlaybackStateCompat pbState = mediaController.getPlaybackState();
-        if (pbState.getState() == PlaybackStateCompat.STATE_STOPPED) {
-            TextView songTitle = _activity.findViewById(R.id.main_bottom_appbar_song_title);
-            songTitle.setText(_activity.getString(R.string.default_current_song_title));
-        }
+        // TODO: set bottom appbar visible only when current song is available
+        View bottomAppbar = _activity.findViewById(R.id.main_bottom_appbar);
+        bottomAppbar.setVisibility(View.VISIBLE);
 
-        // Register a Callback to stay in sync
-        mediaController.registerCallback(_controllerCallback);
-    }
-
-    /**
-     * must be called before MediaBrowserCompat.connect()
-     */
-    public void setMediaBrowser(@NonNull MediaBrowserCompat mediaBrowser) {
-        _mediaBrowser = mediaBrowser;
+        // set bottom padding equal to height of bottom appbar, leave rest as is
+        View viewPager = _activity.findViewById(R.id.main_view_pager);
+        viewPager.setPadding(viewPager.getPaddingStart(), viewPager.getPaddingTop(),
+                viewPager.getPaddingEnd(), bottomAppbar.getHeight());
     }
 }
 

@@ -133,15 +133,4 @@ public class SongListRecyclerAdapter extends RecyclerView.Adapter {
             result.dispatchUpdatesTo(this);
         }
     }
-
-    private Activity _getActivity(View v) {
-        Context context = v.getContext();
-        while (context instanceof ContextWrapper) {
-            if (context instanceof Activity) {
-                return (Activity)context;
-            }
-            context = ((ContextWrapper)context).getBaseContext();
-        }
-        return null;
-    }
 }

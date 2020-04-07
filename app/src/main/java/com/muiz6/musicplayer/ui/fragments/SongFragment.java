@@ -15,15 +15,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.muiz6.musicplayer.R;
-import com.muiz6.musicplayer.ui.MainActivity;
+import com.muiz6.musicplayer.ui.activities.MainActivity;
 import com.muiz6.musicplayer.ui.adapters.SongListRecyclerAdapter;
 import com.muiz6.musicplayer.util.Constants;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 public class SongFragment extends Fragment implements SongListRecyclerAdapter.OnItemClickListener {
 
@@ -43,8 +40,7 @@ public class SongFragment extends Fragment implements SongListRecyclerAdapter.On
 
         // initializing adapter with empty songlist
         _songListRecyclerAdapter =
-                new SongListRecyclerAdapter(new ArrayList<MediaBrowserCompat.MediaItem>(),
-                        this);
+                new SongListRecyclerAdapter(_songList, this);
 
         _recyclerView = (RecyclerView) LayoutInflater.from(context)
             .inflate(R.layout.fragment_list, null);
@@ -96,13 +92,6 @@ public class SongFragment extends Fragment implements SongListRecyclerAdapter.On
         int toPlay = position - 1;
         MediaControllerCompat.getMediaController(getActivity()).getTransportControls()
                 .playFromUri(_songList.get(toPlay).getDescription().getMediaUri(), null);
-    }
-
-    public SongListRecyclerAdapter getAdapter() {
-        return _songListRecyclerAdapter;
-    }
-
-    public RecyclerView getRecyclerView() {
-        return _recyclerView;
+                // .playFromMediaId(_songList.get(toPlay).getMediaId(), null);
     }
 }

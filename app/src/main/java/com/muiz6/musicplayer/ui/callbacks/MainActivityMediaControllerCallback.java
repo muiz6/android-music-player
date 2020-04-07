@@ -1,6 +1,5 @@
-package com.muiz6.musicplayer.callbacks;
+package com.muiz6.musicplayer.ui.callbacks;
 
-import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.support.v4.media.MediaMetadataCompat;
@@ -8,13 +7,11 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.TypedValue;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
-import androidx.core.content.ContextCompat;
 
 import com.muiz6.musicplayer.R;
-import com.muiz6.musicplayer.ui.MainActivity;
+import com.muiz6.musicplayer.ui.activities.MainActivity;
 
 public class MainActivityMediaControllerCallback extends MediaControllerCompat.Callback {
 

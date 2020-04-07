@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:fitsSystemWindows="true"
-    tools:context=".ui.MainActivity"
+    tools:context=".ui.activities.MainActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -70,11 +70,11 @@
             app:tabIconTint="?attr/tabIconTint" />
     </com.google.android.material.appbar.AppBarLayout>
 
+<!--    set padding to viewpager progmatically-->
     <androidx.viewpager.widget.ViewPager
-        android:id="@+id/pager"
+        android:id="@+id/main_view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="@dimen/bottom_appbar_height"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
     <com.google.android.material.bottomappbar.BottomAppBar
@@ -83,7 +83,8 @@
         android:layout_gravity="bottom"
         android:theme="@style/AppTheme.BottomAppBar"
         android:id="@+id/main_bottom_appbar"
-        app:contentInsetStart="0dp">
+        app:contentInsetStart="0dp"
+        android:visibility="invisible">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -114,10 +115,7 @@
                     android:singleLine="true"
                     android:scrollHorizontally="true"
                     android:marqueeRepeatLimit="marquee_forever"
-                    android:fadingEdge="horizontal"
-
-                    android:text="Song Title"
-                    android:textColor="?attr/iconTint" />
+                    android:fadingEdge="horizontal" />
 
                 <ImageButton
                     android:layout_width="50dp"

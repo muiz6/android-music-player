@@ -1,23 +1,23 @@
-package com.muiz6.musicplayer.ui;
+package com.muiz6.musicplayer.ui.activities;
 
 import android.content.ComponentName;
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.session.MediaControllerCompat;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 import com.muiz6.musicplayer.MusicService;
 import com.muiz6.musicplayer.R;
-import com.muiz6.musicplayer.callbacks.MainActivityMediaBrowserConnectionCallback;
-import com.muiz6.musicplayer.callbacks.MainActivityMediaControllerCallback;
+import com.muiz6.musicplayer.ui.callbacks.MainActivityMediaBrowserConnectionCallback;
+import com.muiz6.musicplayer.ui.callbacks.MainActivityMediaControllerCallback;
 import com.muiz6.musicplayer.ui.adapters.MainPagerAdapter;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,7 +25,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String _TAG = "MainActivity";
     private MediaBrowserCompat _mediaBrowser;
     private MainActivityMediaControllerCallback _controllerCallback;
-    private FragmentManager _fragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // setup media browser and media controller
-        _controllerCallback = new MainActivityMediaControllerCallback(this);
         MainActivityMediaBrowserConnectionCallback connectionCallback =
                 new MainActivityMediaBrowserConnectionCallback(this);
 
@@ -41,15 +39,12 @@ public class MainActivity extends AppCompatActivity {
                 new ComponentName(this, MusicService.class),
                 connectionCallback,
                 null);
-
-        // must call before mediaBrowser.connect()
-        connectionCallback.setMediaBrowser(_mediaBrowser);
+        _controllerCallback = new MainActivityMediaControllerCallback(this);
 
         // Instantiate ViewPager, PagerAdapter and TabLayout
-        ViewPager viewPager = findViewById(R.id.pager);
+        ViewPager viewPager = findViewById(R.id.main_view_pager);
         TabLayout tabLayout = findViewById(R.id.main_tabs);
-        _fragmentManager= getSupportFragmentManager();
-        MainPagerAdapter pagerAdapter = new MainPagerAdapter(_fragmentManager);
+        MainPagerAdapter pagerAdapter = new MainPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
         pagerAdapter.setTabIcons(tabLayout);
@@ -81,12 +76,25 @@ public class MainActivity extends AppCompatActivity {
                 super.onTabReselected(tab);
             }
         });
+
+        View miniPlayerTitle = findViewById(R.id.main_bottom_appbar_song_title);
+        miniPlayerTitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this,
+                        NowPlayingActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
     protected void onStart() {
         super.onStart();
 
+        // start service and let media browser bind to it
+        Intent intent= new Intent(this, MusicService.class);
+        ContextCompat.startForegroundService(this, intent);
         _mediaBrowser.connect();
     }
 
