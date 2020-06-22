@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.ui.fragments;
+package com.muiz6.musicplayer.musicservice.mainui.songs;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -15,18 +15,17 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.muiz6.musicplayer.R;
-import com.muiz6.musicplayer.ui.activities.MainActivity;
-import com.muiz6.musicplayer.ui.adapters.SongListRecyclerAdapter;
-import com.muiz6.musicplayer.util.Constants;
+import com.muiz6.musicplayer.musicservice.mainui.MainActivity;
+import com.muiz6.musicplayer.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SongFragment extends Fragment implements SongListRecyclerAdapter.OnItemClickListener {
+public class SongFragment extends Fragment implements RecyclerAdapter.OnItemClickListener {
 
     private static final String _TAG = "SongFragment";
     private RecyclerView _recyclerView;
-    private SongListRecyclerAdapter _songListRecyclerAdapter;
+    private RecyclerAdapter _songListRecyclerAdapter;
     private ArrayList<MediaBrowserCompat.MediaItem> _songList;
 
     // required public ctor
@@ -40,7 +39,7 @@ public class SongFragment extends Fragment implements SongListRecyclerAdapter.On
 
         // initializing adapter with empty songlist
         _songListRecyclerAdapter =
-                new SongListRecyclerAdapter(_songList, this);
+                new RecyclerAdapter(_songList, this);
 
         _recyclerView = (RecyclerView) LayoutInflater.from(context)
             .inflate(R.layout.fragment_list, null);
@@ -87,7 +86,6 @@ public class SongFragment extends Fragment implements SongListRecyclerAdapter.On
         Log.d(_TAG, "onItemClick: clicked at " + position);
 
         // TODO: play from mediaId instead
-
         // -1 to bring recyclerview items and media items in sync
         int toPlay = position - 1;
         MediaControllerCompat.getMediaController(getActivity()).getTransportControls()

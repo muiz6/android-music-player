@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.ui.activities;
+package com.muiz6.musicplayer.musicservice.mainui;
 
 import android.content.ComponentName;
 import android.content.Intent;
@@ -14,17 +14,15 @@ import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
-import com.muiz6.musicplayer.MusicService;
+import com.muiz6.musicplayer.musicservice.MusicService;
 import com.muiz6.musicplayer.R;
-import com.muiz6.musicplayer.ui.callbacks.MainActivityMediaBrowserConnectionCallback;
-import com.muiz6.musicplayer.ui.callbacks.MainActivityMediaControllerCallback;
-import com.muiz6.musicplayer.ui.adapters.MainPagerAdapter;
+import com.muiz6.musicplayer.musicservice.mainui.nowplaying.NowPlayingActivity;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String _TAG = "MainActivity";
     private MediaBrowserCompat _mediaBrowser;
-    private MainActivityMediaControllerCallback _controllerCallback;
+    private MediaControllerCallback _controllerCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,14 +30,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // setup media browser and media controller
-        MainActivityMediaBrowserConnectionCallback connectionCallback =
-                new MainActivityMediaBrowserConnectionCallback(this);
+        MediaBrowserConnCallback connectionCallback =
+                new MediaBrowserConnCallback(this);
 
         _mediaBrowser = new MediaBrowserCompat(this,
                 new ComponentName(this, MusicService.class),
                 connectionCallback,
                 null);
-        _controllerCallback = new MainActivityMediaControllerCallback(this);
+        _controllerCallback = new MediaControllerCallback(this);
 
         // Instantiate ViewPager, PagerAdapter and TabLayout
         ViewPager viewPager = findViewById(R.id.main_view_pager);

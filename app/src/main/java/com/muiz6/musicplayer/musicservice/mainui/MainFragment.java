@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.ui.fragments;
+package com.muiz6.musicplayer.musicservice.mainui;
 
 import android.content.Context;
 import android.os.Bundle;

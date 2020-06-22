@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.misc;
+package com.muiz6.musicplayer.musicservice;
 
 import android.database.Cursor;
 import android.net.Uri;
@@ -7,11 +7,9 @@ import android.provider.MediaStore;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 
-import com.muiz6.musicplayer.MusicService;
-import com.muiz6.musicplayer.util.Constants;
+import com.muiz6.musicplayer.Constants;
 
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class MusicServiceAsyncTaskFetchAllSongs extends AsyncTask<Void, Void, String> {

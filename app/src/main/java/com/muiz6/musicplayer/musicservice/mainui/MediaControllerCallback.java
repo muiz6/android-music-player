@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.ui.callbacks;
+package com.muiz6.musicplayer.musicservice.mainui;
 
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
@@ -11,13 +11,12 @@ import android.widget.ImageButton;
 import androidx.annotation.ColorInt;
 
 import com.muiz6.musicplayer.R;
-import com.muiz6.musicplayer.ui.activities.MainActivity;
 
-public class MainActivityMediaControllerCallback extends MediaControllerCompat.Callback {
+public class MediaControllerCallback extends MediaControllerCompat.Callback {
 
     private final MainActivity _activity;
 
-    public MainActivityMediaControllerCallback(MainActivity activity) {
+    public MediaControllerCallback(MainActivity activity) {
         _activity = activity;
     }
 
@@ -31,6 +30,7 @@ public class MainActivityMediaControllerCallback extends MediaControllerCompat.C
     public void onPlaybackStateChanged(PlaybackStateCompat state) {
         ImageButton btn = _activity.findViewById(R.id.main_bottom_appbar_btn_play);
 
+        // use current theme colors
         TypedValue typedValue = new TypedValue();
         Resources.Theme theme = _activity.getTheme();
         if (state.getState() == PlaybackStateCompat.STATE_PLAYING) {

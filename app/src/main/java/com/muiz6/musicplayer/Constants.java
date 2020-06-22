@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.util;
+package com.muiz6.musicplayer;
 
 public abstract class Constants {
 

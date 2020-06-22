@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.ui.callbacks;
+package com.muiz6.musicplayer.musicservice.mainui.nowplaying;
 
 import android.os.RemoteException;
 import android.support.v4.media.MediaBrowserCompat;
@@ -11,7 +11,6 @@ import android.widget.ImageButton;
 import androidx.core.content.ContextCompat;
 
 import com.muiz6.musicplayer.R;
-import com.muiz6.musicplayer.ui.activities.NowPlayingActivity;
 
 public class NowPlayingActivityMediaBrowserConnectionCallback
         extends MediaBrowserCompat.ConnectionCallback {

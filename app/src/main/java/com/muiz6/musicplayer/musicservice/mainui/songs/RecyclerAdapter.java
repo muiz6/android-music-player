@@ -1,8 +1,5 @@
-package com.muiz6.musicplayer.ui.adapters;
+package com.muiz6.musicplayer.musicservice.mainui.songs;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.ContextWrapper;
 import android.support.v4.media.MediaBrowserCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +15,7 @@ import com.muiz6.musicplayer.R;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class SongListRecyclerAdapter extends RecyclerView.Adapter {
+public class RecyclerAdapter extends RecyclerView.Adapter {
 
     public interface OnItemClickListener {
         void onItemClick(int position);
@@ -27,8 +24,8 @@ public class SongListRecyclerAdapter extends RecyclerView.Adapter {
     private ArrayList<MediaBrowserCompat.MediaItem> _songList;
     private OnItemClickListener _clickListener;
 
-    public SongListRecyclerAdapter(ArrayList<MediaBrowserCompat.MediaItem> list,
-                                   OnItemClickListener listener) {
+    public RecyclerAdapter(ArrayList<MediaBrowserCompat.MediaItem> list,
+                           OnItemClickListener listener) {
 
         // initialize with empty list
         _songList = list;
@@ -104,7 +101,7 @@ public class SongListRecyclerAdapter extends RecyclerView.Adapter {
             DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
                 @Override
                 public int getOldListSize() {
-                    return SongListRecyclerAdapter.this._songList.size();
+                    return RecyclerAdapter.this._songList.size();
                 }
 
                 @Override
@@ -114,7 +111,7 @@ public class SongListRecyclerAdapter extends RecyclerView.Adapter {
 
                 @Override
                 public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                    return SongListRecyclerAdapter.this._songList.get(oldItemPosition)
+                    return RecyclerAdapter.this._songList.get(oldItemPosition)
                             .getDescription().getTitle()
                             .equals(songList.get(newItemPosition).getDescription().getSubtitle());
                 }
@@ -130,7 +127,11 @@ public class SongListRecyclerAdapter extends RecyclerView.Adapter {
                 }
             });
             _songList = songList;
-            result.dispatchUpdatesTo(this);
+
+            // this statement is causing recyclerview to scroll to the bottom
+            // so using notifyDataSetChanged() instead
+            // result.dispatchUpdatesTo(this);
+            notifyDataSetChanged();
         }
     }
 }

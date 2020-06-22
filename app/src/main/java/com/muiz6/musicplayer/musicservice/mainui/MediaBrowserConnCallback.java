@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.ui.callbacks;
+package com.muiz6.musicplayer.musicservice.mainui;
 
 import android.os.RemoteException;
 import android.support.v4.media.MediaBrowserCompat;
@@ -8,17 +8,15 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
 import com.muiz6.musicplayer.R;
-import com.muiz6.musicplayer.ui.activities.MainActivity;
 
-public class MainActivityMediaBrowserConnectionCallback extends MediaBrowserCompat.ConnectionCallback {
+public class MediaBrowserConnCallback extends MediaBrowserCompat.ConnectionCallback {
 
     private static final String _TAG = "MainActivityMBCC";
     private final MainActivity _activity;
 
-    public MainActivityMediaBrowserConnectionCallback(MainActivity activity) {
+    public MediaBrowserConnCallback(MainActivity activity) {
 
         // do not call activity.getMediaBrowser() or activity.getMediaControllerCallback()
         // here as they are null when ConnectionCallback is created

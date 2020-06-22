@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.ui;
+package com.muiz6.musicplayer;
 
 import android.content.Context;
 import android.util.AttributeSet;
