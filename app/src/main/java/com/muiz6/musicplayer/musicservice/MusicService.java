@@ -1,24 +1,18 @@
 package com.muiz6.musicplayer.musicservice;
 
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
-import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,9 +23,9 @@ import androidx.core.util.Pair;
 import androidx.media.MediaBrowserServiceCompat;
 import androidx.media.session.MediaButtonReceiver;
 
+import com.muiz6.musicplayer.Constants;
 import com.muiz6.musicplayer.R;
 import com.muiz6.musicplayer.musicservice.mainui.nowplaying.NowPlayingActivity;
-import com.muiz6.musicplayer.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,13 +38,14 @@ public class MusicService extends MediaBrowserServiceCompat
         implements AudioManager.OnAudioFocusChangeListener,
         MediaPlayer.OnCompletionListener {
 
-    private static final String _TAG = "MusicService";
     public static final int AUDIO_SERVICE_NOTIFICATION_ID = 1;
+
+    private static final String _TAG = "MusicService";
     private final ArrayList<MediaBrowserCompat.MediaItem> _result;
     private final MediaDescriptionCompat.Builder _itemDescriptionBuilder;
     private AudioManager _audioManager;
     private MediaSessionCompat _session;
-    private MusicServiceAsyncTaskFetchAllSongs _taskFetchAllSongs;
+    private _AsyncFetchAllSongs _taskFetchAllSongs;
     private NotificationCompat.Builder _notifBuilder;
 
     public MusicService() {
@@ -68,13 +63,14 @@ public class MusicService extends MediaBrowserServiceCompat
         // initializing media session
         _session = new MediaSessionCompat(this, _TAG);
         this.setSessionToken(_session.getSessionToken());
-        _session.setCallback(new _MediaSessionCallback());
+        _session.setCallback(new _MediaSessionCallback(this,
+                _session, _audioManager, _notifBuilder, this, this));
 
         final Intent intent = new Intent(this, NowPlayingActivity.class);
         _session.setSessionActivity(PendingIntent.getActivity(this, 1,
                 intent, PendingIntent.FLAG_UPDATE_CURRENT));
 
-        _taskFetchAllSongs = new MusicServiceAsyncTaskFetchAllSongs(this);
+        _taskFetchAllSongs = new _AsyncFetchAllSongs(this);
 
         // setup notification builder for media style notification
         _notifBuilder = new NotificationCompat.Builder(this, CHANNEL_ID);
@@ -132,7 +128,7 @@ public class MusicService extends MediaBrowserServiceCompat
     public int onStartCommand(Intent intent, int flags, int startId) {
         NotificationManagerCompat.from(this).notify(AUDIO_SERVICE_NOTIFICATION_ID,
                 _notifBuilder.build());
-
+        this.startForeground(MusicService.AUDIO_SERVICE_NOTIFICATION_ID, _notifBuilder.build());
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -187,7 +183,7 @@ public class MusicService extends MediaBrowserServiceCompat
                 // do nothing
             }
 
-            new MusicServiceAsyncTaskFetchAllSongs(this);
+            new _AsyncFetchAllSongs(this);
         }
 
         result.sendResult(_result);
@@ -207,6 +203,7 @@ public class MusicService extends MediaBrowserServiceCompat
         super.onDestroy();
 
         _session.getController().getTransportControls().stop();
+        this.stopForeground(true);
     }
 
     // belongs to AudioManager.OnAudioFocusChangeListener interface
@@ -232,117 +229,5 @@ public class MusicService extends MediaBrowserServiceCompat
     // req by async task fetch
     public MediaDescriptionCompat.Builder getItemDescriptionBuilder() {
         return _itemDescriptionBuilder;
-    }
-
-    private class _MediaSessionCallback extends MediaSessionCompat.Callback {
-
-        private MediaPlayer _player;
-        private PlaybackStateCompat.Builder _pbStateBuilder;
-        private MediaMetadataCompat.Builder _metadataBuilder;
-        private BroadcastReceiver _noisyReceiver;
-
-        _MediaSessionCallback() {
-            _player = new MediaPlayer();
-            AudioAttributes.Builder audioAttrBuilder = new AudioAttributes.Builder()
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                    .setUsage(AudioAttributes.USAGE_MEDIA);
-            _player.setAudioAttributes(audioAttrBuilder.build());
-            _player.setOnCompletionListener(MusicService.this);
-
-            _pbStateBuilder = new PlaybackStateCompat.Builder()
-                    .setActions(PlaybackStateCompat.ACTION_PLAY
-                            | PlaybackStateCompat.ACTION_PLAY_PAUSE
-                            | PlaybackStateCompat.ACTION_STOP)
-                    .setState(PlaybackStateCompat.STATE_STOPPED, 0, 0);
-            _metadataBuilder = new MediaMetadataCompat.Builder()
-                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, "")
-                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ARTIST, "")
-                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, "");
-
-            _session.setPlaybackState(_pbStateBuilder.build());
-            _session.setMetadata(_metadataBuilder.build());
-
-            _noisyReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
-                        _session.getController().getTransportControls().pause();
-                    }
-                }
-            };
-        }
-
-        @Override
-        public void onPlayFromUri(Uri uri, Bundle extras) {
-            super.onPlayFromUri(uri, extras);
-
-            // service is also and audio focus change listener
-            int result = _audioManager.requestAudioFocus(MusicService.this,
-                    AudioManager.STREAM_MUSIC,
-                    AudioManager.AUDIOFOCUS_GAIN);
-            if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-                _player.reset();
-                try {
-                    _player.setDataSource(MusicService.this, uri);
-                    _player.prepare();
-                    _player.start();
-
-                    _pbStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING,0,1);
-                    _session.setPlaybackState(_pbStateBuilder.build());
-                    _session.setActive(true);
-                    startForeground(AUDIO_SERVICE_NOTIFICATION_ID, _notifBuilder.build());
-
-                    IntentFilter intentFilter =
-                            new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
-                    registerReceiver(_noisyReceiver, intentFilter);
-                }
-                catch (java.io.IOException e) {
-                    Log.e("MusicService", "could not play this track!", e);
-                }
-            }
-        }
-
-        @Override
-        public void onPlay() {
-            super.onPlay();
-
-            // TODO: display notification here
-
-            _player.pause();
-            _pbStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING,0,1);
-            _session.setPlaybackState(_pbStateBuilder.build());
-            _session.setActive(true);
-            // MediaControllerCompat controller = _session.getController();
-            // MediaMetadataCompat mediaMetadata = controller.getMetadata();
-            // MediaDescriptionCompat description = mediaMetadata.getDescription();
-            startForeground(AUDIO_SERVICE_NOTIFICATION_ID, _notifBuilder.build());
-        }
-
-        @Override
-        public void onPause() {
-            super.onPause();
-
-            _player.pause();
-            _audioManager.abandonAudioFocus(MusicService.this);
-            _pbStateBuilder.setState(PlaybackStateCompat.STATE_PAUSED,0,0);
-            _session.setPlaybackState(_pbStateBuilder.build());
-            stopForeground(false);
-            unregisterReceiver(_noisyReceiver);
-        }
-
-        @Override
-        public void onStop() {
-            super.onStop();
-
-            _pbStateBuilder.setState(PlaybackStateCompat.STATE_STOPPED,0,0);
-            _session.setPlaybackState(_pbStateBuilder.build());
-            _session.setActive(false);
-
-            _player.release();
-            _player = null;
-            _audioManager.abandonAudioFocus(MusicService.this);
-            stopForeground(true);
-            stopSelf();
-        }
     }
 }

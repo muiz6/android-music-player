@@ -12,11 +12,11 @@ import com.muiz6.musicplayer.Constants;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
-public class MusicServiceAsyncTaskFetchAllSongs extends AsyncTask<Void, Void, String> {
+class _AsyncFetchAllSongs extends AsyncTask<Void, Void, String> {
 
     private WeakReference<MusicService> _service;
 
-    public MusicServiceAsyncTaskFetchAllSongs(MusicService service) {
+    public _AsyncFetchAllSongs(MusicService service) {
         _service = new WeakReference<>(service);
     }
 
