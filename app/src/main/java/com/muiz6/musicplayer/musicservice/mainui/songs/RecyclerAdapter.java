@@ -1,6 +1,8 @@
 package com.muiz6.musicplayer.musicservice.mainui.songs;
 
+import android.app.Activity;
 import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.session.MediaControllerCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,19 +19,12 @@ import java.util.Objects;
 
 public class RecyclerAdapter extends RecyclerView.Adapter {
 
-    public interface OnItemClickListener {
-        void onItemClick(int position);
-    }
-
+    private final Activity _activity;
     private ArrayList<MediaBrowserCompat.MediaItem> _songList;
-    private OnItemClickListener _clickListener;
 
-    public RecyclerAdapter(ArrayList<MediaBrowserCompat.MediaItem> list,
-                           OnItemClickListener listener) {
-
-        // initialize with empty list
+    public RecyclerAdapter(ArrayList<MediaBrowserCompat.MediaItem> list, Activity activity) {
         _songList = list;
-        _clickListener = listener;
+        _activity = activity;
     }
 
     @NonNull
@@ -49,7 +44,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                _clickListener.onItemClick(holder.getAdapterPosition());
+                int position = holder.getAdapterPosition();
+
+                // TODO: play from mediaId instead
+                // -1 to bring recyclerview items and media items in sync
+                int toPlay = position - 1;
+                MediaControllerCompat.getMediaController(_activity).getTransportControls()
+                        .playFromUri(_songList.get(toPlay).getDescription().getMediaUri(), null);
+                // .playFromMediaId(_songList.get(toPlay).getMediaId(), null);
             }
         });
         return holder;

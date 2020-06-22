@@ -3,8 +3,6 @@ package com.muiz6.musicplayer.musicservice.mainui.songs;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
-import android.support.v4.media.session.MediaControllerCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,14 +12,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.muiz6.musicplayer.Constants;
 import com.muiz6.musicplayer.R;
 import com.muiz6.musicplayer.musicservice.mainui.MainActivity;
-import com.muiz6.musicplayer.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SongFragment extends Fragment implements RecyclerAdapter.OnItemClickListener {
+public class SongFragment extends Fragment {
 
     private static final String _TAG = "SongFragment";
     private RecyclerView _recyclerView;
@@ -39,7 +37,7 @@ public class SongFragment extends Fragment implements RecyclerAdapter.OnItemClic
 
         // initializing adapter with empty songlist
         _songListRecyclerAdapter =
-                new RecyclerAdapter(_songList, this);
+                new RecyclerAdapter(_songList, getActivity());
 
         _recyclerView = (RecyclerView) LayoutInflater.from(context)
             .inflate(R.layout.fragment_list, null);
@@ -64,7 +62,7 @@ public class SongFragment extends Fragment implements RecyclerAdapter.OnItemClic
                 new MediaBrowserCompat.SubscriptionCallback() {
             @Override
             public void onChildrenLoaded(@NonNull String parentId,
-                                         @NonNull List<MediaBrowserCompat.MediaItem> children) {
+                    @NonNull List<MediaBrowserCompat.MediaItem> children) {
                 super.onChildrenLoaded(parentId, children);
 
                 _songList = (ArrayList<MediaBrowserCompat.MediaItem>) children;
@@ -79,17 +77,5 @@ public class SongFragment extends Fragment implements RecyclerAdapter.OnItemClic
         super.onStop();
 
         ((MainActivity)getActivity()).getMediaBrowser().unsubscribe(Constants.MEDIA_ID_ALL_SONGS);
-    }
-
-    @Override
-    public void onItemClick(int position) {
-        Log.d(_TAG, "onItemClick: clicked at " + position);
-
-        // TODO: play from mediaId instead
-        // -1 to bring recyclerview items and media items in sync
-        int toPlay = position - 1;
-        MediaControllerCompat.getMediaController(getActivity()).getTransportControls()
-                .playFromUri(_songList.get(toPlay).getDescription().getMediaUri(), null);
-                // .playFromMediaId(_songList.get(toPlay).getMediaId(), null);
     }
 }
