@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.musicservice.mainui;
+package com.muiz6.musicplayer.musicservice.ui;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -8,7 +8,7 @@ import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.google.android.material.tabs.TabLayout;
 import com.muiz6.musicplayer.R;
-import com.muiz6.musicplayer.musicservice.mainui.songs.SongFragment;
+import com.muiz6.musicplayer.musicservice.ui.songs.SongFragment;
 
 public class MainPagerAdapter extends FragmentPagerAdapter {
 

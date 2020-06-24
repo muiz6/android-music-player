@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.musicservice.mainui.songs;
+package com.muiz6.musicplayer.musicservice.ui.songs;
 
 import android.app.Activity;
 import android.support.v4.media.MediaBrowserCompat;

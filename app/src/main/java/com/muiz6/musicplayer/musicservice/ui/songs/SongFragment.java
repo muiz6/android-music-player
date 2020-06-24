@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.musicservice.mainui.songs;
+package com.muiz6.musicplayer.musicservice.ui.songs;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.muiz6.musicplayer.Constants;
 import com.muiz6.musicplayer.R;
-import com.muiz6.musicplayer.musicservice.mainui.MainActivity;
+import com.muiz6.musicplayer.musicservice.ui.MainActivity;
 
 import java.util.ArrayList;
 import java.util.List;

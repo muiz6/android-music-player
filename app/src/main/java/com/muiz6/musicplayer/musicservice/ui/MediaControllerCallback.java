@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.musicservice.mainui;
+package com.muiz6.musicplayer.musicservice.ui;
 
 import android.content.res.Resources;
 import android.graphics.PorterDuff;

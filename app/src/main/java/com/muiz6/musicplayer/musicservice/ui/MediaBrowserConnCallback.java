@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.musicservice.mainui;
+package com.muiz6.musicplayer.musicservice.ui;
 
 import android.os.RemoteException;
 import android.support.v4.media.MediaBrowserCompat;

@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.musicservice.mainui.nowplaying;
+package com.muiz6.musicplayer.musicservice.ui.nowplaying;
 
 import android.content.ComponentName;
 import android.os.Bundle;

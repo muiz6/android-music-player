@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.musicservice.mainui;
+package com.muiz6.musicplayer.musicservice.ui;
 
 import android.content.ComponentName;
 import android.content.Intent;
@@ -16,7 +16,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.tabs.TabLayout;
 import com.muiz6.musicplayer.musicservice.MusicService;
 import com.muiz6.musicplayer.R;
-import com.muiz6.musicplayer.musicservice.mainui.nowplaying.NowPlayingActivity;
+import com.muiz6.musicplayer.musicservice.ui.nowplaying.NowPlayingActivity;
 
 public class MainActivity extends AppCompatActivity {
 
