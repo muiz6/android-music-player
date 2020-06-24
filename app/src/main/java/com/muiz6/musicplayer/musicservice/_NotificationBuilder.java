@@ -1,5 +1,6 @@
 package com.muiz6.musicplayer.musicservice;
 
+import android.app.Notification;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.media.session.MediaControllerCompat;
@@ -64,7 +65,7 @@ class _NotificationBuilder extends NotificationCompat.Builder {
 		addAction(new NotificationCompat.Action(R.drawable.ic_skip_previous_black_24dp,
 				"skip_to_previous",
 				MediaButtonReceiver.buildMediaButtonPendingIntent(_service,
-						PlaybackStateCompat.ACTION_PAUSE)));
+						PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)));
 
 				// Add a pause button
 		addAction(new NotificationCompat.Action(R.drawable.ic_pause_black_24dp,
@@ -75,6 +76,6 @@ class _NotificationBuilder extends NotificationCompat.Builder {
 		addAction(new NotificationCompat.Action(R.drawable.ic_skip_next_black_24dp,
 				"skip_to_next",
 				MediaButtonReceiver.buildMediaButtonPendingIntent(_service,
-						PlaybackStateCompat.ACTION_PLAY)));
+						PlaybackStateCompat.ACTION_SKIP_TO_NEXT)));
 	}
 }
