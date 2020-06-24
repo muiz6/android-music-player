@@ -37,7 +37,7 @@ class _AsyncFetchAllSongs extends AsyncTask<Void, Void, String> {
                 projection,
                 null,
                 null,
-                null);
+                MediaStore.Audio.AudioColumns.TITLE + " ASC");
 
         if (cursor != null) {
             int i = 0;
