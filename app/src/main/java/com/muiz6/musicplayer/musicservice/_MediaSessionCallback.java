@@ -15,6 +15,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.media.MediaBrowserServiceCompat;
 
 class _MediaSessionCallback extends MediaSessionCompat.Callback {
@@ -22,9 +23,9 @@ class _MediaSessionCallback extends MediaSessionCompat.Callback {
 	private final MediaBrowserServiceCompat _service;
 	private final MediaSessionCompat _session;
 	private final AudioManager _audioManager;
-	private final NotificationCompat.Builder _notifBuilder;
 	private final AudioManager.OnAudioFocusChangeListener _audioFocusListener;
 	private final MediaPlayer.OnCompletionListener _mediaCompletionListener;
+	private final NotificationCompat.Builder _notifBuilder;
 	private final MediaPlayer _player = new MediaPlayer();
 	private PlaybackStateCompat.Builder _pbStateBuilder;
 	private MediaMetadataCompat.Builder _metadataBuilder;
@@ -39,9 +40,9 @@ class _MediaSessionCallback extends MediaSessionCompat.Callback {
 		_service = service;
 		_session = session;
 		_audioManager = audioManager;
-		_notifBuilder = notifBuilder;
 		_audioFocusListener = listener;
 		_mediaCompletionListener = mpListener;
+		_notifBuilder = notifBuilder;
 		AudioAttributes.Builder audioAttrBuilder = new AudioAttributes.Builder()
 				.setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
 				.setUsage(AudioAttributes.USAGE_MEDIA);
@@ -86,14 +87,17 @@ class _MediaSessionCallback extends MediaSessionCompat.Callback {
 				_player.prepare();
 				_player.start();
 
-				_pbStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING,0,1);
+				_pbStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING, 0, 1);
 				_session.setPlaybackState(_pbStateBuilder.build());
 				_session.setActive(true);
-				// _service.startForeground(MusicService.AUDIO_SERVICE_NOTIFICATION_ID, _notifBuilder.build());
 
 				IntentFilter intentFilter =
 						new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
 				_service.registerReceiver(_noisyReceiver, intentFilter);
+
+				_notifBuilder.setContentText(uri.toString());
+				NotificationManagerCompat.from(_service)
+						.notify(_NotificationBuilder.MUSIC_NOTIFICATION_ID, _notifBuilder.build());
 			}
 			catch (java.io.IOException e) {
 				Log.e("MusicService", "could not play this track!", e);
@@ -106,13 +110,12 @@ class _MediaSessionCallback extends MediaSessionCompat.Callback {
 		super.onPlay();
 
 		_player.pause();
-		_pbStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING,0,1);
+		_pbStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING, 0, 1);
 		_session.setPlaybackState(_pbStateBuilder.build());
 		_session.setActive(true);
 		// MediaControllerCompat controller = _session.getController();
 		// MediaMetadataCompat mediaMetadata = controller.getMetadata();
 		// MediaDescriptionCompat description = mediaMetadata.getDescription();
-		// _service.startForeground(MusicService.AUDIO_SERVICE_NOTIFICATION_ID, _notifBuilder.build());
 	}
 
 	@Override
@@ -123,7 +126,6 @@ class _MediaSessionCallback extends MediaSessionCompat.Callback {
 		_audioManager.abandonAudioFocus(_audioFocusListener);
 		_pbStateBuilder.setState(PlaybackStateCompat.STATE_PAUSED,0,0);
 		_session.setPlaybackState(_pbStateBuilder.build());
-		// _service.stopForeground(false);
 		_service.unregisterReceiver(_noisyReceiver);
 	}
 
@@ -137,7 +139,6 @@ class _MediaSessionCallback extends MediaSessionCompat.Callback {
 
 		_player.release();
 		_audioManager.abandonAudioFocus(_audioFocusListener);
-		// _service.stopForeground(true);
 		_service.stopSelf();
 	}
 }
