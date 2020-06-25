@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.musicservice.ui.nowplaying;
+package com.muiz6.musicplayer.ui.nowplaying;
 
 import android.os.RemoteException;
 import android.support.v4.media.MediaBrowserCompat;

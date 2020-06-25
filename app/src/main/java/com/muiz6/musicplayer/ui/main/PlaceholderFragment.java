@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.musicservice.ui;
+package com.muiz6.musicplayer.ui.main;
 
 import android.content.Context;
 import android.os.Bundle;

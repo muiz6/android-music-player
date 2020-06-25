@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.musicservice.ui.nowplaying;
+package com.muiz6.musicplayer.ui.nowplaying;
 
 import android.content.ComponentName;
 import android.os.Bundle;
@@ -7,8 +7,8 @@ import android.support.v4.media.MediaBrowserCompat;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.muiz6.musicplayer.musicservice.MusicService;
 import com.muiz6.musicplayer.R;
+import com.muiz6.musicplayer.musicservice.MusicService;
 
 public class NowPlayingActivity extends AppCompatActivity {
 

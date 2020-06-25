@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.musicservice.ui.songs;
+package com.muiz6.musicplayer.ui.main.songs;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -12,9 +12,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.muiz6.musicplayer.Constants;
 import com.muiz6.musicplayer.R;
-import com.muiz6.musicplayer.musicservice.ui.MainActivity;
+import com.muiz6.musicplayer.musicservice.musicprovider.MusicProvider;
+import com.muiz6.musicplayer.ui.main.MainActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +58,7 @@ public class SongFragment extends Fragment {
         super.onStart();
 
         MainActivity activity = (MainActivity) getActivity();
-        activity.getMediaBrowser().subscribe(Constants.MEDIA_ID_ALL_SONGS,
+        activity.getMediaBrowser().subscribe(MusicProvider.MEDIA_ID_ALL_SONGS,
                 new MediaBrowserCompat.SubscriptionCallback() {
             @Override
             public void onChildrenLoaded(@NonNull String parentId,
@@ -76,6 +76,6 @@ public class SongFragment extends Fragment {
     public void onStop() {
         super.onStop();
 
-        ((MainActivity)getActivity()).getMediaBrowser().unsubscribe(Constants.MEDIA_ID_ALL_SONGS);
+        ((MainActivity)getActivity()).getMediaBrowser().unsubscribe(MusicProvider.MEDIA_ID_ALL_SONGS);
     }
 }

@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.musicservice.ui.songs;
+package com.muiz6.musicplayer.ui.main.songs;
 
 import android.app.Activity;
 import android.support.v4.media.MediaBrowserCompat;
@@ -50,8 +50,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter {
                 // -1 to bring recyclerview items and media items in sync
                 int toPlay = position - 1;
                 MediaControllerCompat.getMediaController(_activity).getTransportControls()
-                        .playFromUri(_songList.get(toPlay).getDescription().getMediaUri(), null);
-                // .playFromMediaId(_songList.get(toPlay).getMediaId(), null);
+                        .playFromMediaId(_songList.get(toPlay).getMediaId(), null);
             }
         });
         return holder;

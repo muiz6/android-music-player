@@ -6,38 +6,31 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
-import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.util.Pair;
 import androidx.media.MediaBrowserServiceCompat;
 import androidx.media.session.MediaButtonReceiver;
 
-import com.muiz6.musicplayer.Constants;
-import com.muiz6.musicplayer.musicservice.ui.nowplaying.NowPlayingActivity;
+import com.muiz6.musicplayer.musicservice.musicprovider.MusicProvider;
+import com.muiz6.musicplayer.ui.nowplaying.NowPlayingActivity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 // overriding onBind() will result in media browser not binding to service
 // TODO: perform long running operation in bg
-public class MusicService extends MediaBrowserServiceCompat
-		implements AudioManager.OnAudioFocusChangeListener {
+public class MusicService extends MediaBrowserServiceCompat {
 
 	private static final String _TAG = "MusicService";
-	private final ArrayList<MediaBrowserCompat.MediaItem> _result;
-	private final MediaDescriptionCompat.Builder _itemDescriptionBuilder;
+	private final MusicProvider _musicProvider;
 	private AudioManager _audioManager; // todo: use AudioManagerCompat instead
 	private MediaSessionCompat _session;
-	private _AsyncFetchAllSongs _taskFetchAllSongs;
 	private _NotificationBuilder _notifBuilder;
 
 	public MusicService() {
 
-		_itemDescriptionBuilder =  new MediaDescriptionCompat.Builder();
-		_result =  new ArrayList<>();
+		_musicProvider = MusicProvider.getInstance(this);
 	}
 
 	@Override
@@ -51,14 +44,14 @@ public class MusicService extends MediaBrowserServiceCompat
 		this.setSessionToken(_session.getSessionToken());
 		_notifBuilder = new _NotificationBuilder(this, _session);
 		_session.setCallback(new _MediaSessionCallback(this,
-				_session, _audioManager, _notifBuilder, this));
+				_session, _audioManager, _notifBuilder, _musicProvider));
 
 		// session activity needed for notification click action
 		final Intent intent = new Intent(this, NowPlayingActivity.class);
 		_session.setSessionActivity(PendingIntent.getActivity(this, 1,
 				intent, PendingIntent.FLAG_UPDATE_CURRENT));
 
-		_taskFetchAllSongs = new _AsyncFetchAllSongs(this);
+		// _taskFetchAllSongs = new _AsyncFetchAllSongs(this);
 	}
 
 	@Override
@@ -78,54 +71,13 @@ public class MusicService extends MediaBrowserServiceCompat
 			@Nullable Bundle rootHints) {
 
 		// let everyone connect ;)
-		return new BrowserRoot(Constants.MEDIA_ID_ROOT, null);
+		return MusicProvider.getBrowserRoot();
 	}
 
 	@Override
 	public void onLoadChildren(@NonNull String parentId,
 			@NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
-
-		// if accessing from root
-		if (parentId.equals(Constants.MEDIA_ID_ROOT)) {
-
-			final ArrayList<Pair<String,String>> rootItems = new ArrayList<>();
-			rootItems.add(new Pair<>(Constants.MEDIA_ID_ALL_SONGS, "All Songs"));
-
-			for (int i = 0; i < rootItems.size(); i++) {
-				final String id = rootItems.get(i).first;
-				final String title = rootItems.get(i).second;
-				final int flag;
-
-				// all songs item is also playable while rest are only browsable
-				if (id.equals(Constants.MEDIA_ID_ALL_SONGS)) {
-					flag = MediaBrowserCompat.MediaItem.FLAG_BROWSABLE
-							| MediaBrowserCompat.MediaItem.FLAG_PLAYABLE;
-				}
-				else {
-					flag = MediaBrowserCompat.MediaItem.FLAG_BROWSABLE;
-				}
-
-				_itemDescriptionBuilder.setMediaId(id)
-						.setTitle(title)
-						.setSubtitle(title);
-				MediaBrowserCompat.MediaItem item =
-						new MediaBrowserCompat.MediaItem(_itemDescriptionBuilder.build(), flag);
-				_result.add(item);
-			}
-		}
-		else if(parentId.equals(Constants.MEDIA_ID_ALL_SONGS)) {
-
-			try {
-				_taskFetchAllSongs.execute();
-			}
-			catch (Exception e) {
-				// do nothing
-			}
-
-			new _AsyncFetchAllSongs(this);
-		}
-
-		result.sendResult(_result);
+		result.sendResult(_musicProvider.getChildren(parentId));
 	}
 
 	@Override
@@ -145,21 +97,21 @@ public class MusicService extends MediaBrowserServiceCompat
 	}
 
 	// belongs to AudioManager.OnAudioFocusChangeListener interface
-	@Override
-	public void onAudioFocusChange(int focusChange) {
-		if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
-			_session.getController().getTransportControls().pause();
-			_audioManager.abandonAudioFocus(this);
-		}
-	}
+	// @Override
+	// public void onAudioFocusChange(int focusChange) {
+	// 	if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
+	// 		_session.getController().getTransportControls().pause();
+	// 		_audioManager.abandonAudioFocus(this);
+	// 	}
+	// }
 
-	// req by async task fetch
-	public ArrayList<MediaBrowserCompat.MediaItem> getMediaItems() {
-		return _result;
-	}
-
-	// req by async task fetch
-	public MediaDescriptionCompat.Builder getItemDescriptionBuilder() {
-		return _itemDescriptionBuilder;
-	}
+	// // req by async task fetch
+	// public ArrayList<MediaBrowserCompat.MediaItem> getMediaItems() {
+	// 	return _result;
+	// }
+	//
+	// // req by async task fetch
+	// public MediaDescriptionCompat.Builder getItemDescriptionBuilder() {
+	// 	return _itemDescriptionBuilder;
+	// }
 }
