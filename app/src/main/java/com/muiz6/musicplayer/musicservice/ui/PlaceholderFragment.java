@@ -13,10 +13,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-public class MainFragment extends Fragment {
+public class PlaceholderFragment extends Fragment {
     private LinearLayout _view;
 
-    public MainFragment() {
+    public PlaceholderFragment() {
 //        required public constructor
     }
 

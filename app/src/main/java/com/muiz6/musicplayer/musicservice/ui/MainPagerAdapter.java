@@ -27,7 +27,7 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
             return _songFragment;
         }
         else {
-            return new MainFragment();
+            return new PlaceholderFragment();
         }
     }
 
