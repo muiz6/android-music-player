@@ -36,21 +36,9 @@
 			android:stopWithTask="false"
 			android:exported="true">
 			<intent-filter>
-
-				<!--required filter MEDIA_BUTTON for notification buttons-->
-				<action android:name="android.intent.action.MEDIA_BUTTON" />
 				<action android:name="android.media.browse.MediaBrowserService" />
 			</intent-filter>
 		</service>
 
-		<!--doc says only required for ver below 5.0
-			but notification buttons are not working without this-->
-		<receiver android:name="androidx.media.session.MediaButtonReceiver">
-			<intent-filter>
-				<action android:name="android.intent.action.MEDIA_BUTTON" />
-			</intent-filter>
-		</receiver>
-
 	</application>
-
 </manifest>
