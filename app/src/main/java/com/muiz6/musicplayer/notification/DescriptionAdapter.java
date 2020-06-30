@@ -1,52 +1,68 @@
 package com.muiz6.musicplayer.notification;
 
 import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaControllerCompat;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.ui.PlayerNotificationManager;
-import com.muiz6.musicplayer.R;
-import com.muiz6.musicplayer.ui.nowplaying.NowPlayingActivity;
 
 public class DescriptionAdapter implements PlayerNotificationManager.MediaDescriptionAdapter {
 
-	private final Context _context;
+	private final MediaControllerCompat _controller;
 
-	public DescriptionAdapter(Context context) {
-		_context = context;
+	public DescriptionAdapter(MediaControllerCompat controller) {
+		_controller = controller;
 	}
 
+	@NonNull
 	@Override
-	public CharSequence getCurrentContentTitle(Player player) {
-		int index = player.getCurrentWindowIndex();
-		return "Exo Title";
-	}
-
-	@Nullable
-	@Override
-	public PendingIntent createCurrentContentIntent(Player player) {
-		Intent intent = new Intent(_context, NowPlayingActivity.class);
-
-		// todo: look into request codes
-		return PendingIntent.getActivity(_context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+	public CharSequence getCurrentContentTitle(@NonNull Player player) {
+		final String title = _controller.getMetadata()
+				.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE);
+		if (title != null) {
+			return title;
+		}
+		return "Unknown Title";
 	}
 
 	@Nullable
 	@Override
-	public CharSequence getCurrentContentText(Player player) {
-		return null;
+	public PendingIntent createCurrentContentIntent(@NonNull Player player) {
+		return _controller.getSessionActivity();
 	}
 
 	@Nullable
 	@Override
-	public Bitmap getCurrentLargeIcon(Player player, PlayerNotificationManager.BitmapCallback callback) {
-		final Bitmap bmp = BitmapFactory.decodeResource(_context.getResources(),
-				R.drawable.artwork_placeholder);
-		return bmp;
+	public CharSequence getCurrentContentText(@NonNull Player player) {
+		final String content = _controller.getMetadata()
+				.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE);
+		if (content != null) {
+			return content;
+		}
+		return "Unknown Artist";
+	}
+
+	@Nullable
+	@Override
+	public CharSequence getCurrentSubText(Player player) {
+		final String subText = _controller.getMetadata()
+				.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION);
+		if (subText != null) {
+			return subText;
+		}
+		return "Unknown Album";
+	}
+
+	@Nullable
+	@Override
+	public Bitmap getCurrentLargeIcon(@NonNull Player player,
+			@NonNull PlayerNotificationManager.BitmapCallback callback) {
+		// todo: add alternative bitmap here
+		return _controller.getMetadata().getBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART);
 	}
 }

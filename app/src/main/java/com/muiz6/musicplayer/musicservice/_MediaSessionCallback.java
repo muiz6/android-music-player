@@ -1,7 +1,9 @@
 package com.muiz6.musicplayer.musicservice;
 
 import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -23,6 +25,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.muiz6.musicplayer.musicprovider.MusicProvider;
 import com.muiz6.musicplayer.notification.DescriptionAdapter;
 import com.muiz6.musicplayer.notification.MusicNotificationManager;
+import com.muiz6.musicplayer.ui.nowplaying.NowPlayingActivity;
 
 // TODO: perform long running operation in bg
 class _MediaSessionCallback extends MediaSessionCompat.Callback
@@ -44,13 +47,19 @@ class _MediaSessionCallback extends MediaSessionCompat.Callback
 		_session = session;
 		_musicProvider = musicProvider;
 
+		// todo: look into request codes
+		// set session activity for notification
+		final Intent intent = new Intent(_service, NowPlayingActivity.class);
+		_session.setSessionActivity(PendingIntent
+				.getActivity(_service, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT));
+
 		_sessionConnector = new MediaSessionConnector(_session);
 		_sessionConnector.setMediaMetadataProvider(_musicProvider);
 
 		_noisyReceiver = new _NoisyReceiver(_session.getController());
 
 		_notificationMgr = new MusicNotificationManager(_service,
-				new DescriptionAdapter(_service), this);
+				new DescriptionAdapter(_session.getController()), this);
 		_notificationMgr.setMediaSessionToken(_session.getSessionToken());
 	}
 
