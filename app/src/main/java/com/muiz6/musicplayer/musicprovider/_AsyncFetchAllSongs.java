@@ -53,17 +53,16 @@ class _AsyncFetchAllSongs extends AsyncTask<Void, Void, String> {
                     String artist = cursor.getString(3);
 
                     descriptionBuilder.setTitle(name);
-                    if (artist.equals("<unknown>")) {
+                    if (!artist.equals("<unknown>")) {
 
                         // subtitle is artist name for media item
-                        descriptionBuilder.setSubtitle("Unknown Artist");
-                    }
-                    else {
                         descriptionBuilder.setSubtitle(artist);
                     }
                     descriptionBuilder.setDescription(album);
                     descriptionBuilder.setMediaUri(Uri.parse(path));
-                    descriptionBuilder.setMediaId(MusicProvider.MEDIA_ID_ALL_SONGS + "." + i++);
+                    descriptionBuilder.setMediaId(MusicProvider.MEDIA_ID_ALL_SONGS
+                            + MusicProvider.SEPARATOR_MEDIA_ID
+                            + i++);
 
                     _itemList.add(new MediaBrowserCompat.MediaItem(descriptionBuilder.build(),
                             MediaBrowserCompat.MediaItem.FLAG_PLAYABLE));

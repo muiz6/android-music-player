@@ -31,7 +31,7 @@ class _MediaSessionCallback extends MediaSessionCompat.Callback
 	private final MediaMetadataCompat.Builder _metadataBuilder = new MediaMetadataCompat.Builder();
 	private final MediaBrowserServiceCompat _service;
 	private final MediaSessionCompat _session;
-	private final MediaSessionConnector _connector;
+	private final MediaSessionConnector _sessionConnector;
 	private final MusicProvider _musicProvider;
 	private final BroadcastReceiver _noisyReceiver;
 	private final PlayerNotificationManager _notificationMgr;
@@ -44,13 +44,8 @@ class _MediaSessionCallback extends MediaSessionCompat.Callback
 		_session = session;
 		_musicProvider = musicProvider;
 
-		// _session.setPlaybackState(new PlaybackStateCompat.Builder()
-		// 		.setActions(PlaybackStateCompat.ACTION_PLAY
-		// 				| PlaybackStateCompat.ACTION_PLAY_PAUSE
-		// 				| PlaybackStateCompat.ACTION_STOP)
-		// 		.setState(PlaybackStateCompat.STATE_STOPPED, 0, 0)
-		// 		.build());
-		_connector = new MediaSessionConnector(_session);
+		_sessionConnector = new MediaSessionConnector(_session);
+		_sessionConnector.setMediaMetadataProvider(_musicProvider);
 
 		_noisyReceiver = new _NoisyReceiver(_session.getController());
 
@@ -63,9 +58,6 @@ class _MediaSessionCallback extends MediaSessionCompat.Callback
 	public void onPlay() {
 		super.onPlay();
 
-		// _player.pause();
-		// _pbStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING, 0, 1);
-		// _session.setPlaybackState(_pbStateBuilder.build());
 		_session.setActive(true);
 		// MediaControllerCompat controller = _session.getController();
 		// MediaMetadataCompat mediaMetadata = controller.getMetadata();
@@ -117,7 +109,7 @@ class _MediaSessionCallback extends MediaSessionCompat.Callback
 					.build();
 			_player.setAudioAttributes(audioAttr, true);
 
-			_connector.setPlayer(_player);
+			_sessionConnector.setPlayer(_player);
 			_notificationMgr.setPlayer(_player);
 
 			final DataSource.Factory dataSourceFactory =

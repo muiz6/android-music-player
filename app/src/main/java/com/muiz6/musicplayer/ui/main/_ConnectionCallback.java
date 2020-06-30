@@ -11,12 +11,12 @@ import android.widget.ImageButton;
 
 import com.muiz6.musicplayer.R;
 
-public class MediaBrowserConnCallback extends MediaBrowserCompat.ConnectionCallback {
+class _ConnectionCallback extends MediaBrowserCompat.ConnectionCallback {
 
     private static final String _TAG = "MainActivityMBCC";
     private final MainActivity _activity;
 
-    public MediaBrowserConnCallback(MainActivity activity) {
+    public _ConnectionCallback(MainActivity activity) {
 
         // do not call activity.getMediaBrowser() or activity.getMediaControllerCallback()
         // here as they are null when ConnectionCallback is created
@@ -65,6 +65,8 @@ public class MediaBrowserConnCallback extends MediaBrowserCompat.ConnectionCallb
     }
 
     private void _buildTransportControls() {
+        final MediaControllerCompat.TransportControls transportControls = MediaControllerCompat
+                .getMediaController(_activity).getTransportControls();
 
         // Grab the view for the play/pause button
         final ImageButton playPauseBtn = _activity.findViewById(R.id.main_bottom_appbar_btn_play);
@@ -83,12 +85,10 @@ public class MediaBrowserConnCallback extends MediaBrowserCompat.ConnectionCallb
                     .getState();
 
                 if (pbState == PlaybackStateCompat.STATE_PLAYING) {
-                    MediaControllerCompat.getMediaController(_activity).getTransportControls()
-                        .pause();
+                    transportControls.pause();
                 }
                 else if (pbState == PlaybackStateCompat.STATE_PAUSED) {
-                    MediaControllerCompat.getMediaController(_activity).getTransportControls()
-                            .play();
+                    transportControls.play();
                 }
                 // else {
                 //     // ArrayList<SongDataModel> data = Repository.getInstance(_activity)
@@ -104,7 +104,26 @@ public class MediaBrowserConnCallback extends MediaBrowserCompat.ConnectionCallb
             }
         });
 
-        MediaControllerCompat mediaController =
+        final ImageButton btnSkipPrev = _activity
+                .findViewById(R.id.main_bottom_appbar_btn_previous);
+        btnSkipPrev.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                transportControls.skipToPrevious();
+            }
+        });
+
+        final ImageButton btnSkipNext = _activity.findViewById(R.id.main_bottom_appbar_btn_next);
+        btnSkipNext.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                transportControls.skipToNext();
+            }
+        });
+
+        final MediaControllerCompat mediaController =
                 MediaControllerCompat.getMediaController(_activity);
 
         // TODO: set bottom appbar visible only when current song is available

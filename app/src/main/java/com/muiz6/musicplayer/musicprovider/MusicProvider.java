@@ -3,11 +3,15 @@ package com.muiz6.musicplayer.musicprovider;
 import android.net.Uri;
 import android.support.v4.media.MediaBrowserCompat.MediaItem;
 import android.support.v4.media.MediaDescriptionCompat;
+import android.support.v4.media.MediaMetadataCompat;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.media.MediaBrowserServiceCompat;
 import androidx.media.MediaBrowserServiceCompat.BrowserRoot;
 
+import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MediaSourceFactory;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
@@ -19,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 // singleton pattern
-public class MusicProvider {
+public class MusicProvider implements MediaSessionConnector.MediaMetadataProvider {
 
 	public static final String MEDIA_ID_ALL_SONGS = "allSongs";
 	public static final String MEDIA_ID_ROOT = "mediaItemRoot";
@@ -35,6 +39,7 @@ public class MusicProvider {
 	private static MusicProvider _instance;
 	private final List<MediaItem> _allSongList = new ArrayList<>();
 	private final MediaBrowserServiceCompat _service;
+	private int _offset; // offset of player track with all songs list
 
 	// singleton pattern
 	private MusicProvider(MediaBrowserServiceCompat service) {
@@ -96,6 +101,7 @@ public class MusicProvider {
 	public MediaSource[] getQueueBytMediaId(String mediaId) {
 		// todo: parse int in separate method for readability
 		final int mediaIndex = Integer.parseInt(mediaId.substring(mediaId.indexOf('.') + 1));
+		_offset = mediaIndex;
 		if (_allSongList.size() > 0) {
 			final MediaSource[] sources = new MediaSource[_allSongList.size()];
 			final DataSource.Factory dataSourceFactory =
@@ -117,12 +123,45 @@ public class MusicProvider {
 		return null;
 	}
 
+	// following method
+	// belong to
+	// MediaSessionConnector.MediaMetadataProvider
+
+	@NonNull
+	@Override
+	public MediaMetadataCompat getMetadata(@NonNull Player player) {
+		int index = player.getCurrentWindowIndex() + _offset;
+		final MediaMetadataCompat.Builder builder = new MediaMetadataCompat.Builder();
+		final MediaItem mediaItem = _allSongList.get(index);
+		final CharSequence title = mediaItem.getDescription().getTitle();
+		final CharSequence artist = mediaItem.getDescription().getSubtitle();
+		final CharSequence album = mediaItem.getDescription().getDescription();
+		if (title != null) {
+			builder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, title.toString())
+					.putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, title.toString());
+		}
+		if (artist != null) {
+			builder.putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE, artist.toString())
+					.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist.toString());
+		}
+		if (album != null) {
+			builder.putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, album.toString())
+					.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, album.toString());
+		}
+		return builder.build();
+	}
+
 	private static MediaDescriptionCompat _getMediaDescription(String mediaId, String title,
 			String subtitle, @Nullable Uri mediaUri) {
-		return _DESC_BUILDER.setExtras(null)
+		return _DESC_BUILDER
+
+				// call to reset if set externally
+				.setExtras(null)
 				.setIconUri(null)
 				.setDescription(null)
 				.setIconBitmap(null)
+
+				// set actual parameters
 				.setMediaId(mediaId)
 				.setTitle(title)
 				.setSubtitle(subtitle)

@@ -7,12 +7,13 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.TypedValue;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 
 import com.muiz6.musicplayer.R;
 
-public class MediaControllerCallback extends MediaControllerCompat.Callback {
+class MediaControllerCallback extends MediaControllerCompat.Callback {
 
     private final MainActivity _activity;
 
@@ -22,8 +23,14 @@ public class MediaControllerCallback extends MediaControllerCompat.Callback {
 
     @Override
     public void onMetadataChanged(MediaMetadataCompat metadata) {
-        // TextView tv = _activity.findViewById(R.id.main_bottom_appbar_song_title);
-        // tv.setText(metadata.getText(""));
+        final TextView tv = _activity.findViewById(R.id.main_bottom_appbar_song_title);
+        final CharSequence title = metadata.getText(MediaMetadataCompat.METADATA_KEY_TITLE);
+        if (title != null) {
+            tv.setText(title);
+        }
+        else {
+            tv.setText("Unknown Title");
+        }
     }
 
     @Override

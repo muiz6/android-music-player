@@ -30,8 +30,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // setup media browser and media controller
-        MediaBrowserConnCallback connectionCallback =
-                new MediaBrowserConnCallback(this);
+        _ConnectionCallback connectionCallback =
+                new _ConnectionCallback(this);
 
         _mediaBrowser = new MediaBrowserCompat(this,
                 new ComponentName(this, MusicService.class),
