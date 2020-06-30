@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.musicservice.musicprovider;
+package com.muiz6.musicplayer.musicprovider;
 
 import android.database.Cursor;
 import android.net.Uri;

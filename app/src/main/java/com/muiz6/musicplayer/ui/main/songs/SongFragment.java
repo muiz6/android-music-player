@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.muiz6.musicplayer.R;
-import com.muiz6.musicplayer.musicservice.musicprovider.MusicProvider;
+import com.muiz6.musicplayer.musicprovider.MusicProvider;
 import com.muiz6.musicplayer.ui.main.MainActivity;
 
 import java.util.ArrayList;

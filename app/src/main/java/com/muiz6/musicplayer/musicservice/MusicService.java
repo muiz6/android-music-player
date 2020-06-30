@@ -1,7 +1,6 @@
 package com.muiz6.musicplayer.musicservice;
 
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.session.MediaSessionCompat;
@@ -9,9 +8,8 @@ import android.support.v4.media.session.MediaSessionCompat;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.media.MediaBrowserServiceCompat;
-import androidx.media.session.MediaButtonReceiver;
 
-import com.muiz6.musicplayer.musicservice.musicprovider.MusicProvider;
+import com.muiz6.musicplayer.musicprovider.MusicProvider;
 
 import java.util.List;
 
@@ -37,18 +35,20 @@ public class MusicService extends MediaBrowserServiceCompat {
 		_session.setCallback(new _MediaSessionCallback(this,
 				_session, _musicProvider));
 
-		IntentFilter filter = new IntentFilter(Intent.ACTION_MEDIA_BUTTON);
-		this.registerReceiver(new MediaButtonReceiver(), filter);
+		// session activity needed for notification click action
+		// final Intent intent = new Intent(this, NowPlayingActivity.class);
+		// _session.setSessionActivity(PendingIntent.getActivity(this, 67,
+		// 		intent, PendingIntent.FLAG_UPDATE_CURRENT));
 	}
 
-	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
-
-		// docs say only required below ver 5.0
-		// but its required for notification buttons to work
-		// MediaButtonReceiver.handleIntent(_session, intent);
-		return super.onStartCommand(intent, flags, startId);
-	}
+	// @Override
+	// public int onStartCommand(Intent intent, int flags, int startId) {
+	//
+	// 	// docs say only required below ver 5.0
+	// 	// but its required for notification buttons to work
+	// 	// MediaButtonReceiver.handleIntent(_session, intent);
+	// 	return super.onStartCommand(intent, flags, startId);
+	// }
 
 	@Nullable
 	@Override

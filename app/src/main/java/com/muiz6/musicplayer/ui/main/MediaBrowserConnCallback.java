@@ -67,7 +67,7 @@ public class MediaBrowserConnCallback extends MediaBrowserCompat.ConnectionCallb
     private void _buildTransportControls() {
 
         // Grab the view for the play/pause button
-        ImageButton playPauseBtn = _activity.findViewById(R.id.main_bottom_appbar_btn_play);
+        final ImageButton playPauseBtn = _activity.findViewById(R.id.main_bottom_appbar_btn_play);
 
         // Attach a listener to the button
         playPauseBtn.setOnClickListener(new View.OnClickListener() {
@@ -76,31 +76,31 @@ public class MediaBrowserConnCallback extends MediaBrowserCompat.ConnectionCallb
                 // Since this is a play/pause button, you'll need to test the current state
                 // and choose the action accordingly
 
-                Log.d(_TAG,"playpause button pressed");
+                Log.d(_TAG, "play/pause button pressed");
 
                 int pbState = MediaControllerCompat.getMediaController(_activity)
                     .getPlaybackState()
                     .getState();
 
                 if (pbState == PlaybackStateCompat.STATE_PLAYING) {
-                    MediaControllerCompat.getMediaController(_activity)
-                        .getTransportControls()
+                    MediaControllerCompat.getMediaController(_activity).getTransportControls()
                         .pause();
                 }
-                // else if(pbState == PlaybackStateCompat.STATE_STOPPED) {
-                //
-                // }
-                else {
-                    // ArrayList<SongDataModel> data = Repository.getInstance(_activity)
-                    //     .getSongList().getValue();
-                    //
-                    // int rand = ThreadLocalRandom.current().nextInt(0, data.size());
-                    // Uri path = Uri.parse(data.get(rand).getPath());
-                    //
-                    // MediaControllerCompat.getMediaController(_activity)
-                    //     .getTransportControls()
-                    //     .playFromUri(path, null);
+                else if (pbState == PlaybackStateCompat.STATE_PAUSED) {
+                    MediaControllerCompat.getMediaController(_activity).getTransportControls()
+                            .play();
                 }
+                // else {
+                //     // ArrayList<SongDataModel> data = Repository.getInstance(_activity)
+                //     //     .getSongList().getValue();
+                //     //
+                //     // int rand = ThreadLocalRandom.current().nextInt(0, data.size());
+                //     // Uri path = Uri.parse(data.get(rand).getPath());
+                //     //
+                //     // MediaControllerCompat.getMediaController(_activity)
+                //     //     .getTransportControls()
+                //     //     .playFromUri(path, null);
+                // }
             }
         });
 

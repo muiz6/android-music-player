@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.musicservice.musicprovider;
+package com.muiz6.musicplayer.musicprovider;
 
 import android.net.Uri;
 import android.support.v4.media.MediaBrowserCompat.MediaItem;
@@ -8,6 +8,12 @@ import androidx.annotation.Nullable;
 import androidx.media.MediaBrowserServiceCompat;
 import androidx.media.MediaBrowserServiceCompat.BrowserRoot;
 
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.MediaSourceFactory;
+import com.google.android.exoplayer2.source.ProgressiveMediaSource;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +21,9 @@ import java.util.List;
 // singleton pattern
 public class MusicProvider {
 
-	public static final String MEDIA_ID_ALL_SONGS = "all_songs";
-	public static final String MEDIA_ID_ROOT = "media_items_root";
+	public static final String MEDIA_ID_ALL_SONGS = "allSongs";
+	public static final String MEDIA_ID_ROOT = "mediaItemRoot";
+	public static final Character SEPARATOR_MEDIA_ID = '.';
 	// public static final String MEDIA_ID_ARTISTS = "artists";
 	// public static final String MEDIA_ID_PLAYLISTS = "playlists";
 	// public static final String MEDIA_ID_ALBUMS = "albums";
@@ -25,7 +32,7 @@ public class MusicProvider {
 
 	private static final MediaDescriptionCompat.Builder _DESC_BUILDER =
 			new MediaDescriptionCompat.Builder();
-	private static MusicProvider _INSTANCE;
+	private static MusicProvider _instance;
 	private final List<MediaItem> _allSongList = new ArrayList<>();
 	private final MediaBrowserServiceCompat _service;
 
@@ -38,10 +45,10 @@ public class MusicProvider {
 	}
 
 	public static MusicProvider getInstance(MediaBrowserServiceCompat service) {
-		if (_INSTANCE == null) {
-			_INSTANCE = new MusicProvider(service);
+		if (_instance == null) {
+			_instance = new MusicProvider(service);
 		}
-		return _INSTANCE;
+		return _instance;
 	}
 
 	public static BrowserRoot getBrowserRoot() {
@@ -82,6 +89,31 @@ public class MusicProvider {
 		}
 		
 		// else
+		return null;
+	}
+
+	@Nullable
+	public MediaSource[] getQueueBytMediaId(String mediaId) {
+		// todo: parse int in separate method for readability
+		final int mediaIndex = Integer.parseInt(mediaId.substring(mediaId.indexOf('.') + 1));
+		if (_allSongList.size() > 0) {
+			final MediaSource[] sources = new MediaSource[_allSongList.size()];
+			final DataSource.Factory dataSourceFactory =
+					new DefaultDataSourceFactory(_service, "exoplayer-codelab");
+			final MediaSourceFactory factory = new ProgressiveMediaSource.Factory(dataSourceFactory);
+			int queueIndex = 0;
+
+			// start queue from the selected media item and add previous songs at the end of queue
+			for (int i = mediaIndex; i < sources.length; i++, queueIndex++) {
+				sources[queueIndex] = factory
+						.createMediaSource(_allSongList.get(i).getDescription().getMediaUri());
+			}
+			for (int i = 0; i < mediaIndex; i++, queueIndex++) {
+				sources[queueIndex] = factory
+						.createMediaSource(_allSongList.get(i).getDescription().getMediaUri());
+			}
+			return sources;
+		}
 		return null;
 	}
 
