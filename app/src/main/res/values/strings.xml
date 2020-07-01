@@ -5,4 +5,5 @@
     <string name="tab_song_header">All Songs</string>
     <string name="row_song_item_play_all">Play All</string>
     <string name="row_song_item_shuffle_all">Shuffle All</string>
+	<string name="action_settings">Settings</string>
 </resources>

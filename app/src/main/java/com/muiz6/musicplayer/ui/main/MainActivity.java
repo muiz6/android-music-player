@@ -7,16 +7,21 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.session.MediaControllerCompat;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 import com.muiz6.musicplayer.R;
 import com.muiz6.musicplayer.musicservice.MusicService;
+import com.muiz6.musicplayer.ui.SettingActivity;
 import com.muiz6.musicplayer.ui.nowplaying.NowPlayingActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,14 +36,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        final Toolbar toolbar = findViewById(R.id.main_toolbar);
+        setSupportActionBar(toolbar);
+
         // initializing ui components
         _playerTitle = findViewById(R.id.main_bottom_appbar_song_title);
-        _playerTitle.setSelected(true);
+        _playerTitle.setSelected(true); // for marquee text
 
         // Instantiate ViewPager, PagerAdapter and TabLayout
-        ViewPager viewPager = findViewById(R.id.main_view_pager);
-        TabLayout tabLayout = findViewById(R.id.main_tabs);
-        MainPagerAdapter pagerAdapter = new MainPagerAdapter(getSupportFragmentManager());
+        final ViewPager viewPager = findViewById(R.id.main_view_pager);
+        final TabLayout tabLayout = findViewById(R.id.main_tabs);
+        final MainPagerAdapter pagerAdapter = new MainPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
         pagerAdapter.setTabIcons(tabLayout);
@@ -47,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.getTabAt(0).getIcon().setColorFilter(ContextCompat.getColor(this,
                 R.color.colorAccent),
                 PorterDuff.Mode.SRC_IN);
-        tabLayout.setOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager) {
+        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager) {
 
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -83,6 +91,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
 
@@ -97,6 +111,16 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.action_settings) {
+            final Intent intent = new Intent(this, SettingActivity.class);
+            ContextCompat.startActivity(this, intent, null);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
