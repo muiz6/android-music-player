@@ -92,13 +92,14 @@ public class MusicProvider implements MediaSessionConnector.MediaMetadataProvide
 				return i;
 			}
 		}
-		
+
 		// else
 		return null;
 	}
 
 	@Nullable
 	public MediaSource[] getQueueBytMediaId(String mediaId) {
+
 		// todo: parse int in separate method for readability
 		final int mediaIndex = Integer.parseInt(mediaId.substring(mediaId.indexOf('.') + 1));
 		_offset = mediaIndex;
@@ -130,7 +131,9 @@ public class MusicProvider implements MediaSessionConnector.MediaMetadataProvide
 	@NonNull
 	@Override
 	public MediaMetadataCompat getMetadata(@NonNull Player player) {
-		int index = player.getCurrentWindowIndex() + _offset;
+
+		// mod to prevent array out of bounds exception
+		int index = (player.getCurrentWindowIndex() + _offset) % _allSongList.size();
 		final MediaMetadataCompat.Builder builder = new MediaMetadataCompat.Builder();
 		final MediaItem mediaItem = _allSongList.get(index);
 		final CharSequence title = mediaItem.getDescription().getTitle();

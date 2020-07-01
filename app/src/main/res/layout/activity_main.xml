@@ -24,13 +24,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:orientation="horizontal"
-                android:layout_gravity="top">
-                <ImageView
-                    android:layout_width="54dp"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/ic_musicplayerlogo"
-                    android:paddingHorizontal="@dimen/padding_container"/>
-
+                android:layout_gravity="top"
+                android:paddingLeft="20dp">
                 <TextView
                     android:id="@+id/textMusicPlayer"
                     android:layout_width="0dp"
@@ -40,24 +35,6 @@
                     android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:textSize="@dimen/text_size_large"/>
-
-<!--                <ImageButton-->
-<!--                    android:id="@+id/search_button"-->
-<!--                    android:layout_width="45dp"-->
-<!--                    android:layout_height="match_parent"-->
-<!--                    android:src="@drawable/ic_search_black_24dp"-->
-<!--                    android:layout_gravity="center"-->
-<!--                    android:layout_weight="0"-->
-<!--                    android:tint="?attr/iconTint" />-->
-
-<!--                <ImageButton-->
-<!--                    android:id="@+id/button"-->
-<!--                    android:layout_width="45dp"-->
-<!--                    android:layout_height="match_parent"-->
-<!--                    android:src="@drawable/ic_settings_black_24dp"-->
-<!--                    android:layout_gravity="center"-->
-<!--                    android:layout_weight="0"-->
-<!--                    android:tint="?attr/iconTint" />-->
             </LinearLayout>
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
@@ -77,67 +54,56 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
-    <com.google.android.material.bottomappbar.BottomAppBar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:theme="@style/AppTheme.BottomAppBar"
+        <!--&lt;!&ndash; TODO: Progressbar may not be consistent across devices&ndash;&gt;-->
+        <!--<ProgressBar-->
+        <!--    android:id="@+id/main_bottom_appbar_progressbar"-->
+        <!--    android:layout_width="match_parent"-->
+        <!--    android:layout_height="wrap_content"-->
+        <!--    style="@style/Widget.AppCompat.ProgressBar.Horizontal"-->
+        <!--    android:layout_marginBottom="-6dp"-->
+        <!--    android:layout_marginTop="-4dp"/>-->
+
+    <LinearLayout
         android:id="@+id/main_bottom_appbar"
-        app:contentInsetStart="0dp"
-        android:visibility="invisible">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:gravity="center_horizontal"
+        android:layout_gravity="bottom"
+        android:background="@drawable/bottom_bar_bg">
+        <TextView
+            android:id="@+id/main_bottom_appbar_song_title"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:paddingStart="5dp"
+            android:onClick="onClick"
 
-            <!-- TODO: Progressbar may not be consistent across devices-->
-            <ProgressBar
-                android:id="@+id/main_bottom_appbar_progressbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                android:layout_marginBottom="-6dp"
-                android:layout_marginTop="-4dp"/>
+            android:ellipsize="marquee"
+            android:singleLine="true"
+            android:scrollHorizontally="true"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:fadingEdge="horizontal" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:gravity="center_horizontal">
-                <TextView
-                    android:id="@+id/main_bottom_appbar_song_title"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:layout_weight="1"
-                    android:paddingStart="5dp"
+        <ImageButton
+            android:id="@+id/main_bottom_appbar_btn_previous"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_skip_previous_black_24dp"
+            android:tint="?attr/iconTint" />
 
-                    android:ellipsize="marquee"
-                    android:singleLine="true"
-                    android:scrollHorizontally="true"
-                    android:marqueeRepeatLimit="marquee_forever"
-                    android:fadingEdge="horizontal" />
+        <ImageButton
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_play_arrow_black_24dp"
+            android:id="@+id/main_bottom_appbar_btn_play"
+            android:tint="?attr/iconTint" />
 
-                <ImageButton
-                    android:id="@+id/main_bottom_appbar_btn_previous"
-                    android:layout_width="50dp"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/ic_skip_previous_black_24dp"
-                    android:tint="?attr/iconTint" />
-
-                <ImageButton
-                    android:layout_width="50dp"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/ic_play_arrow_black_24dp"
-                    android:id="@+id/main_bottom_appbar_btn_play"
-                    android:tint="?attr/iconTint" />
-
-                <ImageButton
-                    android:id="@+id/main_bottom_appbar_btn_next"
-                    android:layout_width="50dp"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/ic_skip_next_black_24dp"
-                    android:tint="?attr/iconTint" />
-            </LinearLayout>
-        </LinearLayout>
-    </com.google.android.material.bottomappbar.BottomAppBar>
+        <ImageButton
+            android:id="@+id/main_bottom_appbar_btn_next"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_skip_next_black_24dp"
+            android:tint="?attr/iconTint" />
+    </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

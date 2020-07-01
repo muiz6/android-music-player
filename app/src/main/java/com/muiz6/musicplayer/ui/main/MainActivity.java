@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -21,6 +22,7 @@ import com.muiz6.musicplayer.ui.nowplaying.NowPlayingActivity;
 public class MainActivity extends AppCompatActivity {
 
     private static final String _TAG = "MainActivity";
+    private TextView _playerTitle;
     private MediaBrowserCompat _mediaBrowser;
     private MediaControllerCallback _controllerCallback;
 
@@ -29,15 +31,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // setup media browser and media controller
-        _ConnectionCallback connectionCallback =
-                new _ConnectionCallback(this);
-
-        _mediaBrowser = new MediaBrowserCompat(this,
-                new ComponentName(this, MusicService.class),
-                connectionCallback,
-                null);
-        _controllerCallback = new MediaControllerCallback(this);
+        // initializing ui components
+        _playerTitle = findViewById(R.id.main_bottom_appbar_song_title);
+        _playerTitle.setSelected(true);
 
         // Instantiate ViewPager, PagerAdapter and TabLayout
         ViewPager viewPager = findViewById(R.id.main_view_pager);
@@ -65,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
             public void onTabUnselected(TabLayout.Tab tab) {
                 super.onTabUnselected(tab);
                 int tabIconColor = ContextCompat.getColor(MainActivity.this,
-                    R.color.textSecondary);
+                    R.color.colorGreyLight);
                 tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
             }
 
@@ -75,15 +71,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        View miniPlayerTitle = findViewById(R.id.main_bottom_appbar_song_title);
-        miniPlayerTitle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this,
-                        NowPlayingActivity.class);
-                startActivity(intent);
-            }
-        });
+        // setup media browser and media controller
+        _ConnectionCallback connectionCallback =
+                new _ConnectionCallback(this);
+
+        _mediaBrowser = new MediaBrowserCompat(this,
+                new ComponentName(this, MusicService.class),
+                connectionCallback,
+                null);
+        _controllerCallback = new MediaControllerCallback(this);
     }
 
     @Override
@@ -120,5 +116,13 @@ public class MainActivity extends AppCompatActivity {
 
     public MediaBrowserCompat getMediaBrowser() {
         return _mediaBrowser;
+    }
+
+    public void onClick(View view) {
+        if (view == _playerTitle) {
+            Intent intent = new Intent(MainActivity.this,
+                    NowPlayingActivity.class);
+            startActivity(intent);
+        }
     }
 }
