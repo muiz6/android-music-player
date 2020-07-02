@@ -15,12 +15,14 @@ class _ConnectionCallback extends MediaBrowserCompat.ConnectionCallback {
 
     private static final String _TAG = "MainActivityMBCC";
     private final MainActivity _activity;
+    private final MediaControllerCompat.Callback _controllerCallback;
 
-    public _ConnectionCallback(MainActivity activity) {
+    public _ConnectionCallback(MainActivity activity, MediaControllerCompat.Callback callback) {
 
-        // do not call activity.getMediaBrowser() or activity.getMediaControllerCallback()
-        // here as they are null when ConnectionCallback is created
+        // do not call activity.getMediaBrowser()
+        // here as its null when ConnectionCallback is created
         _activity = activity;
+        _controllerCallback = callback;
     }
 
     @Override
@@ -47,7 +49,7 @@ class _ConnectionCallback extends MediaBrowserCompat.ConnectionCallback {
 
         // Register a Callback to stay in sync
         MediaControllerCompat.getMediaController(_activity)
-                .registerCallback(_activity.getMediaControllerCallback());
+                .registerCallback(_controllerCallback);
     }
 
     @Override

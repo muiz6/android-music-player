@@ -34,6 +34,7 @@
 
 		<activity
 			android:name=".ui.SettingActivity"
+			android:label="@string/title_setting"
 			android:parentActivityName=".ui.main.MainActivity" />
 
 		<service

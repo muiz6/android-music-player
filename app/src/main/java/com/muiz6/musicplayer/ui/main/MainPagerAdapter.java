@@ -48,7 +48,7 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
     public void setTabIcons(TabLayout tabLayout) {
 
         // resource ids of desired icons
-        int icons[] = {
+        int[] icons = {
             R.drawable.ic_library_music_black_24dp,
             R.drawable.ic_album_black_24dp,
             R.drawable.ic_face_black_24dp,

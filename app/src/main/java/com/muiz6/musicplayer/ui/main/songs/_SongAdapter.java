@@ -17,12 +17,12 @@ import com.muiz6.musicplayer.R;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class RecyclerAdapter extends RecyclerView.Adapter {
+class _SongAdapter extends RecyclerView.Adapter {
 
     private final Activity _activity;
     private ArrayList<MediaBrowserCompat.MediaItem> _songList;
 
-    public RecyclerAdapter(ArrayList<MediaBrowserCompat.MediaItem> list, Activity activity) {
+    public _SongAdapter(ArrayList<MediaBrowserCompat.MediaItem> list, Activity activity) {
         _songList = list;
         _activity = activity;
     }
@@ -102,7 +102,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter {
             DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
                 @Override
                 public int getOldListSize() {
-                    return RecyclerAdapter.this._songList.size();
+                    return _SongAdapter.this._songList.size();
                 }
 
                 @Override
@@ -112,7 +112,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter {
 
                 @Override
                 public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                    return RecyclerAdapter.this._songList.get(oldItemPosition)
+                    return _SongAdapter.this._songList.get(oldItemPosition)
                             .getDescription().getTitle()
                             .equals(songList.get(newItemPosition).getDescription().getSubtitle());
                 }

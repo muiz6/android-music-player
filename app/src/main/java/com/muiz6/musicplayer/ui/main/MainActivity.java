@@ -55,39 +55,17 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.getTabAt(0).getIcon().setColorFilter(ContextCompat.getColor(this,
                 R.color.colorAccent),
                 PorterDuff.Mode.SRC_IN);
-        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager) {
-
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                super.onTabSelected(tab);
-                int tabIconColor = ContextCompat.getColor(MainActivity.this,
-                    R.color.colorAccent);
-                tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-                super.onTabUnselected(tab);
-                int tabIconColor = ContextCompat.getColor(MainActivity.this,
-                    R.color.colorGreyLight);
-                tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-                super.onTabReselected(tab);
-            }
-        });
+        tabLayout.addOnTabSelectedListener(new _TabListener(viewPager));
 
         // setup media browser and media controller
-        _ConnectionCallback connectionCallback =
-                new _ConnectionCallback(this);
+        _controllerCallback = new MediaControllerCallback(this);
+        final _ConnectionCallback connectionCallback =
+                new _ConnectionCallback(this, _controllerCallback);
 
         _mediaBrowser = new MediaBrowserCompat(this,
                 new ComponentName(this, MusicService.class),
                 connectionCallback,
                 null);
-        _controllerCallback = new MediaControllerCallback(this);
     }
 
     @Override
@@ -134,10 +112,7 @@ public class MainActivity extends AppCompatActivity {
         _mediaBrowser.disconnect();
     }
 
-    public MediaControllerCompat.Callback getMediaControllerCallback() {
-        return _controllerCallback;
-    }
-
+    // required by _ConnectionCallback
     public MediaBrowserCompat getMediaBrowser() {
         return _mediaBrowser;
     }
