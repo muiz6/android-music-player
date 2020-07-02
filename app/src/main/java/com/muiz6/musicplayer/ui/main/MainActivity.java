@@ -29,7 +29,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String _TAG = "MainActivity";
     private TextView _playerTitle;
     private MediaBrowserCompat _mediaBrowser;
-    private MediaControllerCallback _controllerCallback;
+    private _MediaControllerCallback _controllerCallback;
+    private _ConnectionCallback _connectionCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         // Instantiate ViewPager, PagerAdapter and TabLayout
         final ViewPager viewPager = findViewById(R.id.main_view_pager);
         final TabLayout tabLayout = findViewById(R.id.main_tabs);
-        final MainPagerAdapter pagerAdapter = new MainPagerAdapter(getSupportFragmentManager());
+        final _MainPagerAdapter pagerAdapter = new _MainPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
         pagerAdapter.setTabIcons(tabLayout);
@@ -58,13 +59,13 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.addOnTabSelectedListener(new _TabListener(viewPager));
 
         // setup media browser and media controller
-        _controllerCallback = new MediaControllerCallback(this);
-        final _ConnectionCallback connectionCallback =
+        _controllerCallback = new _MediaControllerCallback(this);
+        _connectionCallback =
                 new _ConnectionCallback(this, _controllerCallback);
 
         _mediaBrowser = new MediaBrowserCompat(this,
                 new ComponentName(this, MusicService.class),
-                connectionCallback,
+                _connectionCallback,
                 null);
     }
 
@@ -79,7 +80,8 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
 
         // start service and let media browser bind to it
-        Intent intent= new Intent(this, MusicService.class);
+        _connectionCallback.setMediaBrowser(_mediaBrowser);
+        final Intent intent= new Intent(this, MusicService.class);
         ContextCompat.startForegroundService(this, intent);
         _mediaBrowser.connect();
     }
@@ -110,11 +112,6 @@ public class MainActivity extends AppCompatActivity {
             MediaControllerCompat.getMediaController(this).unregisterCallback(_controllerCallback);
         }
         _mediaBrowser.disconnect();
-    }
-
-    // required by _ConnectionCallback
-    public MediaBrowserCompat getMediaBrowser() {
-        return _mediaBrowser;
     }
 
     public void onClick(View view) {

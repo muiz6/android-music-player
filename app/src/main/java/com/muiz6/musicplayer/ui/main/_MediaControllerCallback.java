@@ -13,11 +13,11 @@ import androidx.annotation.ColorInt;
 
 import com.muiz6.musicplayer.R;
 
-class MediaControllerCallback extends MediaControllerCompat.Callback {
+class _MediaControllerCallback extends MediaControllerCompat.Callback {
 
     private final MainActivity _activity;
 
-    public MediaControllerCallback(MainActivity activity) {
+    public _MediaControllerCallback(MainActivity activity) {
         _activity = activity;
     }
 

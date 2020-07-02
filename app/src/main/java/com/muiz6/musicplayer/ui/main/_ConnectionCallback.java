@@ -9,6 +9,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 
+import androidx.annotation.NonNull;
+
 import com.muiz6.musicplayer.R;
 
 class _ConnectionCallback extends MediaBrowserCompat.ConnectionCallback {
@@ -16,11 +18,9 @@ class _ConnectionCallback extends MediaBrowserCompat.ConnectionCallback {
     private static final String _TAG = "MainActivityMBCC";
     private final MainActivity _activity;
     private final MediaControllerCompat.Callback _controllerCallback;
+    private MediaBrowserCompat _mediaBrowser;
 
     public _ConnectionCallback(MainActivity activity, MediaControllerCompat.Callback callback) {
-
-        // do not call activity.getMediaBrowser()
-        // here as its null when ConnectionCallback is created
         _activity = activity;
         _controllerCallback = callback;
     }
@@ -30,7 +30,8 @@ class _ConnectionCallback extends MediaBrowserCompat.ConnectionCallback {
         Log.d(_TAG,"Connected!");
 
         // Get the token for the MediaSession
-        MediaSessionCompat.Token token = _activity.getMediaBrowser().getSessionToken();
+        // make sure this.setMediaBrowser() is called in activity
+        final MediaSessionCompat.Token token = _mediaBrowser.getSessionToken();
 
         // Create a MediaController
         try {
@@ -39,6 +40,9 @@ class _ConnectionCallback extends MediaBrowserCompat.ConnectionCallback {
 
             // Save the controller for using anywhere
             MediaControllerCompat.setMediaController(_activity, mediaController);
+
+            // Register a Callback to stay in sync
+            mediaController.registerCallback(_controllerCallback);
         }
         catch (RemoteException e) {
             Log.e(_TAG, "Error creating controller", e);
@@ -46,10 +50,6 @@ class _ConnectionCallback extends MediaBrowserCompat.ConnectionCallback {
         }
 
         _buildTransportControls();
-
-        // Register a Callback to stay in sync
-        MediaControllerCompat.getMediaController(_activity)
-                .registerCallback(_controllerCallback);
     }
 
     @Override
@@ -65,6 +65,14 @@ class _ConnectionCallback extends MediaBrowserCompat.ConnectionCallback {
 
         Log.d(_TAG, "connection failed!");
     }
+
+	/**
+	 * Must call before MediaBrowserCompat.connect()
+	 * @param mediaBrowser media browser of the activity
+	 */
+	public void setMediaBrowser(@NonNull MediaBrowserCompat mediaBrowser) {
+		_mediaBrowser = mediaBrowser;
+	}
 
     private void _buildTransportControls() {
         final MediaControllerCompat.TransportControls transportControls = MediaControllerCompat

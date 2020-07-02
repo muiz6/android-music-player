@@ -12,14 +12,13 @@ import androidx.core.content.ContextCompat;
 
 import com.muiz6.musicplayer.R;
 
-public class NowPlayingActivityMediaBrowserConnectionCallback
-        extends MediaBrowserCompat.ConnectionCallback {
+class _ConnectionCallback extends MediaBrowserCompat.ConnectionCallback {
 
     private static final String _TAG = "NowPlayingMBCC";
     private final NowPlayingActivity _activity;
     // private final MediaBrowserCompat _mediaBrowser;
 
-    public NowPlayingActivityMediaBrowserConnectionCallback(NowPlayingActivity activity) {
+    public _ConnectionCallback(NowPlayingActivity activity) {
         _activity = activity;
     }
 
@@ -28,8 +27,8 @@ public class NowPlayingActivityMediaBrowserConnectionCallback
         super.onConnected();
 
         try {
-            MediaSessionCompat.Token token = _activity.getMediaBrowser().getSessionToken();
-            MediaControllerCompat controller =
+            final MediaSessionCompat.Token token = _activity.getMediaBrowser().getSessionToken();
+            final MediaControllerCompat controller =
                     new MediaControllerCompat(_activity, token);
             MediaControllerCompat.setMediaController(_activity, controller);
         }
@@ -38,8 +37,8 @@ public class NowPlayingActivityMediaBrowserConnectionCallback
             return;
         }
 
-        ImageButton btnPlay = _activity.findViewById(R.id.now_playing_btn_play);
-        PlaybackStateCompat pbState =
+        final ImageButton btnPlay = _activity.findViewById(R.id.now_playing_btn_play);
+        final PlaybackStateCompat pbState =
                 MediaControllerCompat.getMediaController(_activity).getPlaybackState();
         if (pbState.getState() == PlaybackStateCompat.STATE_PLAYING) {
             btnPlay.setImageDrawable(ContextCompat.getDrawable(_activity,

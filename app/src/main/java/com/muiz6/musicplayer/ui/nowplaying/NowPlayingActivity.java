@@ -19,8 +19,8 @@ public class NowPlayingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_now_playing);
 
-        NowPlayingActivityMediaBrowserConnectionCallback connectionCallback =
-                new NowPlayingActivityMediaBrowserConnectionCallback(this);
+        _ConnectionCallback connectionCallback =
+                new _ConnectionCallback(this);
         _mediaBrowser = new MediaBrowserCompat(this,
                 new ComponentName(this, MusicService.class),
                 connectionCallback,

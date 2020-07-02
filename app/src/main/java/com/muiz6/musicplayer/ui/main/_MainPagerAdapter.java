@@ -10,12 +10,12 @@ import com.google.android.material.tabs.TabLayout;
 import com.muiz6.musicplayer.R;
 import com.muiz6.musicplayer.ui.main.songs.SongFragment;
 
-public class MainPagerAdapter extends FragmentPagerAdapter {
+class _MainPagerAdapter extends FragmentPagerAdapter {
 
     private final SongFragment _songFragment;
 
-    public MainPagerAdapter(@NonNull FragmentManager fm) {
-        super(fm);
+    public _MainPagerAdapter(@NonNull FragmentManager fm) {
+        super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
 
         _songFragment = new SongFragment();
     }
@@ -57,8 +57,11 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
             R.drawable.ic_local_offer_black_24dp
         };
 
-        for (int i =0; i < getCount(); i++) {
-            tabLayout.getTabAt(i).setIcon(icons[i]);;
+        for (int i = 0; i < getCount(); i++) {
+            final TabLayout.Tab tab = tabLayout.getTabAt(i);
+            if (tab !=  null) {
+                tab.setIcon(icons[i]);
+            }
         }
     }
 }

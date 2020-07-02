@@ -35,11 +35,6 @@ class _TabListener extends TabLayout.ViewPagerOnTabSelectedListener {
 		_applyTabColor(tab, R.color.colorGreyLight);
 	}
 
-	@Override
-	public void onTabReselected(TabLayout.Tab tab) {
-		super.onTabReselected(tab);
-	}
-
 	private void _applyTabColor(TabLayout.Tab tab, @ColorRes int id) {
 		int tabIconColor = ContextCompat.getColor(_viewPager.getContext(), id);
 		final Drawable icon = tab.getIcon();
