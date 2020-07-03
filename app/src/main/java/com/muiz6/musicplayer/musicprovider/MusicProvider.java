@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.support.v4.media.MediaBrowserCompat.MediaItem;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaSessionCompat;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,6 +13,7 @@ import androidx.media.MediaBrowserServiceCompat.BrowserRoot;
 
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector;
+import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MediaSourceFactory;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
@@ -152,6 +154,19 @@ public class MusicProvider implements MediaSessionConnector.MediaMetadataProvide
 					.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, album.toString());
 		}
 		return builder.build();
+	}
+
+	public MediaSessionConnector.QueueNavigator getQueueNavigator(MediaSessionCompat session) {
+		return new TimelineQueueNavigator(session) {
+
+			@NonNull
+			@Override
+			public MediaDescriptionCompat getMediaDescription(@NonNull Player player,
+					int windowIndex) {
+				final int index = (windowIndex + _offset) % _allSongList.size();
+				return _allSongList.get(index).getDescription();
+			}
+		};
 	}
 
 	private static MediaDescriptionCompat _getMediaDescription(String mediaId, String title,
