@@ -6,10 +6,12 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.TypedValue;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
 
 import com.muiz6.musicplayer.R;
 
@@ -22,7 +24,7 @@ class _MediaControllerCallback extends MediaControllerCompat.Callback {
     }
 
     @Override
-    public void onMetadataChanged(MediaMetadataCompat metadata) {
+    public void onMetadataChanged(@Nullable MediaMetadataCompat metadata) {
         final TextView tv = _activity.findViewById(R.id.main_bottom_appbar_song_title);
         final CharSequence title = metadata.getText(MediaMetadataCompat.METADATA_KEY_TITLE);
         if (title != null) {
@@ -34,12 +36,20 @@ class _MediaControllerCallback extends MediaControllerCompat.Callback {
     }
 
     @Override
-    public void onPlaybackStateChanged(PlaybackStateCompat state) {
-        ImageButton btn = _activity.findViewById(R.id.main_bottom_appbar_btn_play);
+    public void onPlaybackStateChanged(@Nullable PlaybackStateCompat state) {
+        final View bottomAppbar = _activity.findViewById(R.id.main_bottom_appbar);
+        if (state != null && bottomAppbar.getVisibility() != View.VISIBLE) {
+            bottomAppbar.setVisibility(View.VISIBLE);
+            final View viewPager = _activity.findViewById(R.id.main_view_pager);
+            viewPager.setPadding(viewPager.getPaddingStart(), viewPager.getPaddingTop(),
+                    viewPager.getPaddingEnd(), bottomAppbar.getHeight());
+        }
+
+        final ImageButton btn = _activity.findViewById(R.id.main_bottom_appbar_btn_play);
 
         // use current theme colors
-        TypedValue typedValue = new TypedValue();
-        Resources.Theme theme = _activity.getTheme();
+        final TypedValue typedValue = new TypedValue();
+        final Resources.Theme theme = _activity.getTheme();
         if (state.getState() == PlaybackStateCompat.STATE_PLAYING) {
             theme.resolveAttribute(R.attr.colorAccent, typedValue, true);
             @ColorInt int color = typedValue.data;

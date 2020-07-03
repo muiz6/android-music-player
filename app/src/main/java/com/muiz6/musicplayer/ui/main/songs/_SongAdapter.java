@@ -31,8 +31,7 @@ class _SongAdapter extends RecyclerView.Adapter {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        LayoutInflater inflator = LayoutInflater.from(parent.getContext());
-
+        final LayoutInflater inflator = LayoutInflater.from(parent.getContext());
         View view;
         if (viewType == 0) {
             view = inflator.inflate(R.layout.row_song_item_first, parent, false);

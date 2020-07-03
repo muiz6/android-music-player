@@ -1,54 +1,31 @@
 package com.muiz6.musicplayer.ui.main;
 
-import android.os.RemoteException;
-import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.session.MediaControllerCompat;
-import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 
-import androidx.annotation.NonNull;
-
 import com.muiz6.musicplayer.R;
+import com.muiz6.musicplayer.ui.MyConnectionCallback;
 
-class _ConnectionCallback extends MediaBrowserCompat.ConnectionCallback {
+class _ConnectionCallback extends MyConnectionCallback {
 
     private static final String _TAG = "MainActivityMBCC";
     private final MainActivity _activity;
     private final MediaControllerCompat.Callback _controllerCallback;
-    private MediaBrowserCompat _mediaBrowser;
 
     public _ConnectionCallback(MainActivity activity, MediaControllerCompat.Callback callback) {
+        super(activity, callback);
         _activity = activity;
         _controllerCallback = callback;
     }
 
     @Override
     public void onConnected() {
+        super.onConnected();
+
         Log.d(_TAG,"Connected!");
-
-        // Get the token for the MediaSession
-        // make sure this.setMediaBrowser() is called in activity
-        final MediaSessionCompat.Token token = _mediaBrowser.getSessionToken();
-
-        // Create a MediaController
-        try {
-            MediaControllerCompat mediaController =
-                new MediaControllerCompat(_activity, token);
-
-            // Save the controller for using anywhere
-            MediaControllerCompat.setMediaController(_activity, mediaController);
-
-            // Register a Callback to stay in sync
-            mediaController.registerCallback(_controllerCallback);
-        }
-        catch (RemoteException e) {
-            Log.e(_TAG, "Error creating controller", e);
-            return;
-        }
-
         _buildTransportControls();
     }
 
@@ -66,14 +43,6 @@ class _ConnectionCallback extends MediaBrowserCompat.ConnectionCallback {
         Log.d(_TAG, "connection failed!");
     }
 
-	/**
-	 * Must call before MediaBrowserCompat.connect()
-	 * @param mediaBrowser media browser of the activity
-	 */
-	public void setMediaBrowser(@NonNull MediaBrowserCompat mediaBrowser) {
-		_mediaBrowser = mediaBrowser;
-	}
-
     private void _buildTransportControls() {
         final MediaControllerCompat.TransportControls transportControls = MediaControllerCompat
                 .getMediaController(_activity).getTransportControls();
@@ -90,27 +59,27 @@ class _ConnectionCallback extends MediaBrowserCompat.ConnectionCallback {
 
                 Log.d(_TAG, "play/pause button pressed");
 
-                int pbState = MediaControllerCompat.getMediaController(_activity)
-                    .getPlaybackState()
-                    .getState();
-
-                if (pbState == PlaybackStateCompat.STATE_PLAYING) {
-                    transportControls.pause();
+                final PlaybackStateCompat pbState = MediaControllerCompat.getMediaController(_activity)
+                        .getPlaybackState();
+                if (pbState != null) {
+                    if (pbState.getState() == PlaybackStateCompat.STATE_PLAYING) {
+                        transportControls.pause();
+                    }
+                    else if (pbState.getState() == PlaybackStateCompat.STATE_PAUSED) {
+                        transportControls.play();
+                    }
+                    // else {
+                    //     // ArrayList<SongDataModel> data = Repository.getInstance(_activity)
+                    //     //     .getSongList().getValue();
+                    //     //
+                    //     // int rand = ThreadLocalRandom.current().nextInt(0, data.size());
+                    //     // Uri path = Uri.parse(data.get(rand).getPath());
+                    //     //
+                    //     // MediaControllerCompat.getMediaController(_activity)
+                    //     //     .getTransportControls()
+                    //     //     .playFromUri(path, null);
+                    // }
                 }
-                else if (pbState == PlaybackStateCompat.STATE_PAUSED) {
-                    transportControls.play();
-                }
-                // else {
-                //     // ArrayList<SongDataModel> data = Repository.getInstance(_activity)
-                //     //     .getSongList().getValue();
-                //     //
-                //     // int rand = ThreadLocalRandom.current().nextInt(0, data.size());
-                //     // Uri path = Uri.parse(data.get(rand).getPath());
-                //     //
-                //     // MediaControllerCompat.getMediaController(_activity)
-                //     //     .getTransportControls()
-                //     //     .playFromUri(path, null);
-                // }
             }
         });
 
@@ -137,13 +106,13 @@ class _ConnectionCallback extends MediaBrowserCompat.ConnectionCallback {
                 MediaControllerCompat.getMediaController(_activity);
 
         // TODO: set bottom appbar visible only when current song is available
-        View bottomAppbar = _activity.findViewById(R.id.main_bottom_appbar);
-        bottomAppbar.setVisibility(View.VISIBLE);
+        // View bottomAppbar = _activity.findViewById(R.id.main_bottom_appbar);
+        // bottomAppbar.setVisibility(View.VISIBLE);
 
         // set bottom padding equal to height of bottom appbar, leave rest as is
-        View viewPager = _activity.findViewById(R.id.main_view_pager);
-        viewPager.setPadding(viewPager.getPaddingStart(), viewPager.getPaddingTop(),
-                viewPager.getPaddingEnd(), bottomAppbar.getHeight());
+        // View viewPager = _activity.findViewById(R.id.main_view_pager);
+        // viewPager.setPadding(viewPager.getPaddingStart(), viewPager.getPaddingTop(),
+        //         viewPager.getPaddingEnd(), bottomAppbar.getHeight());
     }
 }
 

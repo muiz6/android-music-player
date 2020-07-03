@@ -1,5 +1,6 @@
 package com.muiz6.musicplayer.musicservice;
 
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
@@ -10,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.media.MediaBrowserServiceCompat;
 
 import com.muiz6.musicplayer.musicprovider.MusicProvider;
+import com.muiz6.musicplayer.ui.nowplaying.NowPlayingActivity;
 
 import java.util.List;
 
@@ -36,9 +38,10 @@ public class MusicService extends MediaBrowserServiceCompat {
 				_session, _musicProvider));
 
 		// session activity needed for notification click action
-		// final Intent intent = new Intent(this, NowPlayingActivity.class);
-		// _session.setSessionActivity(PendingIntent.getActivity(this, 67,
-		// 		intent, PendingIntent.FLAG_UPDATE_CURRENT));
+		// todo: look into request codes
+		final Intent intent = new Intent(this, NowPlayingActivity.class);
+		_session.setSessionActivity(PendingIntent.getActivity(this, 0,
+				intent, PendingIntent.FLAG_UPDATE_CURRENT));
 	}
 
 	// @Override

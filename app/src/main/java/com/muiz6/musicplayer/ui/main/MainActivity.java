@@ -21,6 +21,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.tabs.TabLayout;
 import com.muiz6.musicplayer.R;
 import com.muiz6.musicplayer.musicservice.MusicService;
+import com.muiz6.musicplayer.ui.MyConnectionCallback;
 import com.muiz6.musicplayer.ui.SettingActivity;
 import com.muiz6.musicplayer.ui.nowplaying.NowPlayingActivity;
 
@@ -30,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView _playerTitle;
     private MediaBrowserCompat _mediaBrowser;
     private _MediaControllerCallback _controllerCallback;
-    private _ConnectionCallback _connectionCallback;
+    private MyConnectionCallback _connectionCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,20 +45,6 @@ public class MainActivity extends AppCompatActivity {
         _playerTitle = findViewById(R.id.main_bottom_appbar_song_title);
         _playerTitle.setSelected(true); // for marquee text
 
-        // Instantiate ViewPager, PagerAdapter and TabLayout
-        final ViewPager viewPager = findViewById(R.id.main_view_pager);
-        final TabLayout tabLayout = findViewById(R.id.main_tabs);
-        final _MainPagerAdapter pagerAdapter = new _MainPagerAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(pagerAdapter);
-        tabLayout.setupWithViewPager(viewPager);
-        pagerAdapter.setTabIcons(tabLayout);
-
-        // color tab bar icons
-        tabLayout.getTabAt(0).getIcon().setColorFilter(ContextCompat.getColor(this,
-                R.color.colorAccent),
-                PorterDuff.Mode.SRC_IN);
-        tabLayout.addOnTabSelectedListener(new _TabListener(viewPager));
-
         // setup media browser and media controller
         _controllerCallback = new _MediaControllerCallback(this);
         _connectionCallback =
@@ -67,6 +54,21 @@ public class MainActivity extends AppCompatActivity {
                 new ComponentName(this, MusicService.class),
                 _connectionCallback,
                 null);
+
+        // Instantiate ViewPager, PagerAdapter and TabLayout
+        final ViewPager viewPager = findViewById(R.id.main_view_pager);
+        final TabLayout tabLayout = findViewById(R.id.main_tabs);
+        final _MainPagerAdapter pagerAdapter = new _MainPagerAdapter(getSupportFragmentManager(),
+                _mediaBrowser);
+        viewPager.setAdapter(pagerAdapter);
+        tabLayout.setupWithViewPager(viewPager);
+        pagerAdapter.setTabIcons(tabLayout);
+
+        // color tab bar icons
+        tabLayout.getTabAt(0).getIcon().setColorFilter(ContextCompat.getColor(this,
+                R.color.colorAccent),
+                PorterDuff.Mode.SRC_IN);
+        tabLayout.addOnTabSelectedListener(new _TabListener(viewPager));
     }
 
     @Override
@@ -90,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        // so that default volume button action is media volume increase/decrease
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 

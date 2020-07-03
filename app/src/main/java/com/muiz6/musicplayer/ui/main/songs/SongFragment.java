@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.muiz6.musicplayer.R;
 import com.muiz6.musicplayer.musicprovider.MusicProvider;
-import com.muiz6.musicplayer.ui.main.MainActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,12 +21,15 @@ import java.util.List;
 public class SongFragment extends Fragment {
 
 	private static final String _TAG = "SongFragment";
+	private final MediaBrowserCompat _mediaBrowser;
 	private RecyclerView _recyclerView;
 	private _SongAdapter _songListRecyclerAdapter;
 	private ArrayList<MediaBrowserCompat.MediaItem> _songList;
 
 	// required public ctor
-	public SongFragment() {}
+	public SongFragment(MediaBrowserCompat mediaBrowser) {
+		_mediaBrowser = mediaBrowser;
+	}
 
 	@Override
 	public void onAttach(@NonNull Context context) {
@@ -57,8 +59,8 @@ public class SongFragment extends Fragment {
 	public void onStart() {
 		super.onStart();
 
-		MainActivity activity = (MainActivity) getActivity();
-		activity.getMediaBrowser().subscribe(MusicProvider.MEDIA_ID_ALL_SONGS,
+		// MainActivity activity = (MainActivity) getActivity();
+		_mediaBrowser.subscribe(MusicProvider.MEDIA_ID_ALL_SONGS,
 				new MediaBrowserCompat.SubscriptionCallback() {
 					@Override
 					public void onChildrenLoaded(@NonNull String parentId,
@@ -76,6 +78,6 @@ public class SongFragment extends Fragment {
 	public void onStop() {
 		super.onStop();
 
-		((MainActivity)getActivity()).getMediaBrowser().unsubscribe(MusicProvider.MEDIA_ID_ALL_SONGS);
+		_mediaBrowser.unsubscribe(MusicProvider.MEDIA_ID_ALL_SONGS);
 	}
 }
