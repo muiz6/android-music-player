@@ -11,18 +11,22 @@ import androidx.annotation.ColorRes;
 import androidx.core.content.ContextCompat;
 
 import com.muiz6.musicplayer.R;
+import com.muiz6.musicplayer.databinding.ActivityNowPlayingBinding;
 import com.muiz6.musicplayer.ui.MyConnectionCallback;
 
 class _ConnectionCallback extends MyConnectionCallback {
 
 	private static final String _TAG = "NowPlayingMBCC";
 	private final NowPlayingActivity _activity;
+	private final ActivityNowPlayingBinding _binding;
 
 	public _ConnectionCallback(NowPlayingActivity activity,
-			MediaControllerCompat.Callback callback) {
+			MediaControllerCompat.Callback callback,
+			ActivityNowPlayingBinding binding) {
 		super(activity, callback);
 
 		_activity = activity;
+		_binding = binding;
 	}
 
 	@Override
@@ -31,7 +35,7 @@ class _ConnectionCallback extends MyConnectionCallback {
 
 		final MediaControllerCompat controller =
 				MediaControllerCompat.getMediaController(_activity);
-		final ImageButton btnPlay = _activity.findViewById(R.id.now_playing_btn_play);
+		final ImageButton btnPlay = _binding.nowPlayingBtnPlay;
 		final PlaybackStateCompat pbState = controller.getPlaybackState();
 		if (pbState != null) {
 			if (pbState.getState() == PlaybackStateCompat.STATE_PLAYING) {
@@ -62,7 +66,7 @@ class _ConnectionCallback extends MyConnectionCallback {
 			}
 		});
 
-		final View btnRepeat = _activity.findViewById(R.id.now_playing_btn_repeat);
+		final View btnRepeat = _binding.nowPlayingBtnRepeat;
 		btnRepeat.setOnClickListener(new View.OnClickListener() {
 
 			@Override
@@ -71,7 +75,7 @@ class _ConnectionCallback extends MyConnectionCallback {
 			}
 		});
 
-		final ImageButton btnShuffle = _activity.findViewById(R.id.now_playing_btn_shuffle);
+		final ImageButton btnShuffle = _binding.nowPlayingBtnShuffle;
 		btnShuffle.setOnClickListener(new View.OnClickListener() {
 
 			@Override

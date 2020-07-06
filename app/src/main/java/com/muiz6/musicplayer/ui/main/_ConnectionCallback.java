@@ -6,7 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 
-import com.muiz6.musicplayer.R;
+import com.muiz6.musicplayer.databinding.ActivityMainBinding;
 import com.muiz6.musicplayer.ui.MyConnectionCallback;
 
 class _ConnectionCallback extends MyConnectionCallback {
@@ -14,11 +14,15 @@ class _ConnectionCallback extends MyConnectionCallback {
     private static final String _TAG = "MainActivityMBCC";
     private final MainActivity _activity;
     private final MediaControllerCompat.Callback _controllerCallback;
+    private final ActivityMainBinding _binding;
 
-    public _ConnectionCallback(MainActivity activity, MediaControllerCompat.Callback callback) {
+    public _ConnectionCallback(MainActivity activity,
+            MediaControllerCompat.Callback callback,
+            ActivityMainBinding binding) {
         super(activity, callback);
         _activity = activity;
         _controllerCallback = callback;
+        _binding = binding;
     }
 
     @Override
@@ -48,7 +52,7 @@ class _ConnectionCallback extends MyConnectionCallback {
                 .getMediaController(_activity).getTransportControls();
 
         // Grab the view for the play/pause button
-        final ImageButton playPauseBtn = _activity.findViewById(R.id.main_bottom_appbar_btn_play);
+        final ImageButton playPauseBtn = _binding.mainBottomAppbarBtnPlay;
 
         // Attach a listener to the button
         playPauseBtn.setOnClickListener(new View.OnClickListener() {
@@ -83,8 +87,7 @@ class _ConnectionCallback extends MyConnectionCallback {
             }
         });
 
-        final ImageButton btnSkipPrev = _activity
-                .findViewById(R.id.main_bottom_appbar_btn_previous);
+        final ImageButton btnSkipPrev = _binding.mainBottomAppbarBtnPrevious;
         btnSkipPrev.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -93,7 +96,7 @@ class _ConnectionCallback extends MyConnectionCallback {
             }
         });
 
-        final ImageButton btnSkipNext = _activity.findViewById(R.id.main_bottom_appbar_btn_next);
+        final ImageButton btnSkipNext = _binding.mainBottomAppbarBtnNext;
         btnSkipNext.setOnClickListener(new View.OnClickListener() {
 
             @Override

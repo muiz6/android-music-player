@@ -41,16 +41,16 @@ public class MainActivity extends AppCompatActivity
         _binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(_binding.getRoot());
 
-        final Toolbar toolbar = findViewById(R.id.main_toolbar);
+        final Toolbar toolbar = _binding.mainToolbar;
         setSupportActionBar(toolbar);
 
         // initializing ui components
         _binding.mainBottomAppbarSongTitle.setSelected(true); // for marquee text
 
         // setup media browser and media controller
-        _controllerCallback = new _MediaControllerCallback(this);
+        _controllerCallback = new _MediaControllerCallback(this, _binding);
         _connectionCallback =
-                new _ConnectionCallback(this, _controllerCallback);
+                new _ConnectionCallback(this, _controllerCallback, _binding);
 
         _mediaBrowser = new MediaBrowserCompat(this,
                 new ComponentName(this, MusicService.class),
@@ -58,8 +58,8 @@ public class MainActivity extends AppCompatActivity
                 null);
 
         // Instantiate ViewPager, PagerAdapter and TabLayout
-        final ViewPager viewPager = findViewById(R.id.main_view_pager);
-        final TabLayout tabLayout = findViewById(R.id.main_tabs);
+        final ViewPager viewPager = _binding.mainViewPager;
+        final TabLayout tabLayout = _binding.mainTabs;
         final _MainPagerAdapter pagerAdapter = new _MainPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(viewPager);

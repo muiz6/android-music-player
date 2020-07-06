@@ -28,7 +28,7 @@ public class NowPlayingActivity extends AppCompatActivity {
 
 		final MediaControllerCompat.Callback controllerCallback =
 				new _MediaControllerCallback(this);
-		_connectionCallback = new _ConnectionCallback(this, controllerCallback);
+		_connectionCallback = new _ConnectionCallback(this, controllerCallback, _binding);
 		_mediaBrowser = new MediaBrowserCompat(this,
 				new ComponentName(this, MusicService.class),
 				_connectionCallback,

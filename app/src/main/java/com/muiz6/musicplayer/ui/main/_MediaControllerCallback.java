@@ -14,38 +14,38 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
 import com.muiz6.musicplayer.R;
+import com.muiz6.musicplayer.databinding.ActivityMainBinding;
 
 class _MediaControllerCallback extends MediaControllerCompat.Callback {
 
     private final MainActivity _activity;
+    private final ActivityMainBinding _binding;
 
-    public _MediaControllerCallback(MainActivity activity) {
+    public _MediaControllerCallback(MainActivity activity, ActivityMainBinding binding) {
         _activity = activity;
+        _binding = binding;
     }
 
     @Override
     public void onMetadataChanged(@Nullable MediaMetadataCompat metadata) {
-        final TextView tv = _activity.findViewById(R.id.main_bottom_appbar_song_title);
+        final TextView tv = _binding.mainBottomAppbarSongTitle;
         final CharSequence title = metadata.getText(MediaMetadataCompat.METADATA_KEY_TITLE);
         if (title != null) {
             tv.setText(title);
-        }
-        else {
-            tv.setText("Unknown Title");
         }
     }
 
     @Override
     public void onPlaybackStateChanged(@Nullable PlaybackStateCompat state) {
-        final View bottomAppbar = _activity.findViewById(R.id.main_bottom_appbar);
+        final View bottomAppbar = _binding.mainBottomAppbar;
         if (state != null && bottomAppbar.getVisibility() != View.VISIBLE) {
             bottomAppbar.setVisibility(View.VISIBLE);
-            final View viewPager = _activity.findViewById(R.id.main_view_pager);
+            final View viewPager = _binding.mainViewPager;
             viewPager.setPadding(viewPager.getPaddingStart(), viewPager.getPaddingTop(),
                     viewPager.getPaddingEnd(), bottomAppbar.getHeight());
         }
 
-        final ImageButton btn = _activity.findViewById(R.id.main_bottom_appbar_btn_play);
+        final ImageButton btn = _binding.mainBottomAppbarBtnPlay;
 
         // use current theme colors
         final TypedValue typedValue = new TypedValue();
