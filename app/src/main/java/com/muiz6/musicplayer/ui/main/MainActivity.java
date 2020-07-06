@@ -10,7 +10,6 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +20,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 import com.muiz6.musicplayer.R;
+import com.muiz6.musicplayer.databinding.ActivityMainBinding;
 import com.muiz6.musicplayer.musicservice.MusicService;
 import com.muiz6.musicplayer.ui.MyConnectionCallback;
 import com.muiz6.musicplayer.ui.SettingActivity;
@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity
 	implements MediaBrowserFragment.MediaFragmentListener {
 
     private static final String _TAG = "MainActivity";
-    private TextView _playerTitle;
+    private ActivityMainBinding _binding;
     private MediaBrowserCompat _mediaBrowser;
     private _MediaControllerCallback _controllerCallback;
     private MyConnectionCallback _connectionCallback;
@@ -38,14 +38,14 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        _binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(_binding.getRoot());
 
         final Toolbar toolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
 
         // initializing ui components
-        _playerTitle = findViewById(R.id.main_bottom_appbar_song_title);
-        _playerTitle.setSelected(true); // for marquee text
+        _binding.mainBottomAppbarSongTitle.setSelected(true); // for marquee text
 
         // setup media browser and media controller
         _controllerCallback = new _MediaControllerCallback(this);
@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity
 	}
 
     public void onClick(View view) {
-        if (view == _playerTitle) {
+        if (view == _binding.mainBottomAppbarSongTitle) {
             Intent intent = new Intent(MainActivity.this,
                     NowPlayingActivity.class);
             startActivity(intent);

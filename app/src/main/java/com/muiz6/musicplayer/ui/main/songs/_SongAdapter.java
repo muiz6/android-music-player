@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.muiz6.musicplayer.R;
+import com.muiz6.musicplayer.databinding.RowSongItemBinding;
+import com.muiz6.musicplayer.databinding.RowSongItemFirstBinding;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -45,7 +47,6 @@ class _SongAdapter extends RecyclerView.Adapter {
             public void onClick(View v) {
                 int position = holder.getAdapterPosition();
 
-                // TODO: play from mediaId instead
                 // -1 to bring recyclerview items and media items in sync
                 int toPlay = position - 1;
                 MediaControllerCompat.getMediaController(_activity).getTransportControls()
@@ -58,12 +59,14 @@ class _SongAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
         if (position == 0) {
-            TextView header = holder.itemView.findViewById(R.id.row_song_item_first_header);
-            header.setText(holder.itemView.getContext().getString(R.string.tab_song_header));
+            final RowSongItemFirstBinding binding = RowSongItemFirstBinding.bind(holder.itemView);
+            binding.getRoot()
+                    .setText(holder.itemView.getContext().getString(R.string.tab_song_header));
         }
         else {
-            TextView songTitle = holder.itemView.findViewById(R.id.row_song_item_title);
-            TextView songArtist = holder.itemView.findViewById(R.id.row_song_item_artist);
+            final RowSongItemBinding binding = RowSongItemBinding.bind(holder.itemView);
+            final TextView songTitle = binding.rowSongItemTitle;
+            final TextView songArtist = binding.rowSongItemArtist;
 
             // -1 bcz index 0 is occupied by header and item positions are no longer in sync
             songTitle.setText(_songList.get(position - 1).getDescription().getTitle());

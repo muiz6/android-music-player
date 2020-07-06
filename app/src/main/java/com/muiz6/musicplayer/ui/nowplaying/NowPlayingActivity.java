@@ -10,23 +10,21 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.muiz6.musicplayer.R;
+import com.muiz6.musicplayer.databinding.ActivityNowPlayingBinding;
 import com.muiz6.musicplayer.musicservice.MusicService;
 import com.muiz6.musicplayer.ui.MyConnectionCallback;
 
 public class NowPlayingActivity extends AppCompatActivity {
 
-	private FloatingActionButton _fab;
+	private ActivityNowPlayingBinding _binding;
 	private MediaBrowserCompat _mediaBrowser;
 	private MyConnectionCallback _connectionCallback;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_now_playing);
-
-		_fab = findViewById(R.id.now_playing_fab);
+		_binding = ActivityNowPlayingBinding.inflate(getLayoutInflater());
+		setContentView(_binding.getRoot());
 
 		final MediaControllerCompat.Callback controllerCallback =
 				new _MediaControllerCallback(this);
@@ -53,7 +51,7 @@ public class NowPlayingActivity extends AppCompatActivity {
 	}
 
 	public void onClick(View view) {
-		if (view == _fab) {
+		if (view == _binding.nowPlayingFab) {
 			final Intent intent = new Intent(this, QueueActivity.class);
 			startActivity(intent);
 		}

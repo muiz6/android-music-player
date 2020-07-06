@@ -1,18 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+
+<TextView
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
-	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/row_song_item_first_header"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
-	android:paddingTop="@dimen/padding_container"
-	tools:context=".ui.main.songs.SongFragment">
-
-	<TextView
-		android:id="@+id/row_song_item_first_header"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:paddingStart="@dimen/padding_container"
-		android:textColor="?attr/colorAccent"
-		app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+	android:paddingStart="@dimen/padding_container"
+	android:textColor="?attr/colorAccent"
+	app:layout_constraintTop_toTopOf="parent" />
