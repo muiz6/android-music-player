@@ -1,7 +1,5 @@
 package com.muiz6.musicplayer.ui.main;
 
-import android.support.v4.media.MediaBrowserCompat;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -14,14 +12,12 @@ import com.muiz6.musicplayer.ui.main.songs.SongFragment;
 
 class _MainPagerAdapter extends FragmentPagerAdapter {
 
-    private final MediaBrowserCompat _mediaBrowser;
     private final SongFragment _songFragment;
 
-    public _MainPagerAdapter(@NonNull FragmentManager fm, MediaBrowserCompat mediaBrowser) {
+    public _MainPagerAdapter(@NonNull FragmentManager fm) {
         super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
 
-        _mediaBrowser = mediaBrowser;
-        _songFragment = new SongFragment(_mediaBrowser);
+        _songFragment = SongFragment.newInstance();
     }
 
     @NonNull

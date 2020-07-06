@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
@@ -25,7 +26,8 @@ import com.muiz6.musicplayer.ui.MyConnectionCallback;
 import com.muiz6.musicplayer.ui.SettingActivity;
 import com.muiz6.musicplayer.ui.nowplaying.NowPlayingActivity;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+	implements MediaBrowserFragment.MediaFragmentListener {
 
     private static final String _TAG = "MainActivity";
     private TextView _playerTitle;
@@ -58,8 +60,7 @@ public class MainActivity extends AppCompatActivity {
         // Instantiate ViewPager, PagerAdapter and TabLayout
         final ViewPager viewPager = findViewById(R.id.main_view_pager);
         final TabLayout tabLayout = findViewById(R.id.main_tabs);
-        final _MainPagerAdapter pagerAdapter = new _MainPagerAdapter(getSupportFragmentManager(),
-                _mediaBrowser);
+        final _MainPagerAdapter pagerAdapter = new _MainPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
         pagerAdapter.setTabIcons(tabLayout);
@@ -116,6 +117,12 @@ public class MainActivity extends AppCompatActivity {
         }
         _mediaBrowser.disconnect();
     }
+
+    @Nullable
+	@Override
+	public MediaBrowserCompat getMediaBrowser() {
+		return _mediaBrowser;
+	}
 
     public void onClick(View view) {
         if (view == _playerTitle) {
