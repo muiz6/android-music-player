@@ -45,31 +45,27 @@ public class SongFragment extends MediaBrowserFragment {
 	public void onStart() {
 		super.onStart();
 
-		final MediaBrowserCompat browser = getMediaFragmentListener().getMediaBrowser();
-		if (browser != null) {
-			browser.subscribe(MusicProvider.MEDIA_ID_ALL_SONGS,
-					new MediaBrowserCompat.SubscriptionCallback() {
-						@Override
-						public void onChildrenLoaded(@NonNull String parentId,
-								@NonNull List<MediaBrowserCompat.MediaItem> children) {
-							super.onChildrenLoaded(parentId, children);
+		final MediaBrowserCompat browser = getMediaBrowserProvider().getMediaBrowser();
+		browser.subscribe(MusicProvider.MEDIA_ID_ALL_SONGS,
+				new MediaBrowserCompat.SubscriptionCallback() {
+					@Override
+					public void onChildrenLoaded(@NonNull String parentId,
+							@NonNull List<MediaBrowserCompat.MediaItem> children) {
+						super.onChildrenLoaded(parentId, children);
 
-							_songList = (ArrayList<MediaBrowserCompat.MediaItem>) children;
-							_songListRecyclerAdapter
-									.setSongList(_songList);
-						}
-					});
-		}
+						_songList = (ArrayList<MediaBrowserCompat.MediaItem>) children;
+						_songListRecyclerAdapter
+								.setSongList(_songList);
+					}
+				});
 	}
 
 	@Override
 	public void onStop() {
 		super.onStop();
 
-		final MediaBrowserCompat browser = getMediaFragmentListener().getMediaBrowser();
-		if (browser != null) {
-			browser.unsubscribe(MusicProvider.MEDIA_ID_ALL_SONGS);
-		}
+		final MediaBrowserCompat browser = getMediaBrowserProvider().getMediaBrowser();
+		browser.unsubscribe(MusicProvider.MEDIA_ID_ALL_SONGS);
 	}
 
 	public static SongFragment newInstance() {

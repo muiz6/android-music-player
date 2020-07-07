@@ -8,22 +8,15 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-public abstract class MyConnectionCallback extends MediaBrowserCompat.ConnectionCallback {
+public class MyConnectionCallback extends MediaBrowserCompat.ConnectionCallback {
 
-	private final MediaControllerCompat.Callback _controllerCallback;
-	private final Activity _activity;
-	private MediaBrowserCompat _mediaBrowser;
+	private static final String _TAG = "MyConnectionCallback";
+	private final Listener _listener;
 
-	/**
-	 *
-	 * @param activity activity to register the media controller to
-	 * @param controllerCallback callback required to keep in sync with media session
-	 */
-	public MyConnectionCallback(@NonNull Activity activity,
-			@NonNull MediaControllerCompat.Callback controllerCallback) {
-		_activity = activity;
-		_controllerCallback = controllerCallback;
+	public MyConnectionCallback(@NonNull MyConnectionCallback.Listener listener) {
+		_listener = listener;
 	}
 
 	@Override
@@ -31,30 +24,50 @@ public abstract class MyConnectionCallback extends MediaBrowserCompat.Connection
 		super.onConnected();
 
 		// Get the token for the MediaSession
-		// make sure this.setMediaBrowser() is called in activity
-		final MediaSessionCompat.Token token = _mediaBrowser.getSessionToken();
+		final MediaSessionCompat.Token token = _listener.getMediaBrowser().getSessionToken();
 
 		// Create a MediaController
 		try {
 			MediaControllerCompat mediaController =
-					new MediaControllerCompat(_activity, token);
+					new MediaControllerCompat(_listener.getActivity(), token);
 
 			// Save the controller for using anywhere
-			MediaControllerCompat.setMediaController(_activity, mediaController);
+			MediaControllerCompat.setMediaController(_listener.getActivity(), mediaController);
 
-			// Register a Callback to stay in sync
-			mediaController.registerCallback(_controllerCallback);
+			// Register a Callback (if provided) to stay in sync
+			final MediaControllerCompat.Callback callback = _listener.getMediaControllerCallback();
+			if (callback != null) {
+				mediaController.registerCallback(callback);
+			}
 		}
 		catch (RemoteException e) {
 			Log.e("MyConnCallback", "Error creating controller", e);
 		}
+
+		_listener.onConnected();
 	}
 
-	/**
-	 * Must be called before MediaBrowserCompat.connect()
-	 * @param mediaBrowser media browser of the activity
-	 */
-	public void setMediaBrowser(@NonNull MediaBrowserCompat mediaBrowser) {
-		_mediaBrowser = mediaBrowser;
+	@Override
+	public void onConnectionFailed() {
+		super.onConnectionFailed();
+
+		Log.d(_TAG, "Connection Failed");
+	}
+
+	@Override
+	public void onConnectionSuspended() {
+		super.onConnectionSuspended();
+
+		Log.d(_TAG, "Connection Suspended");
+	}
+
+	public interface Listener extends MediaBrowserProvider{
+		void onConnected();
+
+		@NonNull
+		Activity getActivity();
+
+		@Nullable
+		MediaControllerCompat.Callback getMediaControllerCallback();
 	}
 }
