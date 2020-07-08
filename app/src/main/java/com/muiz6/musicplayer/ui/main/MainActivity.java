@@ -3,8 +3,6 @@ package com.muiz6.musicplayer.ui.main;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -12,19 +10,18 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
@@ -34,6 +31,7 @@ import com.muiz6.musicplayer.musicservice.MusicService;
 import com.muiz6.musicplayer.ui.MyConnectionCallback;
 import com.muiz6.musicplayer.ui.MyControllerCallback;
 import com.muiz6.musicplayer.ui.SettingActivity;
+import com.muiz6.musicplayer.ui.ThemeUtil;
 import com.muiz6.musicplayer.ui.nowplaying.NowPlayingActivity;
 
 public class MainActivity extends AppCompatActivity
@@ -78,9 +76,8 @@ public class MainActivity extends AppCompatActivity
 		if (tab != null) {
 			final Drawable tabIcon = tab.getIcon();
 			if (tabIcon != null) {
-				tabIcon.setColorFilter(ContextCompat.getColor(this,
-						R.color.colorAccent),
-						PorterDuff.Mode.SRC_IN);
+				final int color = ThemeUtil.getColor(this, R.attr.colorAccent);
+				DrawableCompat.setTint(tabIcon, color);
 			}
 		}
 		tabLayout.addOnTabSelectedListener(new _TabListener(viewPager));
@@ -249,20 +246,14 @@ public class MainActivity extends AppCompatActivity
 	private void _updatePlayPauseBtn(PlaybackStateCompat pbState) {
 		if (pbState != null) {
 			final ImageButton btn = _binding.mainBottomAppbarBtnPlay;
-			final TypedValue typedValue = new TypedValue();
-			final Resources.Theme theme = getTheme();
+			Drawable icon = getDrawable(R.drawable.ic_play_arrow);
+			int color = ThemeUtil.getColor(this, R.attr.tint);
 			if (pbState.getState() == PlaybackStateCompat.STATE_PLAYING) {
-				theme.resolveAttribute(R.attr.colorAccent, typedValue, true);
-				@ColorInt int color = typedValue.data;
-				btn.setColorFilter(color, PorterDuff.Mode.SRC_IN);
-				btn.setImageDrawable(getDrawable(R.drawable.ic_pause_black_24dp));
+				color = ThemeUtil.getColor(this, R.attr.colorAccent);
+				icon = getDrawable(R.drawable.ic_pause);
 			}
-			else {
-				theme.resolveAttribute(R.attr.iconTint, typedValue, true);
-				@ColorInt int color = typedValue.data;
-				btn.setColorFilter(color, PorterDuff.Mode.SRC_IN);
-				btn.setImageDrawable(getDrawable(R.drawable.ic_play_arrow_black_24dp));
-			}
+			btn.setImageDrawable(icon);
+			DrawableCompat.setTint(btn.getDrawable(), color);
 		}
 	}
 }

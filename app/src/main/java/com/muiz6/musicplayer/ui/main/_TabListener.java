@@ -1,15 +1,14 @@
 package com.muiz6.musicplayer.ui.main;
 
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 
-import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 import com.muiz6.musicplayer.R;
+import com.muiz6.musicplayer.ui.ThemeUtil;
 
 class _TabListener extends TabLayout.ViewPagerOnTabSelectedListener {
 
@@ -25,21 +24,22 @@ class _TabListener extends TabLayout.ViewPagerOnTabSelectedListener {
 	public void onTabSelected(@NonNull TabLayout.Tab tab) {
 		super.onTabSelected(tab);
 
-		_applyTabColor(tab, R.color.colorAccent);
+		final Drawable icon = tab.getIcon();
+		if (icon != null) {
+			final int color = ThemeUtil.getColor(_viewPager.getContext(), R.attr.colorAccent);
+			DrawableCompat.setTint(tab.getIcon(), color);
+		}
 	}
 
 	@Override
 	public void onTabUnselected(TabLayout.Tab tab) {
 		super.onTabUnselected(tab);
 
-		_applyTabColor(tab, R.color.colorGreyLight);
-	}
-
-	private void _applyTabColor(TabLayout.Tab tab, @ColorRes int id) {
-		int tabIconColor = ContextCompat.getColor(_viewPager.getContext(), id);
 		final Drawable icon = tab.getIcon();
 		if (icon != null) {
-			icon.setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+			final int color = ThemeUtil.getColor(_viewPager.getContext(),
+					android.R.attr.textColorSecondary);
+			DrawableCompat.setTint(tab.getIcon(), color);
 		}
 	}
 }

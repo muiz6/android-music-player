@@ -29,7 +29,6 @@
 			android:layout_height="wrap_content"
 			app:layout_collapseMode="pin"
 			app:tabGravity="fill"
-			app:tabIconTint="?attr/tabIconTint"
 			app:tabMode="fixed" />
 	</com.google.android.material.appbar.AppBarLayout>
 
@@ -39,15 +38,6 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
-
-	<!--&lt;!&ndash; TODO: Progressbar may not be consistent across devices&ndash;&gt;-->
-	<!--<ProgressBar-->
-	<!--    android:id="@+id/main_bottom_appbar_progressbar"-->
-	<!--    android:layout_width="match_parent"-->
-	<!--    android:layout_height="wrap_content"-->
-	<!--    style="@style/Widget.AppCompat.ProgressBar.Horizontal"-->
-	<!--    android:layout_marginBottom="-6dp"-->
-	<!--    android:layout_marginTop="-4dp"/>-->
 
 	<LinearLayout
 		android:id="@+id/main_bottom_appbar"
@@ -77,21 +67,18 @@
 			android:id="@+id/main_bottom_appbar_btn_previous"
 			android:layout_width="50dp"
 			android:layout_height="match_parent"
-			android:src="@drawable/ic_skip_previous_black_24dp"
-			android:tint="?attr/iconTint" />
+			android:src="@drawable/ic_skip_previous" />
 
 		<ImageButton
 			android:id="@+id/main_bottom_appbar_btn_play"
 			android:layout_width="50dp"
 			android:layout_height="match_parent"
-			android:src="@drawable/ic_play_arrow_black_24dp"
-			android:tint="?attr/iconTint" />
+			android:src="@drawable/ic_play_arrow" />
 
 		<ImageButton
 			android:id="@+id/main_bottom_appbar_btn_next"
 			android:layout_width="50dp"
 			android:layout_height="match_parent"
-			android:src="@drawable/ic_skip_next_black_24dp"
-			android:tint="?attr/iconTint" />
+			android:src="@drawable/ic_skip_next" />
 	</LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

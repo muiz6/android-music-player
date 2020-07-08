@@ -19,26 +19,25 @@ class _AsyncFetchAllSongs extends AsyncTask<Void, Void, String> {
 
     private final List<MediaBrowserCompat.MediaItem> _itemList;
     private final WeakReference<MediaBrowserServiceCompat> _refService;
+    private final MediaDescriptionCompat.Builder _descriptionBuilder;
 
     public _AsyncFetchAllSongs(WeakReference<MediaBrowserServiceCompat> service,
             List<MediaBrowserCompat.MediaItem> itemList) {
         _refService = service;
         _itemList = itemList;
+        _descriptionBuilder = new MediaDescriptionCompat.Builder();
     }
 
     @Override
     protected String doInBackground(Void... voids) {
-        MediaBrowserServiceCompat service = _refService.get();
+        final MediaBrowserServiceCompat service = _refService.get();
         if (service != null) {
-            MediaDescriptionCompat.Builder descriptionBuilder =
-                    new MediaDescriptionCompat.Builder();
-
-            Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-            String[] projection = {MediaStore.Audio.AudioColumns.DATA,
+            final Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+            final String[] projection = {MediaStore.Audio.AudioColumns.DATA,
                     MediaStore.Audio.AudioColumns.TITLE,
                     MediaStore.Audio.AudioColumns.ALBUM,
                     MediaStore.Audio.ArtistColumns.ARTIST};
-            Cursor cursor = service.getContentResolver().query(uri,
+            final Cursor cursor = service.getContentResolver().query(uri,
                     projection,
                     null,
                     null,
@@ -47,24 +46,21 @@ class _AsyncFetchAllSongs extends AsyncTask<Void, Void, String> {
             if (cursor != null) {
                 int i = 0;
                 while (cursor.moveToNext()) {
-                    String path = cursor.getString(0);
-                    String name = cursor.getString(1);
-                    String album = cursor.getString(2);
+                    final String path = cursor.getString(0);
+                    final String name = cursor.getString(1);
+                    final String album = cursor.getString(2);
                     String artist = cursor.getString(3);
-
-                    descriptionBuilder.setTitle(name);
-                    if (!artist.equals("<unknown>")) {
-
-                        // subtitle is artist name for media item
-                        descriptionBuilder.setSubtitle(artist);
+                    if (artist.equals("<unknown>")) {
+                        artist = null;
                     }
-                    descriptionBuilder.setDescription(album);
-                    descriptionBuilder.setMediaUri(Uri.parse(path));
-                    descriptionBuilder.setMediaId(MusicProvider.MEDIA_ID_ALL_SONGS
+                    final String mediaId = MusicProvider.MEDIA_ID_ALL_SONGS
                             + MusicProvider.SEPARATOR_MEDIA_ID
-                            + i++);
-
-                    _itemList.add(new MediaBrowserCompat.MediaItem(descriptionBuilder.build(),
+                            + i++;
+                    _itemList.add(new MediaBrowserCompat.MediaItem(_getDescription(mediaId,
+                            Uri.parse(path),
+                            name,
+                            artist,
+                            album),
                             MediaBrowserCompat.MediaItem.FLAG_PLAYABLE));
                 }
                 cursor.close();
@@ -77,9 +73,25 @@ class _AsyncFetchAllSongs extends AsyncTask<Void, Void, String> {
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
 
-        MediaBrowserServiceCompat service = _refService.get();
+        final MediaBrowserServiceCompat service = _refService.get();
         if (service != null) {
             service.notifyChildrenChanged(MusicProvider.MEDIA_ID_ALL_SONGS);
         }
+    }
+
+    private MediaDescriptionCompat _getDescription(String mediaId,
+            Uri mediaUri,
+            String title,
+            String subtitle,
+            String description) {
+        _descriptionBuilder.setExtras(null);
+        _descriptionBuilder.setIconBitmap(null);
+        _descriptionBuilder.setIconUri(null);
+        _descriptionBuilder.setMediaId(mediaId);
+        _descriptionBuilder.setMediaUri(mediaUri);
+        _descriptionBuilder.setTitle(title);
+        _descriptionBuilder.setSubtitle(subtitle);
+        _descriptionBuilder.setDescription(description);
+        return _descriptionBuilder.build();
     }
 }

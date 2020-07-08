@@ -12,4 +12,6 @@
     <dimen name="text_size_small">14sp</dimen>
     <dimen name="text_size_large">20sp</dimen>
     <dimen name="radius_bottom_appbar">25dp</dimen>
+    <dimen name="margin_now_playing_controls">25dp</dimen>
+    <dimen name="padding_now_playing_text">10dp</dimen>
 </resources>

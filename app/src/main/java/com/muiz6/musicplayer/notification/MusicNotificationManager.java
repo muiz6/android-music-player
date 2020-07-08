@@ -18,7 +18,7 @@ public class MusicNotificationManager extends PlayerNotificationManager {
 		setColor(Color.BLACK);
 		setColorized(true);
 		setUseNavigationActionsInCompactView(true);
-		setSmallIcon(R.drawable.ic_play_circle_filled_black_24dp);
+		setSmallIcon(R.drawable.ic_play_circle_filled);
 
 		// hide fast forward and rewind buttons
 		setFastForwardIncrementMs(0);

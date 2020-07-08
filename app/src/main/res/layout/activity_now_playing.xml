@@ -7,14 +7,12 @@
 	android:layout_height="match_parent"
 	tools:context=".ui.nowplaying.NowPlayingActivity">
 
-	<TextView
+	<View
 		android:id="@+id/imageView2"
 		android:layout_width="match_parent"
 		android:layout_height="0dp"
-		android:backgroundTint="@color/colorGrey"
-		android:gravity="center"
-		android:text="Text View"
-		app:layout_constraintHeight_percent="0.5"
+		android:background="@color/colorGrey2"
+		app:layout_constraintBottom_toTopOf="@id/now_playing_title"
 		app:layout_constraintTop_toTopOf="parent" />
 
 	<com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -23,89 +21,91 @@
 		android:layout_height="wrap_content"
 		android:layout_marginEnd="@dimen/padding_container"
 		android:onClick="onClick"
-		android:src="@drawable/ic_queue_music_black_24dp"
-		android:translationY="30dp"
-		app:layout_constraintBottom_toTopOf="@id/now_playing_panel"
-		app:layout_constraintRight_toRightOf="@id/now_playing_panel" />
+		android:src="@drawable/ic_queue_music"
+		android:translationY="-30dp"
+		app:layout_constraintRight_toRightOf="parent"
+		app:layout_constraintTop_toBottomOf="@id/imageView2" />
 
-	<androidx.constraintlayout.widget.ConstraintLayout
-		android:id="@+id/now_playing_panel"
+	<TextView
+		android:id="@+id/now_playing_title"
 		android:layout_width="match_parent"
-		android:layout_height="0dp"
-		android:padding="@dimen/padding_container"
+		android:layout_height="wrap_content"
+		android:padding="@dimen/padding_now_playing_text"
+		app:layout_constraintBottom_toTopOf="@id/now_playing_artist" />
+
+	<TextView
+		android:id="@+id/now_playing_artist"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingHorizontal="@dimen/padding_now_playing_text"
+		app:layout_constraintBottom_toTopOf="@id/now_playing_album" />
+
+	<TextView
+		android:id="@+id/now_playing_album"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingHorizontal="@dimen/padding_now_playing_text"
+		android:paddingTop="@dimen/padding_now_playing_text"
+		app:layout_constraintBottom_toTopOf="@id/now_playing_progress" />
+
+	<ProgressBar
+		android:id="@+id/now_playing_progress"
+		style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginVertical="@dimen/margin_now_playing_controls"
+		app:layout_constraintBottom_toTopOf="@id/now_playing_btn_play" />
+
+	<ImageButton
+		android:id="@+id/now_playing_btn_shuffle"
+		android:layout_width="56dp"
+		android:layout_height="56dp"
+		android:layout_marginBottom="@dimen/margin_now_playing_controls"
+		android:scaleType="fitXY"
+		android:src="@drawable/ic_shuffle"
 		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintHeight_percent="0.5">
+		app:layout_constraintRight_toLeftOf="@id/now_playing_btn_previous" />
 
-		<TextView
-			android:id="@+id/now_playing_title"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			app:layout_constraintTop_toTopOf="parent" />
+	<ImageButton
+		android:id="@+id/now_playing_btn_previous"
+		android:layout_width="56dp"
+		android:layout_height="56dp"
+		android:layout_marginBottom="@dimen/margin_now_playing_controls"
+		android:scaleType="fitXY"
+		android:src="@drawable/ic_skip_previous"
+		android:tint="@color/colorWhite"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintRight_toLeftOf="@id/now_playing_btn_play" />
 
-		<TextView
-			android:id="@+id/now_playing_artist"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			app:layout_constraintTop_toBottomOf="@+id/now_playing_title" />
+	<ImageButton
+		android:id="@+id/now_playing_btn_play"
+		android:layout_width="56dp"
+		android:layout_height="56dp"
+		android:layout_marginBottom="@dimen/margin_now_playing_controls"
+		android:scaleType="fitXY"
+		android:src="@drawable/ic_play_arrow"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintHorizontal_bias="0.5"
+		app:layout_constraintStart_toStartOf="parent" />
 
-		<TextView
-			android:id="@+id/now_playing_album"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			app:layout_constraintTop_toBottomOf="@+id/now_playing_artist" />
+	<ImageButton
+		android:id="@+id/now_playing_btn_next"
+		android:layout_width="56dp"
+		android:layout_height="56dp"
+		android:layout_marginBottom="@dimen/margin_now_playing_controls"
+		android:scaleType="fitXY"
+		android:src="@drawable/ic_skip_next"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintLeft_toRightOf="@id/now_playing_btn_play" />
 
-		<ProgressBar
-			android:id="@+id/now_playing_progress"
-			style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			app:layout_constraintTop_toBottomOf="@+id/now_playing_album" />
-
-		<ImageButton
-			android:id="@+id/now_playing_btn_shuffle"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:src="@drawable/ic_shuffle_black_24dp"
-			app:layout_constraintBottom_toBottomOf="parent"
-			app:layout_constraintRight_toLeftOf="@id/now_playing_btn_previous"
-			app:layout_constraintTop_toBottomOf="@id/now_playing_progress" />
-
-		<ImageButton
-			android:id="@+id/now_playing_btn_previous"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:src="@drawable/ic_skip_previous_black_24dp"
-			app:layout_constraintBottom_toBottomOf="parent"
-			app:layout_constraintRight_toLeftOf="@id/now_playing_btn_play"
-			app:layout_constraintTop_toBottomOf="@id/now_playing_progress" />
-
-		<ImageButton
-			android:id="@+id/now_playing_btn_play"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:src="@drawable/ic_play_arrow_black_24dp"
-			app:layout_constraintBottom_toBottomOf="parent"
-			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintHorizontal_bias="0.5"
-			app:layout_constraintStart_toStartOf="parent"
-			app:layout_constraintTop_toBottomOf="@id/now_playing_progress" />
-
-		<ImageButton
-			android:id="@+id/now_playing_btn_next"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:src="@drawable/ic_skip_next_black_24dp"
-			app:layout_constraintBottom_toBottomOf="parent"
-			app:layout_constraintLeft_toRightOf="@id/now_playing_btn_play"
-			app:layout_constraintTop_toBottomOf="@id/now_playing_progress" />
-
-		<ImageButton
-			android:id="@+id/now_playing_btn_repeat"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:src="@drawable/ic_repeat_black_24dp"
-			app:layout_constraintBottom_toBottomOf="parent"
-			app:layout_constraintLeft_toRightOf="@id/now_playing_btn_next"
-			app:layout_constraintTop_toBottomOf="@id/now_playing_progress" />
-	</androidx.constraintlayout.widget.ConstraintLayout>
+	<ImageButton
+		android:id="@+id/now_playing_btn_repeat"
+		android:layout_width="56dp"
+		android:layout_height="56dp"
+		android:layout_marginBottom="@dimen/margin_now_playing_controls"
+		android:scaleType="fitXY"
+		android:src="@drawable/ic_repeat"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintLeft_toRightOf="@id/now_playing_btn_next" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -31,11 +31,11 @@
 			android:parentActivityName=".ui.main.MainActivity" />
 		<activity
 			android:name=".ui.SettingActivity"
-			android:label="@string/title_setting"
+			android:label="@string/settings"
 			android:parentActivityName=".ui.main.MainActivity" />
 		<activity
 			android:name=".ui.nowplaying.QueueActivity"
-			android:label="@string/title_queue"
+			android:label="@string/play_queue"
 			android:parentActivityName=".ui.nowplaying.NowPlayingActivity"/>
 
 		<service

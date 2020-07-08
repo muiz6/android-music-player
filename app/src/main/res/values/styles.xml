@@ -1,35 +1,33 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="colorPrimary">@color/colorPrimaryDark</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:textColor">@color/colorWhite</item>
-        <item name="android:textColorSecondary">@color/colorGreyLight</item>
+	<!-- Base application theme. -->
+	<style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+		<item name="colorPrimary">@color/colorBlack2</item>
+		<item name="colorPrimaryDark">@color/colorBlack2</item>
+		<item name="colorAccent">@color/colorYellow</item>
+		<item name="android:textColor">@color/colorWhite</item>
+		<item name="android:textColorSecondary">@color/colorGreyLight</item>
 
-        <item name="android:scrollbarThumbVertical">@drawable/scrollbar_thumb</item>
+		<item name="android:scrollbarThumbVertical">@drawable/scrollbar_thumb</item>
 
-<!--        color at the back of icon buttons-->
-        <item name="backgroundTint">@android:color/transparent</item>
-        <item name="android:colorBackground">?android:attr/colorPrimary</item>
+		<!--color at the back of icon buttons-->
+		<item name="backgroundTint">@android:color/transparent</item>
+		<item name="android:colorBackground">?android:attr/colorPrimary</item>
 
-<!--        for app compact icons only will not work on custom icons unless explicitly applied-->
-        <item name="iconTint">?android:attr/textColor</item>
-        <item name="tabIconTint">?android:attr/textColorSecondary</item>
-    </style>
+		<!--toolbar icon tint-->
+		<item name="iconTint">?android:attr/textColor</item>
 
-    <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
+		<!--default drawable_src/icon color-->
+		<item name="tint">?android:attr/textColor</item>
+	</style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+	<style name="AppTheme.NoActionBar">
+		<item name="windowActionBar">false</item>
+		<item name="windowNoTitle">true</item>
+	</style>
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+	<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="AppTheme.BottomAppBar" parent="Widget.MaterialComponents.BottomAppBar.Colored">
-        <item name="backgroundTint">?attr/colorPrimaryDark</item>
-    </style>
+	<style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 </resources>

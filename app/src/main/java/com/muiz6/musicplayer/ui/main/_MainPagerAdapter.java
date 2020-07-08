@@ -1,13 +1,16 @@
 package com.muiz6.musicplayer.ui.main;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.google.android.material.tabs.TabLayout;
 import com.muiz6.musicplayer.R;
+import com.muiz6.musicplayer.ui.ThemeUtil;
 import com.muiz6.musicplayer.ui.main.songs.SongFragment;
 
 class _MainPagerAdapter extends FragmentPagerAdapter {
@@ -49,18 +52,24 @@ class _MainPagerAdapter extends FragmentPagerAdapter {
 
         // resource ids of desired icons
         int[] icons = {
-            R.drawable.ic_library_music_black_24dp,
-            R.drawable.ic_album_black_24dp,
-            R.drawable.ic_face_black_24dp,
-            R.drawable.ic_folder_black_24dp,
-            R.drawable.ic_queue_music_black_24dp,
-            R.drawable.ic_local_offer_black_24dp
+            R.drawable.ic_library_music,
+            R.drawable.ic_album,
+            R.drawable.ic_face,
+            R.drawable.ic_folder,
+            R.drawable.ic_queue_music,
+            R.drawable.ic_local_offer
         };
 
+        // get textColorSecondary from theme
+        @ColorInt final int color = ThemeUtil.getColor(tabLayout.getContext(),
+                android.R.attr.textColorSecondary);
         for (int i = 0; i < getCount(); i++) {
             final TabLayout.Tab tab = tabLayout.getTabAt(i);
             if (tab !=  null) {
                 tab.setIcon(icons[i]);
+
+                // setting color here because tabIconTint attribute not working
+                DrawableCompat.setTint(tab.getIcon(), color);
             }
         }
     }

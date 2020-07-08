@@ -61,7 +61,7 @@ class _SongAdapter extends RecyclerView.Adapter {
         if (position == 0) {
             final RowSongItemFirstBinding binding = RowSongItemFirstBinding.bind(holder.itemView);
             binding.getRoot()
-                    .setText(holder.itemView.getContext().getString(R.string.tab_song_header));
+                    .setText(holder.itemView.getContext().getString(R.string.all_songs));
         }
         else {
             final RowSongItemBinding binding = RowSongItemBinding.bind(holder.itemView);
