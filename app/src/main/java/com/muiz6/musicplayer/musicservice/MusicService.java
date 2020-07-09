@@ -155,6 +155,7 @@ public class MusicService extends MediaBrowserServiceCompat
 			final MediaSource[] sources = _musicProvider.getQueueBytMediaId(mediaId);
 			if (sources != null) {
 				_player.prepare(new ConcatenatingMediaSource(sources));
+				_player.seekTo(MusicProvider.getIndexFromMediaId(mediaId), 0);
 				_player.setPlayWhenReady(playWhenReady);
 
 				final IntentFilter intentFilter =

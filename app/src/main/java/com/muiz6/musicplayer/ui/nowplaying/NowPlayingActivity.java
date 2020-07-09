@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
@@ -27,9 +28,20 @@ public class NowPlayingActivity extends AppCompatActivity
 		implements MyConnectionCallback.Listener,
 		MyControllerCallback.Listener {
 
+	private final Handler _handler = new Handler();
 	private ActivityNowPlayingBinding _binding;
 	private MediaBrowserCompat _mediaBrowser;
 	private MediaControllerCompat.Callback _controllerCallback;
+	private Runnable _seekBarRunnable = new Runnable() {
+		@Override
+		public void run() {
+			final MediaControllerCompat controller = MediaControllerCompat
+					.getMediaController(NowPlayingActivity.this);
+			int progress = (int) controller.getPlaybackState().getPosition();
+			_binding.nowPlayingSeekBar.setProgress(progress);
+			_handler.postDelayed(this, 34); // at 30Hz
+		}
+	};
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,13 +68,6 @@ public class NowPlayingActivity extends AppCompatActivity
 		super.onStop();
 
 		_mediaBrowser.disconnect();
-	}
-
-	public void onClick(View view) {
-		if (view == _binding.nowPlayingFab) {
-			final Intent intent = new Intent(this, QueueActivity.class);
-			startActivity(intent);
-		}
 	}
 
 	@Override
@@ -132,14 +137,21 @@ public class NowPlayingActivity extends AppCompatActivity
 				if (mode == PlaybackStateCompat.REPEAT_MODE_ALL) {
 					transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_NONE);
 				}
-				else {
+				else if (mode == PlaybackStateCompat.REPEAT_MODE_ONE) {
 					transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL);
+				}
+				else {
+					transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE);
 				}
 			}
 		});
 
 		_updateFromPlaybackState(controller.getPlaybackState());
 		_updateFromMetadata(controller.getMetadata());
+
+		_binding.nowPlayingSeekBar.setOnSeekBarChangeListener(
+				new _SeekBarListener(controller.getTransportControls()));
+		this.runOnUiThread(_seekBarRunnable);
 	}
 
 	@NonNull
@@ -170,6 +182,17 @@ public class NowPlayingActivity extends AppCompatActivity
 		_updateFromMetadata(metadata);
 	}
 
+	// following methods
+	// are specific to
+	// this activity
+
+	public void onClick(View view) {
+		if (view == _binding.nowPlayingFab) {
+			final Intent intent = new Intent(this, QueueActivity.class);
+			startActivity(intent);
+		}
+	}
+
 	private void _updateFromMetadata(MediaMetadataCompat metadata) {
 		if (metadata != null) {
 			final String title = metadata.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE);
@@ -193,6 +216,9 @@ public class NowPlayingActivity extends AppCompatActivity
 				_binding.nowPlayingAlbum.setText(R.string.unknown_album);
 			}
 		}
+		final int duration = (int) MediaControllerCompat.getMediaController(this).getMetadata()
+				.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
+		_binding.nowPlayingSeekBar.setMax(duration);
 	}
 
 	private void _updateFromPlaybackState(PlaybackStateCompat state) {
@@ -211,10 +237,18 @@ public class NowPlayingActivity extends AppCompatActivity
 
 		final int repeatMode = controller.getRepeatMode();
 		if (repeatMode == PlaybackStateCompat.REPEAT_MODE_ALL) {
+			_binding.nowPlayingBtnRepeat
+					.setImageDrawable(getDrawable(R.drawable.ic_repeat));
 			DrawableCompat.setTint(_binding.nowPlayingBtnRepeat.getDrawable(),
 					colorAccent);
 		}
+		else if (repeatMode == PlaybackStateCompat.REPEAT_MODE_ONE) {
+			_binding.nowPlayingBtnRepeat
+					.setImageDrawable(getDrawable(R.drawable.exo_controls_repeat_one));
+		}
 		else {
+			_binding.nowPlayingBtnRepeat
+					.setImageDrawable(getDrawable(R.drawable.ic_repeat));
 			DrawableCompat.setTint(_binding.nowPlayingBtnRepeat.getDrawable(),
 					colorIconDefault);
 		}

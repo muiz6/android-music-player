@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
@@ -7,105 +7,106 @@
 	android:layout_height="match_parent"
 	tools:context=".ui.nowplaying.NowPlayingActivity">
 
-	<View
-		android:id="@+id/imageView2"
-		android:layout_width="match_parent"
-		android:layout_height="0dp"
-		android:background="@color/colorGrey2"
-		app:layout_constraintBottom_toTopOf="@id/now_playing_title"
-		app:layout_constraintTop_toTopOf="parent" />
-
 	<com.google.android.material.floatingactionbutton.FloatingActionButton
 		android:id="@+id/now_playing_fab"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_marginEnd="@dimen/padding_container"
+		android:layout_alignTop="@id/now_playing_container_control"
+		android:layout_alignEnd="@id/now_playing_container_control"
+		android:layout_marginEnd="@dimen/margin_fab"
 		android:onClick="onClick"
 		android:src="@drawable/ic_queue_music"
-		android:translationY="-30dp"
-		app:layout_constraintRight_toRightOf="parent"
-		app:layout_constraintTop_toBottomOf="@id/imageView2" />
+		android:translationY="-30dp" />
 
-	<TextView
-		android:id="@+id/now_playing_title"
+	<androidx.constraintlayout.widget.ConstraintLayout
+		android:id="@+id/now_playing_container_control"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:padding="@dimen/padding_now_playing_text"
-		app:layout_constraintBottom_toTopOf="@id/now_playing_artist" />
+		android:layout_alignParentBottom="true"
+		android:background="@drawable/bottom_bar_bg"
+		android:paddingHorizontal="@dimen/padding_container"
+		android:paddingTop="@dimen/padding_container"
+		android:paddingBottom="@dimen/padding_container_controls_now_playing">
 
-	<TextView
-		android:id="@+id/now_playing_artist"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:paddingHorizontal="@dimen/padding_now_playing_text"
-		app:layout_constraintBottom_toTopOf="@id/now_playing_album" />
+		<TextView
+			android:id="@+id/now_playing_title"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:padding="@dimen/padding_now_playing_text"
+			app:layout_constraintBottom_toTopOf="@id/now_playing_artist" />
 
-	<TextView
-		android:id="@+id/now_playing_album"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:paddingHorizontal="@dimen/padding_now_playing_text"
-		android:paddingTop="@dimen/padding_now_playing_text"
-		app:layout_constraintBottom_toTopOf="@id/now_playing_progress" />
+		<TextView
+			android:id="@+id/now_playing_artist"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingHorizontal="@dimen/padding_now_playing_text"
+			app:layout_constraintBottom_toTopOf="@id/now_playing_album" />
 
-	<ProgressBar
-		android:id="@+id/now_playing_progress"
-		style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginVertical="@dimen/margin_now_playing_controls"
-		app:layout_constraintBottom_toTopOf="@id/now_playing_btn_play" />
+		<TextView
+			android:id="@+id/now_playing_album"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingHorizontal="@dimen/padding_now_playing_text"
+			android:paddingTop="@dimen/padding_now_playing_text"
+			app:layout_constraintBottom_toTopOf="@id/now_playing_seek_bar" />
 
-	<ImageButton
-		android:id="@+id/now_playing_btn_shuffle"
-		android:layout_width="56dp"
-		android:layout_height="56dp"
-		android:layout_marginBottom="@dimen/margin_now_playing_controls"
-		android:scaleType="fitXY"
-		android:src="@drawable/ic_shuffle"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintRight_toLeftOf="@id/now_playing_btn_previous" />
+		<SeekBar
+			android:id="@+id/now_playing_seek_bar"
+			style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:paddingVertical="@dimen/padding_seek_bar_now_playing"
+			app:layout_constraintBottom_toTopOf="@id/now_playing_btn_play" />
 
-	<ImageButton
-		android:id="@+id/now_playing_btn_previous"
-		android:layout_width="56dp"
-		android:layout_height="56dp"
-		android:layout_marginBottom="@dimen/margin_now_playing_controls"
-		android:scaleType="fitXY"
-		android:src="@drawable/ic_skip_previous"
-		android:tint="@color/colorWhite"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintRight_toLeftOf="@id/now_playing_btn_play" />
+		<ImageButton
+			android:id="@+id/now_playing_btn_shuffle"
+			android:layout_width="@dimen/size_icon_now_playing"
+			android:layout_height="@dimen/size_icon_now_playing"
+			android:scaleType="fitXY"
+			android:src="@drawable/ic_shuffle"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintLeft_toLeftOf="parent" />
 
-	<ImageButton
-		android:id="@+id/now_playing_btn_play"
-		android:layout_width="56dp"
-		android:layout_height="56dp"
-		android:layout_marginBottom="@dimen/margin_now_playing_controls"
-		android:scaleType="fitXY"
-		android:src="@drawable/ic_play_arrow"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintEnd_toEndOf="parent"
-		app:layout_constraintHorizontal_bias="0.5"
-		app:layout_constraintStart_toStartOf="parent" />
+		<ImageButton
+			android:id="@+id/now_playing_btn_previous"
+			android:layout_width="@dimen/size_icon_now_playing"
+			android:layout_height="@dimen/size_icon_now_playing"
+			android:scaleType="fitXY"
+			android:src="@drawable/ic_skip_previous"
+			android:tint="@color/colorWhite"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintEnd_toStartOf="@id/now_playing_btn_play"
+			app:layout_constraintStart_toEndOf="@id/now_playing_btn_shuffle" />
 
-	<ImageButton
-		android:id="@+id/now_playing_btn_next"
-		android:layout_width="56dp"
-		android:layout_height="56dp"
-		android:layout_marginBottom="@dimen/margin_now_playing_controls"
-		android:scaleType="fitXY"
-		android:src="@drawable/ic_skip_next"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintLeft_toRightOf="@id/now_playing_btn_play" />
+		<ImageButton
+			android:id="@+id/now_playing_btn_play"
+			android:layout_width="@dimen/size_icon_now_playing"
+			android:layout_height="@dimen/size_icon_now_playing"
+			android:scaleType="fitXY"
+			android:src="@drawable/ic_play_arrow"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintHorizontal_bias="0.5"
+			app:layout_constraintStart_toStartOf="parent" />
 
-	<ImageButton
-		android:id="@+id/now_playing_btn_repeat"
-		android:layout_width="56dp"
-		android:layout_height="56dp"
-		android:layout_marginBottom="@dimen/margin_now_playing_controls"
-		android:scaleType="fitXY"
-		android:src="@drawable/ic_repeat"
-		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintLeft_toRightOf="@id/now_playing_btn_next" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+		<ImageButton
+			android:id="@+id/now_playing_btn_next"
+			android:layout_width="@dimen/size_icon_now_playing"
+			android:layout_height="@dimen/size_icon_now_playing"
+			android:scaleType="fitXY"
+			android:src="@drawable/ic_skip_next"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintEnd_toStartOf="@id/now_playing_btn_repeat"
+			app:layout_constraintStart_toEndOf="@id/now_playing_btn_play" />
+
+		<ImageButton
+			android:id="@+id/now_playing_btn_repeat"
+			android:layout_width="@dimen/size_icon_now_playing"
+			android:layout_height="@dimen/size_icon_now_playing"
+			android:scaleType="fitXY"
+			android:src="@drawable/ic_repeat"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintRight_toRightOf="parent" />
+	</androidx.constraintlayout.widget.ConstraintLayout>
+
+</RelativeLayout>

@@ -38,10 +38,10 @@ public class MainActivity extends AppCompatActivity
 		implements MyConnectionCallback.Listener,
 		MyControllerCallback.Listener {
 
+	private MyControllerCallback _controllerCallback;
 	private static final String _TAG = "MainActivity";
 	private ActivityMainBinding _binding;
 	private MediaBrowserCompat _mediaBrowser;
-	private MediaControllerCompat.Callback _controllerCallback;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

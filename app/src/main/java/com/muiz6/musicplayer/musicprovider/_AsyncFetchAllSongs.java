@@ -84,14 +84,14 @@ class _AsyncFetchAllSongs extends AsyncTask<Void, Void, String> {
             String title,
             String subtitle,
             String description) {
-        _descriptionBuilder.setExtras(null);
-        _descriptionBuilder.setIconBitmap(null);
-        _descriptionBuilder.setIconUri(null);
-        _descriptionBuilder.setMediaId(mediaId);
-        _descriptionBuilder.setMediaUri(mediaUri);
-        _descriptionBuilder.setTitle(title);
-        _descriptionBuilder.setSubtitle(subtitle);
-        _descriptionBuilder.setDescription(description);
+        _descriptionBuilder.setExtras(null)
+                .setIconBitmap(null)
+                .setIconUri(null)
+                .setMediaId(mediaId)
+                .setMediaUri(mediaUri)
+                .setTitle(title)
+                .setSubtitle(subtitle)
+                .setDescription(description);
         return _descriptionBuilder.build();
     }
 }

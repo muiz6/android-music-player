@@ -32,7 +32,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textColor="?android:attr/textColorSecondary"
-        android:textSize="@dimen/text_size_small"
+        android:textSize="@dimen/size_text_small"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintLeft_toRightOf="@+id/row_song_item_icon"

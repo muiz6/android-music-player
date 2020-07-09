@@ -1,6 +1,7 @@
 package com.muiz6.musicplayer.musicprovider;
 
 import android.net.Uri;
+import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaBrowserCompat.MediaItem;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -51,6 +52,32 @@ public class MusicProvider implements MediaSessionConnector.MediaMetadataProvide
 		new _AsyncFetchAllSongs(new WeakReference<>(service), _allSongList).execute();
 	}
 
+	@NonNull
+	@Override
+	public MediaMetadataCompat getMetadata(@NonNull Player player) {
+
+		// mod to prevent array out of bounds exception
+		int index = (player.getCurrentWindowIndex() + _offset) % _allSongList.size();
+		final MediaMetadataCompat.Builder builder = new MediaMetadataCompat.Builder();
+		final MediaItem mediaItem = _allSongList.get(index);
+		final CharSequence title = mediaItem.getDescription().getTitle();
+		final CharSequence artist = mediaItem.getDescription().getSubtitle();
+		final CharSequence album = mediaItem.getDescription().getDescription();
+		if (title != null) {
+			builder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, title.toString())
+					.putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, title.toString());
+		}
+		if (artist != null) {
+			builder.putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE, artist.toString())
+					.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist.toString());
+		}
+		if (album != null) {
+			builder.putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, album.toString())
+					.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, album.toString());
+		}
+		return builder.build();
+	}
+
 	public static MusicProvider getInstance(MediaBrowserServiceCompat service) {
 		if (_instance == null) {
 			_instance = new MusicProvider(service);
@@ -60,6 +87,10 @@ public class MusicProvider implements MediaSessionConnector.MediaMetadataProvide
 
 	public static BrowserRoot getBrowserRoot() {
 		return new BrowserRoot(MEDIA_ID_ROOT, null);
+	}
+
+	public static int getIndexFromMediaId(String mediaId) {
+		return Integer.parseInt(mediaId.substring(mediaId.indexOf('.') + 1));
 	}
 
 	/**
@@ -99,61 +130,28 @@ public class MusicProvider implements MediaSessionConnector.MediaMetadataProvide
 		return null;
 	}
 
+	// following method
+	// belong to
+	// MediaSessionConnector.MediaMetadataProvider
+
 	@Nullable
 	public MediaSource[] getQueueBytMediaId(String mediaId) {
 
-		// todo: parse int in separate method for readability
-		final int mediaIndex = Integer.parseInt(mediaId.substring(mediaId.indexOf('.') + 1));
-		_offset = mediaIndex;
+		// todo: use media id to provide queue
 		if (_allSongList.size() > 0) {
 			final MediaSource[] sources = new MediaSource[_allSongList.size()];
 			final DataSource.Factory dataSourceFactory =
 					new DefaultDataSourceFactory(_service, "exoplayer-codelab");
 			final MediaSourceFactory factory = new ProgressiveMediaSource.Factory(dataSourceFactory);
-			int queueIndex = 0;
-
-			// start queue from the selected media item and add previous songs at the end of queue
-			for (int i = mediaIndex; i < sources.length; i++, queueIndex++) {
-				sources[queueIndex] = factory
-						.createMediaSource(_allSongList.get(i).getDescription().getMediaUri());
-			}
-			for (int i = 0; i < mediaIndex; i++, queueIndex++) {
-				sources[queueIndex] = factory
-						.createMediaSource(_allSongList.get(i).getDescription().getMediaUri());
+			int i = 0;
+			for (final MediaBrowserCompat.MediaItem mediaItem : _allSongList) {
+				sources[i] = factory
+						.createMediaSource(mediaItem.getDescription().getMediaUri());
+				i++;
 			}
 			return sources;
 		}
 		return null;
-	}
-
-	// following method
-	// belong to
-	// MediaSessionConnector.MediaMetadataProvider
-
-	@NonNull
-	@Override
-	public MediaMetadataCompat getMetadata(@NonNull Player player) {
-
-		// mod to prevent array out of bounds exception
-		int index = (player.getCurrentWindowIndex() + _offset) % _allSongList.size();
-		final MediaMetadataCompat.Builder builder = new MediaMetadataCompat.Builder();
-		final MediaItem mediaItem = _allSongList.get(index);
-		final CharSequence title = mediaItem.getDescription().getTitle();
-		final CharSequence artist = mediaItem.getDescription().getSubtitle();
-		final CharSequence album = mediaItem.getDescription().getDescription();
-		if (title != null) {
-			builder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, title.toString())
-					.putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, title.toString());
-		}
-		if (artist != null) {
-			builder.putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE, artist.toString())
-					.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist.toString());
-		}
-		if (album != null) {
-			builder.putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION, album.toString())
-					.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, album.toString());
-		}
-		return builder.build();
 	}
 
 	public MediaSessionConnector.QueueNavigator getQueueNavigator(MediaSessionCompat session) {
