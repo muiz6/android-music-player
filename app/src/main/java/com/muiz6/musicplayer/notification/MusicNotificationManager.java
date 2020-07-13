@@ -4,7 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 
 import com.google.android.exoplayer2.ui.PlayerNotificationManager;
-import com.muiz6.musicplayer.App;
+import com.muiz6.musicplayer.MyApp;
 import com.muiz6.musicplayer.R;
 
 public class MusicNotificationManager extends PlayerNotificationManager {
@@ -12,7 +12,7 @@ public class MusicNotificationManager extends PlayerNotificationManager {
 	public MusicNotificationManager(Context context,
 			MediaDescriptionAdapter description,
 			NotificationListener listener) {
-		super(context, App.NOTIFICATION_CHANNEL_ID, App.NOTIFICATION_ID_PLAYER, description,
+		super(context, MyApp.NOTIFICATION_CHANNEL_ID, MyApp.NOTIFICATION_ID_PLAYER, description,
 				listener);
 
 		setColor(Color.BLACK);

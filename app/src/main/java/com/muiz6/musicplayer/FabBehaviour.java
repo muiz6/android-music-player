@@ -9,39 +9,41 @@ import androidx.viewpager.widget.ViewPager;
 
 public class FabBehaviour extends CoordinatorLayout.Behavior<View> {
 
-    private float _max = 0;
+	private float _max = 0;
 
-    // necessary constructors
-    public FabBehaviour() {}
+	// necessary constructors
+	public FabBehaviour() {}
 
-    public FabBehaviour(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
+	public FabBehaviour(Context context, AttributeSet attrs) {
+		super(context, attrs);
+	}
 
-    @Override
-    public boolean layoutDependsOn(CoordinatorLayout parent, View child, View dependency) {
-        return dependency instanceof  ViewPager;
-    }
+	@Override
+	public boolean layoutDependsOn(CoordinatorLayout parent, View child, View dependency) {
+		return dependency instanceof ViewPager;
+	}
 
-    @Override
-    public boolean onDependentViewChanged(CoordinatorLayout parent, final View child, final View dependency) {
-        if (dependency != null) {
-            float translation = dependency.getY();
-            if (translation > _max) _max = translation;
+	@Override
+	public boolean onDependentViewChanged(CoordinatorLayout parent, final View child, final View dependency) {
+		if (dependency != null) {
+			float translation = dependency.getY();
+			if (translation > _max) {
+				_max = translation;
+			}
 
-            if (translation < _max) {
-                child.setVisibility(View.INVISIBLE);
-            }
-            else {
-                child.setVisibility(View.VISIBLE);
-            }
+			if (translation < _max) {
+				child.setVisibility(View.INVISIBLE);
+			}
+			else {
+				child.setVisibility(View.VISIBLE);
+			}
 
-            child.requestLayout();
+			child.requestLayout();
 
-            return true;
-        }
+			return true;
+		}
 
-        // else
-        return false;
-    }
+		// else
+		return false;
+	}
 }

@@ -13,7 +13,9 @@ import android.support.v4.media.session.PlaybackStateCompat;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.media.MediaBrowserServiceCompat;
+import androidx.navigation.NavDeepLinkBuilder;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ControlDispatcher;
@@ -24,19 +26,20 @@ import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector;
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.ui.PlayerNotificationManager;
+import com.muiz6.musicplayer.R;
 import com.muiz6.musicplayer.musicprovider.MusicProvider;
 import com.muiz6.musicplayer.notification.DescriptionAdapter;
 import com.muiz6.musicplayer.notification.MusicNotificationManager;
-import com.muiz6.musicplayer.ui.nowplaying.NowPlayingActivity;
 
 import java.util.List;
 
 // overriding onBind() will result in media browser not binding to service
 public class MusicService extends MediaBrowserServiceCompat
-	implements MediaSessionConnector.PlaybackPreparer {
+		implements MediaSessionConnector.PlaybackPreparer {
 
 	private static final String _TAG = "MusicService";
 	private final MusicProvider _musicProvider;
+	// @Inject MusicProvider _musicProvider;
 	private MediaSessionCompat _session;
 	private MediaSessionConnector _sessionConnector;
 	private SimpleExoPlayer _player;
@@ -44,14 +47,13 @@ public class MusicService extends MediaBrowserServiceCompat
 	private _NoisyReceiver _noisyReceiver;
 
 	public MusicService() {
-
 		_musicProvider = MusicProvider.getInstance(this);
 	}
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		
+
 		// initializing media session
 		_session = new MediaSessionCompat(this, _TAG);
 		this.setSessionToken(_session.getSessionToken());
@@ -65,9 +67,13 @@ public class MusicService extends MediaBrowserServiceCompat
 
 		// session activity needed for notification click action
 		// todo: look into request codes
-		final Intent intent = new Intent(this, NowPlayingActivity.class);
-		_session.setSessionActivity(PendingIntent.getActivity(this, 0,
-				intent, PendingIntent.FLAG_UPDATE_CURRENT));
+		final PendingIntent intent = new NavDeepLinkBuilder(this)
+				.setGraph(R.navigation.navigation_main)
+				.setDestination(R.id.main_player_fragment)
+				.createPendingIntent();
+		// _session.setSessionActivity(PendingIntent.getActivity(this, 0,
+		// 		intent, PendingIntent.FLAG_UPDATE_CURRENT));
+		_session.setSessionActivity(intent);
 
 		_noisyReceiver = new _NoisyReceiver(_session.getController());
 
@@ -115,6 +121,7 @@ public class MusicService extends MediaBrowserServiceCompat
 
 		// stop playback and related processes
 		_session.getController().getTransportControls().stop();
+		NotificationManagerCompat.from(this).cancelAll();
 		super.onDestroy();
 	}
 
@@ -183,9 +190,4 @@ public class MusicService extends MediaBrowserServiceCompat
 			@Nullable ResultReceiver cb) {
 		return false;
 	}
-
-	//
-	//
-	//
-
 }

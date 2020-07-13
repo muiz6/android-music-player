@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+
+	<com.google.android.material.appbar.AppBarLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:theme="@style/AppTheme.AppBarOverlay">
+
+		<androidx.appcompat.widget.Toolbar
+			android:id="@+id/main_toolbar"
+			android:layout_width="match_parent"
+			android:layout_height="?attr/actionBarSize"
+			app:layout_scrollFlags="scroll|snap|enterAlways"
+			app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+		<com.google.android.material.tabs.TabLayout
+			android:id="@+id/main_tab_layout"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			app:tabGravity="fill"
+			app:tabIconTint="?android:attr/textColorSecondary"
+			app:tabMode="fixed" />
+	</com.google.android.material.appbar.AppBarLayout>
+
+	<!--viewpager1 is causing a crash with navigation component-->
+	<androidx.viewpager2.widget.ViewPager2
+		android:id="@+id/main_view_pager"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
+
+	<com.google.android.material.floatingactionbutton.FloatingActionButton
+		android:id="@+id/main_fab"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="bottom|end"
+		android:layout_margin="@dimen/margin_fab"
+		android:src="@drawable/ic_shuffle"
+		app:layout_dodgeInsetEdges="bottom" />
+
+	<LinearLayout
+		android:id="@+id/main_bottom_bar"
+		android:layout_width="match_parent"
+		android:layout_height="?attr/actionBarSize"
+		android:layout_gravity="bottom"
+		android:background="@drawable/bottom_bar_bg"
+		android:visibility="invisible"
+		app:layout_insetEdge="bottom">
+
+		<TextView
+			android:id="@+id/main_bottom_bar_song_title"
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
+			android:ellipsize="marquee"
+			android:fadingEdge="horizontal"
+			android:gravity="center"
+
+			android:marqueeRepeatLimit="marquee_forever"
+			android:paddingStart="5dp"
+			android:scrollHorizontally="true"
+			android:singleLine="true" />
+
+		<ImageButton
+			android:id="@+id/main_bottom_bar_btn_previous"
+			android:layout_width="50dp"
+			android:layout_height="match_parent"
+			android:src="@drawable/ic_skip_previous" />
+
+		<ImageButton
+			android:id="@+id/main_bottom_bar_btn_play_pause"
+			android:layout_width="50dp"
+			android:layout_height="match_parent"
+			android:src="@drawable/ic_play_arrow" />
+
+		<ImageButton
+			android:id="@+id/main_bottom_bar_btn_next"
+			android:layout_width="50dp"
+			android:layout_height="match_parent"
+			android:src="@drawable/ic_skip_next" />
+	</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

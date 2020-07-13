@@ -1,5 +1,6 @@
 package com.muiz6.musicplayer.musicprovider;
 
+import android.content.Context;
 import android.net.Uri;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaBrowserCompat.MediaItem;
@@ -20,12 +21,13 @@ import com.google.android.exoplayer2.source.MediaSourceFactory;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.muiz6.musicplayer.di.scope.ApplicationScope;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-// singleton pattern
+@ApplicationScope
 public class MusicProvider implements MediaSessionConnector.MediaMetadataProvider {
 
 	public static final String MEDIA_ID_ALL_SONGS = "allSongs";
@@ -41,12 +43,12 @@ public class MusicProvider implements MediaSessionConnector.MediaMetadataProvide
 			new MediaDescriptionCompat.Builder();
 	private static MusicProvider _instance;
 	private final List<MediaItem> _allSongList = new ArrayList<>();
-	private final MediaBrowserServiceCompat _service;
-	private int _offset; // offset of player track with all songs list
+	private final Context _context;
+	// private final AsyncFetch _asyncFetch;
 
-	// singleton pattern
-	private MusicProvider(MediaBrowserServiceCompat service) {
-		_service = service;
+	public MusicProvider(MediaBrowserServiceCompat service) {
+		_context = service;
+		// _asyncFetch = asyncFetch;
 
 		// fetch music library when provider is created
 		new _AsyncFetchAllSongs(new WeakReference<>(service), _allSongList).execute();
@@ -55,9 +57,7 @@ public class MusicProvider implements MediaSessionConnector.MediaMetadataProvide
 	@NonNull
 	@Override
 	public MediaMetadataCompat getMetadata(@NonNull Player player) {
-
-		// mod to prevent array out of bounds exception
-		int index = (player.getCurrentWindowIndex() + _offset) % _allSongList.size();
+		int index = player.getCurrentWindowIndex();
 		final MediaMetadataCompat.Builder builder = new MediaMetadataCompat.Builder();
 		final MediaItem mediaItem = _allSongList.get(index);
 		final CharSequence title = mediaItem.getDescription().getTitle();
@@ -94,7 +94,6 @@ public class MusicProvider implements MediaSessionConnector.MediaMetadataProvide
 	}
 
 	/**
-	 *
 	 * @param mediaId id of the parent media item
 	 * @return list of child media items, empty if parent item is not browsable or invalid
 	 */
@@ -120,7 +119,7 @@ public class MusicProvider implements MediaSessionConnector.MediaMetadataProvide
 
 	@Nullable
 	public MediaItem getMediaItemById(String mediaId) {
-		for (final MediaItem i:_allSongList) {
+		for (final MediaItem i : _allSongList) {
 			if (i.getMediaId().equals(mediaId)) {
 				return i;
 			}
@@ -141,7 +140,7 @@ public class MusicProvider implements MediaSessionConnector.MediaMetadataProvide
 		if (_allSongList.size() > 0) {
 			final MediaSource[] sources = new MediaSource[_allSongList.size()];
 			final DataSource.Factory dataSourceFactory =
-					new DefaultDataSourceFactory(_service, "exoplayer-codelab");
+					new DefaultDataSourceFactory(_context, "exoplayer-codelab");
 			final MediaSourceFactory factory = new ProgressiveMediaSource.Factory(dataSourceFactory);
 			int i = 0;
 			for (final MediaBrowserCompat.MediaItem mediaItem : _allSongList) {
@@ -161,8 +160,7 @@ public class MusicProvider implements MediaSessionConnector.MediaMetadataProvide
 			@Override
 			public MediaDescriptionCompat getMediaDescription(@NonNull Player player,
 					int windowIndex) {
-				final int index = (windowIndex + _offset) % _allSongList.size();
-				return _allSongList.get(index).getDescription();
+				return _allSongList.get(windowIndex).getDescription();
 			}
 		};
 	}

@@ -14,32 +14,30 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 public class PlaceholderFragment extends Fragment {
-    private LinearLayout _view;
+	private LinearLayout _view;
 
-    public PlaceholderFragment() {
-//        required public constructor
-    }
+	// public ctor for framework
+	public PlaceholderFragment() {}
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        this._view = new LinearLayout(context);
-        this._view.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT
-        ));
-        this._view.setGravity(Gravity.CENTER);
-        TextView txt = new TextView(context);
-        txt.setText("Text");
-        txt.setTextColor(0xFFFFFFFF);
-        this._view.addView(txt);
-    }
+	@Override
+	public void onAttach(Context context) {
+		super.onAttach(context);
+		this._view = new LinearLayout(context);
+		this._view.setLayoutParams(new LinearLayout.LayoutParams(
+				LinearLayout.LayoutParams.MATCH_PARENT,
+				LinearLayout.LayoutParams.MATCH_PARENT
+		));
+		this._view.setGravity(Gravity.CENTER);
+		TextView txt = new TextView(context);
+		txt.setText("Placeholder Fragment");
+		this._view.addView(txt);
+	}
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+	@Nullable
+	@Override
+	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 //        return super.onCreateView(inflater, container, savedInstanceState);
 
-        return this._view;
-    }
+		return this._view;
+	}
 }
