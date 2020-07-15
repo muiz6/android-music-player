@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
-		((MyApp) getApplication()).getAppComponent().getMainActivityComponent().inject(this);
+		((MyApp) getApplication()).getAppComponent().getMainComponent().create(this).inject(this);
 		getSupportFragmentManager().setFragmentFactory(factory);
 		super.onCreate(savedInstanceState);
 

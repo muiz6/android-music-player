@@ -25,6 +25,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.muiz6.musicplayer.R;
 import com.muiz6.musicplayer.databinding.FragmentMainBinding;
@@ -39,21 +40,27 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 @FragmentScope
-public class MainFragment extends MediaBrowserFragment {
+public class HomeFragment extends MediaBrowserFragment {
 
 	private final MediaBrowserCompat _mediaBrowser;
 	private final FragmentFactory _fragmentFactory;
+	private final TabLayoutMediator.TabConfigurationStrategy _tabMediatorStrategy;
+	private final TabLayout.OnTabSelectedListener _tabListener;
 	private FragmentMainBinding _binding; // only available on runtime
 
 	// arged ctor for fragment factory
 	@Inject
-	public MainFragment(MediaBrowserCompat mediaBrowser,
+	public HomeFragment(MediaBrowserCompat mediaBrowser,
 			MediaConnectionCallback connectionCallback,
 			MediaControllerCallback controllerCallback,
-			@Named("MainFragment") FragmentFactory factory) {
+			@Named("HomeFragment") FragmentFactory factory,
+			TabLayoutMediator.TabConfigurationStrategy tabMediatorStrategy,
+			TabLayout.OnTabSelectedListener tabListener) {
 		super(mediaBrowser, connectionCallback, controllerCallback);
 		_mediaBrowser = mediaBrowser;
 		_fragmentFactory = factory;
+		_tabMediatorStrategy = tabMediatorStrategy;
+		_tabListener = tabListener;
 	}
 
 	@Override
@@ -97,12 +104,11 @@ public class MainFragment extends MediaBrowserFragment {
 		});
 
 		// setup tab layout
-		final _MainPagerAdapter pagerAdapter = new _MainPagerAdapter(this, _mediaBrowser);
-		_binding.mainViewPager.setAdapter(pagerAdapter);
+		_binding.mainViewPager.setAdapter(new HomePagerAdapter(this, _mediaBrowser));
 		new TabLayoutMediator(_binding.mainTabLayout,
 				_binding.mainViewPager,
-				new _TabMediator(getContext())).attach();
-		_binding.mainTabLayout.addOnTabSelectedListener(new _TabListener(getContext()));
+				_tabMediatorStrategy).attach();
+		_binding.mainTabLayout.addOnTabSelectedListener(_tabListener);
 	}
 
 	@Override
@@ -170,14 +176,17 @@ public class MainFragment extends MediaBrowserFragment {
 	private void _updateFromPlaybackState(PlaybackStateCompat pbState) {
 		if (pbState != null) {
 			final ImageButton btn = _binding.mainBottomBarBtnPlayPause;
-			Drawable icon = getContext().getDrawable(R.drawable.ic_play_arrow);
-			int color = ThemeUtil.getColor(getContext(), R.attr.tint);
-			if (pbState.getState() == PlaybackStateCompat.STATE_PLAYING) {
-				color = ThemeUtil.getColor(getContext(), R.attr.colorAccent);
-				icon = getContext().getDrawable(R.drawable.ic_pause);
+			final Context context = getContext();
+			if (context != null) {
+				Drawable icon = context.getDrawable(R.drawable.ic_play_arrow);
+				int color = ThemeUtil.getColor(getContext(), R.attr.tint);
+				if (pbState.getState() == PlaybackStateCompat.STATE_PLAYING) {
+					color = ThemeUtil.getColor(getContext(), R.attr.colorAccent);
+					icon = context.getDrawable(R.drawable.ic_pause);
+				}
+				btn.setImageDrawable(icon);
+				DrawableCompat.setTint(btn.getDrawable(), color);
 			}
-			btn.setImageDrawable(icon);
-			DrawableCompat.setTint(btn.getDrawable(), color);
 		}
 	}
 

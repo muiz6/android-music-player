@@ -8,7 +8,7 @@
 
 	<fragment
 		android:id="@+id/main_home_fragment"
-		android:name="com.muiz6.musicplayer.ui.main.home.MainFragment"
+		android:name="com.muiz6.musicplayer.ui.main.home.HomeFragment"
 		android:label="@string/app_name"
 		tools:layout="@layout/fragment_main">
 		<action

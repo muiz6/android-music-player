@@ -18,7 +18,7 @@ public class MyApp extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		_appComponent = DaggerAppComponent.factory().create(this);
+		_appComponent = DaggerAppComponent.factory().create();
 
 		_createNotificationChannel();
 	}

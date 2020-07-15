@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.di;
+package com.muiz6.musicplayer.di.main.home;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -18,7 +18,7 @@ public abstract class TabFragmentFactoryModule {
 
 	@Provides
 	@FragmentScope
-	@Named("MainFragment")
+	@Named("HomeFragment")
 	static FragmentFactory provideTabFragmentFactory(final Provider<SongFragment> provider) {
 		return new FragmentFactory() {
 

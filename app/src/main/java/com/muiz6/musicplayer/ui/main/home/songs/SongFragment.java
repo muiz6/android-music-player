@@ -3,7 +3,6 @@ package com.muiz6.musicplayer.ui.main.home.songs;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
-import android.support.v4.media.session.MediaControllerCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,9 +24,8 @@ public class SongFragment extends Fragment {
 
 	private static final String _TAG = "SongFragment";
 	private final MediaBrowserCompat _mediaBrowser;
-	private MediaControllerCompat _mediaController;
 	private RecyclerView _recyclerView;
-	private _SongAdapter _songListRecyclerAdapter;
+	private SongAdapter _songListRecyclerAdapter;
 	private ArrayList<MediaBrowserCompat.MediaItem> _songList;
 
 	// public arged ctor to use with fragment factory
@@ -49,7 +47,7 @@ public class SongFragment extends Fragment {
 		_songList = new ArrayList<>();
 
 		// initializing adapter with empty songlist
-		_songListRecyclerAdapter = new _SongAdapter(_songList, _mediaBrowser);
+		_songListRecyclerAdapter = new SongAdapter(_songList, _mediaBrowser);
 		_recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_list, container, false);
 		_recyclerView.setAdapter(_songListRecyclerAdapter);
 		return _recyclerView;

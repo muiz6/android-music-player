@@ -10,7 +10,9 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import com.muiz6.musicplayer.R;
 import com.muiz6.musicplayer.ui.ThemeUtil;
 
-class _TabMediator implements TabLayoutMediator.TabConfigurationStrategy {
+import javax.inject.Inject;
+
+public class TabMediatorStrategy implements TabLayoutMediator.TabConfigurationStrategy {
 
 	private static final int[] _ICONS = {
 			R.drawable.ic_library_music,
@@ -21,7 +23,8 @@ class _TabMediator implements TabLayoutMediator.TabConfigurationStrategy {
 	};
 	private Context _context;
 
-	public _TabMediator(Context context) {
+	@Inject
+	public TabMediatorStrategy(Context context) {
 		_context = context;
 	}
 

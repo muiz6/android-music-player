@@ -12,12 +12,12 @@ import com.muiz6.musicplayer.ui.ThemeUtil;
 
 import javax.inject.Inject;
 
-class _TabListener implements TabLayout.OnTabSelectedListener {
+public class TabListener implements TabLayout.OnTabSelectedListener {
 
 	private final Context _context;
 
 	@Inject
-	public _TabListener(Context context) {
+	public TabListener(Context context) {
 		_context = context;
 	}
 

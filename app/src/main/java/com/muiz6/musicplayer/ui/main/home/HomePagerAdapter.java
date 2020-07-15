@@ -9,11 +9,11 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import com.muiz6.musicplayer.ui.main.PlaceholderFragment;
 import com.muiz6.musicplayer.ui.main.home.songs.SongFragment;
 
-class _MainPagerAdapter extends FragmentStateAdapter {
+public class HomePagerAdapter extends FragmentStateAdapter {
 
 	private final MediaBrowserCompat _mediaBrowser;
 
-	public _MainPagerAdapter(@NonNull Fragment fragment, MediaBrowserCompat mediaBrowser) {
+	public HomePagerAdapter(@NonNull Fragment fragment, MediaBrowserCompat mediaBrowser) {
 		super(fragment);
 
 		_mediaBrowser = mediaBrowser;
@@ -36,11 +36,11 @@ class _MainPagerAdapter extends FragmentStateAdapter {
 	}
 }
 
-// class _MainPagerAdapter extends FragmentPagerAdapter {
+// class HomePagerAdapter extends FragmentPagerAdapter {
 //
 // 	private final MediaBrowserCompat _mediaBrowser;
 //
-// 	public _MainPagerAdapter(@NonNull FragmentManager fm, MediaBrowserCompat mediaBrowser) {
+// 	public HomePagerAdapter(@NonNull FragmentManager fm, MediaBrowserCompat mediaBrowser) {
 // 		super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
 //
 // 		_mediaBrowser = mediaBrowser;

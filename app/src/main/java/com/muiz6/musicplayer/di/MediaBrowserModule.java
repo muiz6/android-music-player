@@ -14,12 +14,18 @@ import dagger.Provides;
 @Module
 public abstract class MediaBrowserModule {
 
+	@Provides
+	static ComponentName provideComponentName(Context context) {
+		return new ComponentName(context, MusicService.class);
+	}
+
 	@FragmentScope
 	@Provides
 	static MediaBrowserCompat provideMediaBrowser(Context context,
-			MediaConnectionCallback connectionCallback) {
+			MediaConnectionCallback connectionCallback,
+			ComponentName componentName) {
 		return new MediaBrowserCompat(context,
-				new ComponentName(context, MusicService.class),
+				componentName,
 				connectionCallback,
 				null);
 	}

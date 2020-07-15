@@ -3,9 +3,9 @@ package com.muiz6.musicplayer.ui.main.nowplaying;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
-import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,44 +16,50 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.muiz6.musicplayer.R;
 import com.muiz6.musicplayer.databinding.FragmentPlayerBinding;
+import com.muiz6.musicplayer.di.scope.FragmentScope;
+import com.muiz6.musicplayer.media.MediaConnectionCallback;
 import com.muiz6.musicplayer.media.MediaControllerCallback;
 import com.muiz6.musicplayer.ui.ThemeUtil;
+import com.muiz6.musicplayer.ui.main.MediaBrowserFragment;
 
-import java.util.List;
+import javax.inject.Inject;
 
-public class PlayerFragment extends Fragment
-	implements MediaControllerCallback.Listener,
-	SeekBar.OnSeekBarChangeListener {
+@FragmentScope
+public class PlayerFragment extends MediaBrowserFragment
+		implements SeekBar.OnSeekBarChangeListener {
 
 	private final Handler _handler = new Handler();
-	private final MediaControllerCallback _mediaControllerCallback =
-			new MediaControllerCallback();
-	private MediaControllerCompat _mediaController;
+	private final MediaControllerCallback _mediaControllerCallback;
 	private FragmentPlayerBinding _binding;
 	private Runnable _seekBarRunnable = new Runnable() {
 		@Override
 		public void run() {
-			int progress = (int) _mediaController.getPlaybackState().getPosition();
+			int progress = (int) getMediaController().getPlaybackState().getPosition();
 			_binding.nowPlayingSeekBar.setProgress(progress);
 			_handler.postDelayed(this, 34); // at 30Hz
 		}
 	};
 
-	// public ctor for framework
-	public PlayerFragment() {}
+	// arg ctor for fragment factory
+	@Inject
+	public PlayerFragment(MediaBrowserCompat mediaBrowser,
+			MediaConnectionCallback connectionCallback,
+			MediaControllerCallback controllerCallback) {
+		super(mediaBrowser, connectionCallback, controllerCallback);
+
+		_mediaControllerCallback = controllerCallback;
+	}
 
 	@Override
 	public void onAttach(@NonNull Context context) {
 		super.onAttach(context);
 
 		_mediaControllerCallback.addListener(this);
-		_mediaController = MediaControllerCompat.getMediaController(getActivity());
 	}
 
 	@Nullable
@@ -79,11 +85,12 @@ public class PlayerFragment extends Fragment
 			}
 		});
 
-		if (_mediaController != null) {
-			_mediaController.registerCallback(_mediaControllerCallback);
+		final MediaControllerCompat mediaController = getMediaController();
+		if (mediaController != null) {
+			mediaController.registerCallback(_mediaControllerCallback);
 			_buildTransportControls();
-			_updateFromMetadata(_mediaController.getMetadata());
-			_updateFromPlaybackState(_mediaController.getPlaybackState());
+			_updateFromMetadata(mediaController.getMetadata());
+			_updateFromPlaybackState(mediaController.getPlaybackState());
 
 			_binding.nowPlayingSeekBar.setOnSeekBarChangeListener(this);
 
@@ -96,10 +103,24 @@ public class PlayerFragment extends Fragment
 	public void onDestroyView() {
 		super.onDestroyView();
 
-		if (_mediaController != null) {
-			_mediaController.unregisterCallback(_mediaControllerCallback);
-		}
 		_binding = null;
+	}
+
+	// following methods
+	// belong to
+	// MediaConnectionCallback.Listener
+
+	@Override
+	public void onConnected() {
+		super.onConnected();
+
+		final MediaControllerCompat mediaController = getMediaController();
+		if (mediaController != null) {
+			_updateFromMetadata(mediaController.getMetadata());
+			_updateFromPlaybackState(mediaController.getPlaybackState());
+			_updateFromShuffleMode(mediaController.getShuffleMode());
+			_updateFromRepeatMode(mediaController.getRepeatMode());
+		}
 	}
 
 	// following methods
@@ -117,63 +138,43 @@ public class PlayerFragment extends Fragment
 	}
 
 	@Override
-	public void onSessionReady() {
-
-	}
-
-	@Override
-	public void onSessionDestroyed() {
-
-	}
-
-	@Override
-	public void onSessionEvent(String event, Bundle extras) {
-
-	}
-
-	@Override
-	public void onQueueChanged(List<MediaSessionCompat.QueueItem> queue) {
-
-	}
-
-	@Override
-	public void onQueueTitleChanged(CharSequence title) {
-
-	}
-
-	@Override
-	public void onExtrasChanged(Bundle extras) {
-
-	}
-
-	@Override
-	public void onAudioInfoChanged(MediaControllerCompat.PlaybackInfo info) {
-
-	}
-
-	@Override
-	public void onCaptioningEnabledChanged(boolean enabled) {
-
-	}
-
-	@Override
 	public void onRepeatModeChanged(int repeatMode) {
-
+		_updateFromRepeatMode(repeatMode);
 	}
 
 	@Override
 	public void onShuffleModeChanged(int shuffleMode) {
-
+		_updateFromShuffleMode(shuffleMode);
 	}
+
+	// following methods
+	// belong to
+	// SeekBar.OnSeekBarChangeListener
+
+	@Override
+	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+		if (fromUser) {
+			final MediaControllerCompat mediaController = getMediaController();
+			if (mediaController != null) {
+				mediaController.getTransportControls().seekTo(progress);
+			}
+		}
+	}
+
+	@Override
+	public void onStartTrackingTouch(SeekBar seekBar) {}
+
+	@Override
+	public void onStopTrackingTouch(SeekBar seekBar) {}
 
 	private void _buildTransportControls() {
 		final MediaControllerCompat.TransportControls transportControls =
-				_mediaController.getTransportControls();
+				getMediaController().getTransportControls();
 		_binding.nowPlayingBtnPlay.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				final PlaybackStateCompat pbState = _mediaController.getPlaybackState();
+				final PlaybackStateCompat pbState = getMediaController().getPlaybackState();
 				if (pbState != null) {
 					if (pbState.getState() == PlaybackStateCompat.STATE_PLAYING) {
 						transportControls.pause();
@@ -197,7 +198,7 @@ public class PlayerFragment extends Fragment
 
 			@Override
 			public void onClick(View v) {
-				final int mode = _mediaController.getShuffleMode();
+				final int mode = getMediaController().getShuffleMode();
 				if (mode == PlaybackStateCompat.SHUFFLE_MODE_ALL) {
 					transportControls.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_NONE);
 				}
@@ -227,7 +228,7 @@ public class PlayerFragment extends Fragment
 
 			@Override
 			public void onClick(View v) {
-				final int mode = _mediaController.getRepeatMode();
+				final int mode = getMediaController().getRepeatMode();
 				if (mode == PlaybackStateCompat.REPEAT_MODE_ALL) {
 					transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_NONE);
 				}
@@ -240,23 +241,6 @@ public class PlayerFragment extends Fragment
 			}
 		});
 	}
-
-	// following methods
-	// belong to
-	// SeekBar.OnSeekBarChangeListener
-
-	@Override
-	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-		if (fromUser) {
-			_mediaController.getTransportControls().seekTo(progress);
-		}
-	}
-
-	@Override
-	public void onStartTrackingTouch(SeekBar seekBar) {}
-
-	@Override
-	public void onStopTrackingTouch(SeekBar seekBar) {}
 
 	private void _updateFromMetadata(MediaMetadataCompat metadata) {
 		if (metadata != null) {
@@ -281,13 +265,31 @@ public class PlayerFragment extends Fragment
 				_binding.nowPlayingAlbum.setText(R.string.unknown_album);
 			}
 		}
-		final int duration = (int) _mediaController.getMetadata()
+		final int duration = (int) getMediaController().getMetadata()
 				.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
 		_binding.nowPlayingSeekBar.setMax(duration);
 	}
 
 	private void _updateFromPlaybackState(PlaybackStateCompat state) {
-		final int shuffleMode = _mediaController.getShuffleMode();
+		final int colorAccent = ThemeUtil.getColor(getContext(), R.attr.colorAccent);
+		final int colorIconDefault = ThemeUtil.getColor(getContext(), R.attr.tint);
+		if (state != null) {
+			if (state.getState() == PlaybackStateCompat.STATE_PLAYING) {
+				_binding.nowPlayingBtnPlay.setImageDrawable(ContextCompat.getDrawable(getContext(),
+						R.drawable.ic_pause));
+				DrawableCompat.setTint(_binding.nowPlayingBtnPlay.getDrawable(),
+						colorAccent);
+			}
+			else {
+				_binding.nowPlayingBtnPlay.setImageDrawable(ContextCompat.getDrawable(getContext(),
+						R.drawable.ic_play_arrow));
+				DrawableCompat.setTint(_binding.nowPlayingBtnPlay.getDrawable(),
+						colorIconDefault);
+			}
+		}
+	}
+
+	private void _updateFromShuffleMode(int shuffleMode) {
 		final int colorAccent = ThemeUtil.getColor(getContext(), R.attr.colorAccent);
 		final int colorIconDefault = ThemeUtil.getColor(getContext(), R.attr.tint);
 		if (shuffleMode == PlaybackStateCompat.SHUFFLE_MODE_ALL) {
@@ -298,8 +300,11 @@ public class PlayerFragment extends Fragment
 			DrawableCompat.setTint(_binding.nowPlayingBtnShuffle.getDrawable(),
 					colorIconDefault);
 		}
+	}
 
-		final int repeatMode = _mediaController.getRepeatMode();
+	private void _updateFromRepeatMode(int repeatMode) {
+		final int colorAccent = ThemeUtil.getColor(getContext(), R.attr.colorAccent);
+		final int colorIconDefault = ThemeUtil.getColor(getContext(), R.attr.tint);
 		if (repeatMode == PlaybackStateCompat.REPEAT_MODE_ALL) {
 			_binding.nowPlayingBtnRepeat
 					.setImageDrawable(getContext().getDrawable(R.drawable.ic_repeat));
@@ -315,21 +320,6 @@ public class PlayerFragment extends Fragment
 					.setImageDrawable(getContext().getDrawable(R.drawable.ic_repeat));
 			DrawableCompat.setTint(_binding.nowPlayingBtnRepeat.getDrawable(),
 					colorIconDefault);
-		}
-
-		if (state != null) {
-			if (state.getState() == PlaybackStateCompat.STATE_PLAYING) {
-				_binding.nowPlayingBtnPlay.setImageDrawable(ContextCompat.getDrawable(getContext(),
-						R.drawable.ic_pause));
-				DrawableCompat.setTint(_binding.nowPlayingBtnPlay.getDrawable(),
-						colorAccent);
-			}
-			else {
-				_binding.nowPlayingBtnPlay.setImageDrawable(ContextCompat.getDrawable(getContext(),
-						R.drawable.ic_play_arrow));
-				DrawableCompat.setTint(_binding.nowPlayingBtnPlay.getDrawable(),
-						colorIconDefault);
-			}
 		}
 	}
 }
