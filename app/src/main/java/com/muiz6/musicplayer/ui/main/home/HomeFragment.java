@@ -94,7 +94,7 @@ public class HomeFragment extends MediaBrowserFragment {
 				navController,
 				appBarConfiguration);
 
-		// final NavController navController = Navigation.findNavController(view);
+		_binding.mainBottomBarSongTitle.setSelected(true); // for marquee text
 		_binding.mainBottomBarSongTitle.setOnClickListener(new View.OnClickListener() {
 
 			@Override

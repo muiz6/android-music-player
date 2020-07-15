@@ -48,7 +48,7 @@
 		android:layout_height="?attr/actionBarSize"
 		android:layout_gravity="bottom"
 		android:background="@drawable/bottom_bar_bg"
-		android:visibility="invisible"
+		android:visibility="gone"
 		app:layout_insetEdge="bottom">
 
 		<TextView
@@ -61,7 +61,7 @@
 			android:gravity="center"
 
 			android:marqueeRepeatLimit="marquee_forever"
-			android:paddingStart="5dp"
+			android:paddingStart="@dimen/padding_main_bottom_bar_title"
 			android:scrollHorizontally="true"
 			android:singleLine="true" />
 

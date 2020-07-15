@@ -15,4 +15,5 @@
     <dimen name="margin_fab">16dp</dimen>
     <dimen name="padding_seek_bar_now_playing">25dp</dimen>
     <dimen name="padding_container_controls_now_playing">20dp</dimen>
+	<dimen name="padding_main_bottom_bar_title">10dp</dimen>
 </resources>

@@ -27,6 +27,10 @@ import com.muiz6.musicplayer.media.MediaControllerCallback;
 import com.muiz6.musicplayer.ui.ThemeUtil;
 import com.muiz6.musicplayer.ui.main.MediaBrowserFragment;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
 import javax.inject.Inject;
 
 @FragmentScope
@@ -36,11 +40,15 @@ public class PlayerFragment extends MediaBrowserFragment
 	private final Handler _handler = new Handler();
 	private final MediaControllerCallback _mediaControllerCallback;
 	private FragmentPlayerBinding _binding;
+	private ExecutorService _executorService = Executors.newSingleThreadExecutor();
+	private Future _longRunningTaskFuture;
 	private Runnable _seekBarRunnable = new Runnable() {
 		@Override
 		public void run() {
-			int progress = (int) getMediaController().getPlaybackState().getPosition();
-			_binding.nowPlayingSeekBar.setProgress(progress);
+			if (_binding != null) {
+				int progress = (int) getMediaController().getPlaybackState().getPosition();
+				_binding.nowPlayingSeekBar.setProgress(progress);
+			}
 			_handler.postDelayed(this, 34); // at 30Hz
 		}
 	};
@@ -75,34 +83,15 @@ public class PlayerFragment extends MediaBrowserFragment
 		super.onViewCreated(view, savedInstanceState);
 
 		_binding = FragmentPlayerBinding.bind(view);
-
-		final NavController navController = Navigation.findNavController(view);
-		_binding.nowPlayingFab.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				navController.navigate(R.id.main_queue_fragment);
-			}
-		});
-
-		final MediaControllerCompat mediaController = getMediaController();
-		if (mediaController != null) {
-			mediaController.registerCallback(_mediaControllerCallback);
-			_buildTransportControls();
-			_updateFromMetadata(mediaController.getMetadata());
-			_updateFromPlaybackState(mediaController.getPlaybackState());
-
-			_binding.nowPlayingSeekBar.setOnSeekBarChangeListener(this);
-
-			// todo: improve seek bar progress
-			getActivity().runOnUiThread(_seekBarRunnable);
-		}
 	}
 
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
 
+		if (_longRunningTaskFuture != null) {
+			_longRunningTaskFuture.cancel(true);
+		}
 		_binding = null;
 	}
 
@@ -116,6 +105,8 @@ public class PlayerFragment extends MediaBrowserFragment
 
 		final MediaControllerCompat mediaController = getMediaController();
 		if (mediaController != null) {
+			mediaController.registerCallback(_mediaControllerCallback);
+			_buildTransportControls();
 			_updateFromMetadata(mediaController.getMetadata());
 			_updateFromPlaybackState(mediaController.getPlaybackState());
 			_updateFromShuffleMode(mediaController.getShuffleMode());
@@ -170,6 +161,16 @@ public class PlayerFragment extends MediaBrowserFragment
 	private void _buildTransportControls() {
 		final MediaControllerCompat.TransportControls transportControls =
 				getMediaController().getTransportControls();
+
+		final NavController navController = Navigation.findNavController(getView());
+		_binding.nowPlayingFab.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				navController.navigate(R.id.main_queue_fragment);
+			}
+		});
+
 		_binding.nowPlayingBtnPlay.setOnClickListener(new View.OnClickListener() {
 
 			@Override
@@ -240,6 +241,11 @@ public class PlayerFragment extends MediaBrowserFragment
 				}
 			}
 		});
+
+		_binding.nowPlayingSeekBar.setOnSeekBarChangeListener(this);
+
+		// todo: optimize seek bar progress
+		_longRunningTaskFuture = _executorService.submit(_seekBarRunnable);
 	}
 
 	private void _updateFromMetadata(MediaMetadataCompat metadata) {
