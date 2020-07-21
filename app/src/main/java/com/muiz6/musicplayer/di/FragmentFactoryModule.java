@@ -1,32 +1,30 @@
-package com.muiz6.musicplayer.di.main.home;
+package com.muiz6.musicplayer.di;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentFactory;
 
-import com.muiz6.musicplayer.di.scope.FragmentScope;
-import com.muiz6.musicplayer.ui.main.home.songs.SongFragment;
+import java.util.Map;
 
-import javax.inject.Named;
 import javax.inject.Provider;
 
 import dagger.Module;
 import dagger.Provides;
 
 @Module
-public abstract class TabFragmentFactoryModule {
+public class FragmentFactoryModule {
 
 	@Provides
-	@FragmentScope
-	@Named("HomeFragment")
-	static FragmentFactory provideTabFragmentFactory(final Provider<SongFragment> provider) {
+	FragmentFactory getFragmentFactory(final Map<Class<?>, Provider<Fragment>> providerMap) {
 		return new FragmentFactory() {
 
 			@NonNull
 			@Override
 			public Fragment instantiate(@NonNull ClassLoader classLoader,
 					@NonNull String className) {
-				if (className.equals(SongFragment.class.getName())) {
+				final Class<?> fragmentClass = loadFragmentClass(classLoader, className);
+				final Provider<Fragment> provider = providerMap.get(fragmentClass);
+				if (provider != null) {
 					return provider.get();
 				}
 				return super.instantiate(classLoader, className);

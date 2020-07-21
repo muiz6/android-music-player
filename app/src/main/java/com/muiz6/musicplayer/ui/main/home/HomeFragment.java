@@ -1,75 +1,62 @@
 package com.muiz6.musicplayer.ui.main.home;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentFactory;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.muiz6.musicplayer.R;
-import com.muiz6.musicplayer.databinding.FragmentMainBinding;
-import com.muiz6.musicplayer.di.scope.FragmentScope;
-import com.muiz6.musicplayer.media.MediaConnectionCallback;
-import com.muiz6.musicplayer.media.MediaControllerCallback;
-import com.muiz6.musicplayer.musicservice.MusicService;
+import com.muiz6.musicplayer.databinding.FragmentHomeBinding;
 import com.muiz6.musicplayer.ui.ThemeUtil;
-import com.muiz6.musicplayer.ui.main.MediaBrowserFragment;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
-@FragmentScope
-public class HomeFragment extends MediaBrowserFragment {
+public class HomeFragment extends Fragment implements View.OnClickListener {
 
-	private final MediaBrowserCompat _mediaBrowser;
 	private final FragmentFactory _fragmentFactory;
 	private final TabLayoutMediator.TabConfigurationStrategy _tabMediatorStrategy;
 	private final TabLayout.OnTabSelectedListener _tabListener;
-	private FragmentMainBinding _binding; // only available on runtime
+	private final ViewModelProvider.Factory _viewModelFactory;
+	private HomeViewModel _viewModel;
+	private FragmentHomeBinding _binding; // only available on runtime
 
 	// arged ctor for fragment factory
 	@Inject
-	public HomeFragment(MediaBrowserCompat mediaBrowser,
-			MediaConnectionCallback connectionCallback,
-			MediaControllerCallback controllerCallback,
-			@Named("HomeFragment") FragmentFactory factory,
+	public HomeFragment(FragmentFactory factory,
+			ViewModelProvider.Factory viewModelFactory,
 			TabLayoutMediator.TabConfigurationStrategy tabMediatorStrategy,
 			TabLayout.OnTabSelectedListener tabListener) {
-		super(mediaBrowser, connectionCallback, controllerCallback);
-		_mediaBrowser = mediaBrowser;
 		_fragmentFactory = factory;
 		_tabMediatorStrategy = tabMediatorStrategy;
 		_tabListener = tabListener;
+		_viewModelFactory = viewModelFactory;
 	}
 
 	@Override
 	public void onAttach(@NonNull Context context) {
 		super.onAttach(context);
 
+		_viewModel = new ViewModelProvider(this, _viewModelFactory).get(HomeViewModel.class);
 		getChildFragmentManager().setFragmentFactory(_fragmentFactory);
-		final Intent intentMusicService = new Intent(getContext(), MusicService.class);
-		ContextCompat.startForegroundService(context, intentMusicService);
 	}
 
 	@Nullable
@@ -77,14 +64,13 @@ public class HomeFragment extends MediaBrowserFragment {
 	public View onCreateView(@NonNull LayoutInflater inflater,
 			@Nullable ViewGroup container,
 			@Nullable Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.fragment_main, container, false);
+		_binding = FragmentHomeBinding.inflate(inflater, container, false);
+		return _binding.getRoot();
 	}
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-
-		_binding = FragmentMainBinding.bind(view);
 
 		// setup toolbar
 		final NavController navController = Navigation.findNavController(view);
@@ -94,21 +80,40 @@ public class HomeFragment extends MediaBrowserFragment {
 				navController,
 				appBarConfiguration);
 
-		_binding.mainBottomBarSongTitle.setSelected(true); // for marquee text
-		_binding.mainBottomBarSongTitle.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				navController.navigate(R.id.main_player_fragment);
-			}
-		});
-
 		// setup tab layout
-		_binding.mainViewPager.setAdapter(new HomePagerAdapter(this, _mediaBrowser));
+		_binding.mainViewPager.setAdapter(new HomePagerAdapter(this,
+				getActivity().getClassLoader(),
+				_fragmentFactory));
 		new TabLayoutMediator(_binding.mainTabLayout,
 				_binding.mainViewPager,
 				_tabMediatorStrategy).attach();
 		_binding.mainTabLayout.addOnTabSelectedListener(_tabListener);
+
+		// sync with media session
+		_viewModel.getMetadata().observe(getViewLifecycleOwner(),
+				new Observer<MediaMetadataCompat>() {
+
+					@Override
+					public void onChanged(MediaMetadataCompat metadata) {
+						_updateFromMetadata(metadata);
+					}
+				});
+		_viewModel.getPlayBackState().observe(getViewLifecycleOwner(),
+				new Observer<PlaybackStateCompat>() {
+
+					@Override
+					public void onChanged(PlaybackStateCompat pbState) {
+						if (pbState != null) {
+							_updateFromPlaybackState(pbState);
+						}
+					}
+				});
+
+		// build transport controls
+		_binding.mainBottomBarBtnPlayPause.setOnClickListener(this);
+		_binding.mainBottomBarBtnNext.setOnClickListener(this);
+		_binding.mainBottomBarBtnPrevious.setOnClickListener(this);
+		_binding.mainBottomBarSongTitle.setOnClickListener(this);
 	}
 
 	@Override
@@ -119,111 +124,54 @@ public class HomeFragment extends MediaBrowserFragment {
 		_binding = null;
 	}
 
-	// following methods
-	// belong to
-	// MediaConnectionCallback.Listener
-
-	@Override
-	public void onConnected() {
-		super.onConnected();
-
-		final MediaControllerCompat mediaController = getMediaController();
-		if (mediaController != null) {
-			final MediaMetadataCompat metadata = mediaController.getMetadata();
-			final PlaybackStateCompat pbState = mediaController.getPlaybackState();
-			_updateFromMetadata(metadata);
-			_updateFromPlaybackState(pbState);
-		}
-		_buildTransportControls();
-	}
-
-	// following methods
-	// belong to
-	// MediaControllerCallback.Listener
-
-	@Override
-	public void onPlaybackStateChanged(@Nullable PlaybackStateCompat state) {
-		super.onPlaybackStateChanged(state);
-
-		_updateFromPlaybackState(state);
-	}
-
-	@Override
-	public void onMetadataChanged(@Nullable MediaMetadataCompat metadata) {
-		super.onMetadataChanged(metadata);
-
-		_updateFromMetadata(metadata);
-	}
-
 	private void _updateFromMetadata(MediaMetadataCompat metadata) {
-		if (metadata != null) {
 
-			// make bottom appbar visible if metadata exists
-			final LinearLayout bottomAppbar = _binding.mainBottomBar;
-			final ViewPager2 viewPager = _binding.mainViewPager;
-			if (bottomAppbar.getVisibility() != View.VISIBLE) {
-				bottomAppbar.setVisibility(View.VISIBLE);
-				viewPager.setPadding(viewPager.getPaddingStart(), viewPager.getPaddingTop(),
-						viewPager.getPaddingEnd(), bottomAppbar.getHeight());
-			}
-			final String title = metadata.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE);
-			if (title != null) {
-				_binding.mainBottomBarSongTitle.setText(title);
-			}
+		// make bottom appbar visible if metadata exists
+		if (_binding.mainBottomBar.getVisibility() != View.VISIBLE) {
+			_binding.mainBottomBarSongTitle.setSelected(true); // for marquee text
+			_binding.mainBottomBar.setVisibility(View.VISIBLE);
+
+			// todo: not working for some reason
+			_binding.mainViewPager.setPadding(_binding.mainViewPager.getPaddingStart(),
+					_binding.mainViewPager.getPaddingTop(),
+					_binding.mainViewPager.getPaddingEnd(),
+					_binding.mainBottomBar.getHeight());
+		}
+		final String title = metadata.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE);
+		if (title != null) {
+			_binding.mainBottomBarSongTitle.setText(title);
 		}
 	}
 
 	private void _updateFromPlaybackState(PlaybackStateCompat pbState) {
-		if (pbState != null) {
-			final ImageButton btn = _binding.mainBottomBarBtnPlayPause;
-			final Context context = getContext();
-			if (context != null) {
-				Drawable icon = context.getDrawable(R.drawable.ic_play_arrow);
-				int color = ThemeUtil.getColor(getContext(), R.attr.tint);
-				if (pbState.getState() == PlaybackStateCompat.STATE_PLAYING) {
-					color = ThemeUtil.getColor(getContext(), R.attr.colorAccent);
-					icon = context.getDrawable(R.drawable.ic_pause);
-				}
-				btn.setImageDrawable(icon);
-				DrawableCompat.setTint(btn.getDrawable(), color);
+		final ImageButton btn = _binding.mainBottomBarBtnPlayPause;
+		final Context context = getContext();
+		if (context != null) {
+			Drawable icon = context.getDrawable(R.drawable.ic_play_arrow);
+			int color = ThemeUtil.getColor(getContext(), R.attr.tint);
+			if (pbState.getState() == PlaybackStateCompat.STATE_PLAYING) {
+				color = ThemeUtil.getColor(getContext(), R.attr.colorAccent);
+				icon = context.getDrawable(R.drawable.ic_pause);
 			}
+			btn.setImageDrawable(icon);
+			DrawableCompat.setTint(btn.getDrawable(), color);
 		}
 	}
 
-	private void _buildTransportControls() {
-		final MediaControllerCompat mediaController = getMediaController();
-		if (mediaController != null) {
-			final MediaControllerCompat.TransportControls transportControls =
-					mediaController.getTransportControls();
-			_binding.mainBottomBarBtnPlayPause.setOnClickListener(new View.OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					final PlaybackStateCompat pbState = mediaController.getPlaybackState();
-					if (pbState != null) {
-						if (pbState.getState() == PlaybackStateCompat.STATE_PLAYING) {
-							transportControls.pause();
-						}
-						else {
-							transportControls.play();
-						}
-					}
-				}
-			});
-			_binding.mainBottomBarBtnNext.setOnClickListener(new View.OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					transportControls.skipToNext();
-				}
-			});
-			_binding.mainBottomBarBtnPrevious.setOnClickListener(new View.OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					transportControls.skipToPrevious();
-				}
-			});
+	@Override
+	public void onClick(View view) {
+		if (view == _binding.mainBottomBarBtnPlayPause) {
+			_viewModel.onPlayPauseBtnClicked();
+		}
+		else if (view == _binding.mainBottomBarBtnNext) {
+			_viewModel.onSkipNextBtnClicked();
+		}
+		else if (view == _binding.mainBottomBarBtnPrevious) {
+			_viewModel.onSkipPreviousBtnClicked();
+		}
+		else if (view == _binding.mainBottomBarSongTitle) {
+			final NavController navController = Navigation.findNavController(getView());
+			navController.navigate(R.id.main_player_fragment);
 		}
 	}
 }

@@ -2,20 +2,20 @@ package com.muiz6.musicplayer.media;
 
 import android.support.v4.media.MediaBrowserCompat;
 
-import com.muiz6.musicplayer.di.scope.FragmentScope;
-
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * Wrapper class for MediaBrowserCompat.ConnectionCallback so that activity can implement
  * methods of MediaConnectionCallback.Listener instead of using ConnectionCallback as inner class.
  */
-@FragmentScope
+@Singleton
 public class MediaConnectionCallback extends MediaBrowserCompat.ConnectionCallback {
 
-	private final ArrayList<Listener> _listeners = new ArrayList<>();
+	private final Set<Listener> _listeners = new HashSet<>();
 
 	@Inject
 	public MediaConnectionCallback() {}
@@ -49,6 +49,14 @@ public class MediaConnectionCallback extends MediaBrowserCompat.ConnectionCallba
 
 	public void addListener(Listener listener) {
 		_listeners.add(listener);
+	}
+
+	public void removeListener(Listener listener) {
+		_listeners.remove(listener);
+	}
+
+	public void removeAllListeners() {
+		_listeners.clear();
 	}
 
 	public interface Listener {

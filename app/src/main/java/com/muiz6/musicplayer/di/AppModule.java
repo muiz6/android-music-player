@@ -5,5 +5,5 @@ import com.muiz6.musicplayer.di.main.MainComponent;
 import dagger.Module;
 
 @Module(subcomponents = {MainComponent.class})
-public class AppSubcomponentModule {
+public class AppModule {
 }

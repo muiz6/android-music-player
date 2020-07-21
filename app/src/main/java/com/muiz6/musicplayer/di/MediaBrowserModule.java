@@ -4,9 +4,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.support.v4.media.MediaBrowserCompat;
 
-import com.muiz6.musicplayer.di.scope.FragmentScope;
 import com.muiz6.musicplayer.media.MediaConnectionCallback;
 import com.muiz6.musicplayer.musicservice.MusicService;
+
+import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
@@ -15,13 +16,12 @@ import dagger.Provides;
 public abstract class MediaBrowserModule {
 
 	@Provides
-	static ComponentName provideComponentName(Context context) {
+	static ComponentName provideComponentName(@Named("Application") Context context) {
 		return new ComponentName(context, MusicService.class);
 	}
 
-	@FragmentScope
 	@Provides
-	static MediaBrowserCompat provideMediaBrowser(Context context,
+	static MediaBrowserCompat provideMediaBrowser(@Named("Application") Context context,
 			MediaConnectionCallback connectionCallback,
 			ComponentName componentName) {
 		return new MediaBrowserCompat(context,

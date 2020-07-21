@@ -21,13 +21,11 @@ import com.google.android.exoplayer2.source.MediaSourceFactory;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.muiz6.musicplayer.di.scope.ApplicationScope;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-@ApplicationScope
 public class MusicProvider implements MediaSessionConnector.MediaMetadataProvider {
 
 	public static final String MEDIA_ID_ALL_SONGS = "allSongs";

@@ -2,10 +2,7 @@ package com.muiz6.musicplayer.ui.main.nowplaying;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,58 +13,50 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.ui.NavigationUI;
 
 import com.muiz6.musicplayer.R;
 import com.muiz6.musicplayer.databinding.FragmentPlayerBinding;
-import com.muiz6.musicplayer.di.scope.FragmentScope;
-import com.muiz6.musicplayer.media.MediaConnectionCallback;
-import com.muiz6.musicplayer.media.MediaControllerCallback;
 import com.muiz6.musicplayer.ui.ThemeUtil;
-import com.muiz6.musicplayer.ui.main.MediaBrowserFragment;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import javax.inject.Inject;
 
-@FragmentScope
-public class PlayerFragment extends MediaBrowserFragment
-		implements SeekBar.OnSeekBarChangeListener {
+public class PlayerFragment extends Fragment
+		implements View.OnClickListener,
+		SeekBar.OnSeekBarChangeListener {
 
-	private final Handler _handler = new Handler();
-	private final MediaControllerCallback _mediaControllerCallback;
+	private final ViewModelProvider.Factory _viewModelFactory;
 	private FragmentPlayerBinding _binding;
-	private ExecutorService _executorService = Executors.newSingleThreadExecutor();
-	private Future _longRunningTaskFuture;
-	private Runnable _seekBarRunnable = new Runnable() {
-		@Override
-		public void run() {
-			if (_binding != null) {
-				int progress = (int) getMediaController().getPlaybackState().getPosition();
-				_binding.nowPlayingSeekBar.setProgress(progress);
-			}
-			_handler.postDelayed(this, 34); // at 30Hz
-		}
-	};
+	private PlayerViewModel _viewModel;
+	// private final Handler _handler = new Handler();
+	// private ExecutorService _executorService = Executors.newSingleThreadExecutor();
+	// private Future _longRunningTaskFuture;
+	// private Runnable _seekBarRunnable = new Runnable() {
+	// 	@Override
+	// 	public void run() {
+	// 		if (_binding != null) {
+	// 			int progress = (int) getMediaController().getPlaybackState().getPosition();
+	// 			_binding.nowPlayingSeekBar.setProgress(progress);
+	// 		}
+	// 		_handler.postDelayed(this, 34); // at 30Hz
+	// 	}
+	// };
 
-	// arg ctor for fragment factory
 	@Inject
-	public PlayerFragment(MediaBrowserCompat mediaBrowser,
-			MediaConnectionCallback connectionCallback,
-			MediaControllerCallback controllerCallback) {
-		super(mediaBrowser, connectionCallback, controllerCallback);
-
-		_mediaControllerCallback = controllerCallback;
+	public PlayerFragment(ViewModelProvider.Factory viewModelFactory) {
+		_viewModelFactory = viewModelFactory;
 	}
 
 	@Override
 	public void onAttach(@NonNull Context context) {
 		super.onAttach(context);
 
-		_mediaControllerCallback.addListener(this);
+		_viewModel = new ViewModelProvider(this, _viewModelFactory).get(PlayerViewModel.class);
 	}
 
 	@Nullable
@@ -75,67 +64,87 @@ public class PlayerFragment extends MediaBrowserFragment
 	public View onCreateView(@NonNull LayoutInflater inflater,
 			@Nullable ViewGroup container,
 			@Nullable Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.fragment_player, container, false);
+		_binding = FragmentPlayerBinding.inflate(inflater, container, false);
+		return _binding.getRoot();
 	}
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
-		_binding = FragmentPlayerBinding.bind(view);
+		// setup toolbar
+		final NavController navController = Navigation.findNavController(view);
+		NavigationUI.setupWithNavController(_binding.playerToolbar, navController);
+
+		// sync with media session
+		_viewModel.getPlayBackState().observe(getViewLifecycleOwner(),
+				new Observer<PlaybackStateCompat>() {
+
+					@Override
+					public void onChanged(PlaybackStateCompat pbState) {
+						if (pbState != null) {
+							_updateFromPlaybackState(pbState);
+
+							_updateFromRepeatMode(_viewModel.getRepeatMode());
+							_updateFromShuffleMode(_viewModel.getShuffleMode());
+						}
+					}
+				});
+		_viewModel.getMetadata().observe(getViewLifecycleOwner(),
+				new Observer<MediaMetadataCompat>() {
+
+					@Override
+					public void onChanged(MediaMetadataCompat metadata) {
+						if (metadata != null) {
+							_updateFromMetadata(metadata);
+						}
+					}
+				});
+
+		// build transport controls
+		_binding.playerBtnPlayPause.setOnClickListener(this);
+		_binding.playerBtnNext.setOnClickListener(this);
+		_binding.playerBtnPrevious.setOnClickListener(this);
+		_binding.playerBtnShuffle.setOnClickListener(this);
+		_binding.playerBtnRepeat.setOnClickListener(this);
+		_binding.playerFab.setOnClickListener(this);
 	}
 
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
 
-		if (_longRunningTaskFuture != null) {
-			_longRunningTaskFuture.cancel(true);
-		}
+		// if (_longRunningTaskFuture != null) {
+		// 	_longRunningTaskFuture.cancel(true);
+		// }
 		_binding = null;
 	}
 
 	// following methods
 	// belong to
-	// MediaConnectionCallback.Listener
+	// View.OnClickListener
 
 	@Override
-	public void onConnected() {
-		super.onConnected();
-
-		final MediaControllerCompat mediaController = getMediaController();
-		if (mediaController != null) {
-			mediaController.registerCallback(_mediaControllerCallback);
-			_buildTransportControls();
-			_updateFromMetadata(mediaController.getMetadata());
-			_updateFromPlaybackState(mediaController.getPlaybackState());
-			_updateFromShuffleMode(mediaController.getShuffleMode());
-			_updateFromRepeatMode(mediaController.getRepeatMode());
+	public void onClick(View view) {
+		if (view == _binding.playerBtnPlayPause) {
+			_viewModel.onPlayPauseBtnClicked();
 		}
-	}
-
-	// following methods
-	// belong to
-	// MediaControllerCallback.Listener
-
-	@Override
-	public void onPlaybackStateChanged(@Nullable PlaybackStateCompat state) {
-		_updateFromPlaybackState(state);
-	}
-
-	@Override
-	public void onMetadataChanged(@Nullable MediaMetadataCompat metadata) {
-		_updateFromMetadata(metadata);
-	}
-
-	@Override
-	public void onRepeatModeChanged(int repeatMode) {
-		_updateFromRepeatMode(repeatMode);
-	}
-
-	@Override
-	public void onShuffleModeChanged(int shuffleMode) {
-		_updateFromShuffleMode(shuffleMode);
+		else if (view == _binding.playerBtnNext) {
+			_viewModel.onSkipNextBtnClicked();
+		}
+		else if (view == _binding.playerBtnPrevious) {
+			_viewModel.onSkipPreviousBtnClicked();
+		}
+		else if (view == _binding.playerBtnShuffle) {
+			_viewModel.onShuffleBtnClicked();
+		}
+		else if (view == _binding.playerBtnRepeat) {
+			_viewModel.onRepeatBtnClicked();
+		}
+		else if (view == _binding.playerFab) {
+			final NavController navController = Navigation.findNavController(getView());
+			navController.navigate(R.id.main_queue_fragment);
+		}
 	}
 
 	// following methods
@@ -145,10 +154,10 @@ public class PlayerFragment extends MediaBrowserFragment
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 		if (fromUser) {
-			final MediaControllerCompat mediaController = getMediaController();
-			if (mediaController != null) {
-				mediaController.getTransportControls().seekTo(progress);
-			}
+			// final MediaControllerCompat mediaController = getMediaController();
+			// if (mediaController != null) {
+			// 	mediaController.getTransportControls().seekTo(progress);
+			// }
 		}
 	}
 
@@ -158,140 +167,53 @@ public class PlayerFragment extends MediaBrowserFragment
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {}
 
-	private void _buildTransportControls() {
-		final MediaControllerCompat.TransportControls transportControls =
-				getMediaController().getTransportControls();
-
-		final NavController navController = Navigation.findNavController(getView());
-		_binding.nowPlayingFab.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				navController.navigate(R.id.main_queue_fragment);
-			}
-		});
-
-		_binding.nowPlayingBtnPlay.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				final PlaybackStateCompat pbState = getMediaController().getPlaybackState();
-				if (pbState != null) {
-					if (pbState.getState() == PlaybackStateCompat.STATE_PLAYING) {
-						transportControls.pause();
-					}
-					else {
-						transportControls.play();
-					}
-				}
-			}
-		});
-
-		_binding.nowPlayingBtnRepeat.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL);
-			}
-		});
-
-		_binding.nowPlayingBtnShuffle.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				final int mode = getMediaController().getShuffleMode();
-				if (mode == PlaybackStateCompat.SHUFFLE_MODE_ALL) {
-					transportControls.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_NONE);
-				}
-				else {
-					transportControls.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL);
-				}
-			}
-		});
-
-		_binding.nowPlayingBtnNext.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				transportControls.skipToNext();
-			}
-		});
-
-		_binding.nowPlayingBtnPrevious.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				transportControls.skipToPrevious();
-			}
-		});
-
-		_binding.nowPlayingBtnRepeat.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				final int mode = getMediaController().getRepeatMode();
-				if (mode == PlaybackStateCompat.REPEAT_MODE_ALL) {
-					transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_NONE);
-				}
-				else if (mode == PlaybackStateCompat.REPEAT_MODE_ONE) {
-					transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL);
-				}
-				else {
-					transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE);
-				}
-			}
-		});
-
-		_binding.nowPlayingSeekBar.setOnSeekBarChangeListener(this);
-
-		// todo: optimize seek bar progress
-		_longRunningTaskFuture = _executorService.submit(_seekBarRunnable);
-	}
+	// private void _buildTransportControls() {
+	// 	_binding.nowPlayingSeekBar.setOnSeekBarChangeListener(this);
+	//
+	// 	// todo: optimize seek bar progress
+	// 	_longRunningTaskFuture = _executorService.submit(_seekBarRunnable);
+	// }
 
 	private void _updateFromMetadata(MediaMetadataCompat metadata) {
-		if (metadata != null) {
-			final String title = metadata.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE);
-			if (title != null) {
-				_binding.nowPlayingTitle.setText(title);
-			}
-			final String artist = metadata
-					.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE);
-			if (artist != null) {
-				_binding.nowPlayingArtist.setText(artist);
-			}
-			else {
-				_binding.nowPlayingArtist.setText(R.string.unknown_artist);
-			}
-			final String album = metadata
-					.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION);
-			if (album != null) {
-				_binding.nowPlayingAlbum.setText(album);
-			}
-			else {
-				_binding.nowPlayingAlbum.setText(R.string.unknown_album);
-			}
+		final String title = metadata.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE);
+		if (title != null) {
+			_binding.playerTitle.setText(title);
 		}
-		final int duration = (int) getMediaController().getMetadata()
-				.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
-		_binding.nowPlayingSeekBar.setMax(duration);
+		final String artist = metadata
+				.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE);
+		if (artist != null) {
+			_binding.playerArtist.setText(artist);
+		}
+		else {
+			_binding.playerArtist.setText(R.string.unknown_artist);
+		}
+		final String album = metadata
+				.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION);
+		if (album != null) {
+			_binding.playerAlbum.setText(album);
+		}
+		else {
+			_binding.playerAlbum.setText(R.string.unknown_album);
+		}
+		// final int duration = (int) getMediaController().getMetadata()
+		// 		.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
+		// _binding.nowPlayingSeekBar.setMax(duration);
 	}
 
 	private void _updateFromPlaybackState(PlaybackStateCompat state) {
 		final int colorAccent = ThemeUtil.getColor(getContext(), R.attr.colorAccent);
 		final int colorIconDefault = ThemeUtil.getColor(getContext(), R.attr.tint);
-		if (state != null) {
-			if (state.getState() == PlaybackStateCompat.STATE_PLAYING) {
-				_binding.nowPlayingBtnPlay.setImageDrawable(ContextCompat.getDrawable(getContext(),
-						R.drawable.ic_pause));
-				DrawableCompat.setTint(_binding.nowPlayingBtnPlay.getDrawable(),
-						colorAccent);
-			}
-			else {
-				_binding.nowPlayingBtnPlay.setImageDrawable(ContextCompat.getDrawable(getContext(),
-						R.drawable.ic_play_arrow));
-				DrawableCompat.setTint(_binding.nowPlayingBtnPlay.getDrawable(),
-						colorIconDefault);
-			}
+		if (state.getState() == PlaybackStateCompat.STATE_PLAYING) {
+			_binding.playerBtnPlayPause.setImageDrawable(ContextCompat.getDrawable(getContext(),
+					R.drawable.ic_pause));
+			DrawableCompat.setTint(_binding.playerBtnPlayPause.getDrawable(),
+					colorAccent);
+		}
+		else {
+			_binding.playerBtnPlayPause.setImageDrawable(ContextCompat.getDrawable(getContext(),
+					R.drawable.ic_play_arrow));
+			DrawableCompat.setTint(_binding.playerBtnPlayPause.getDrawable(),
+					colorIconDefault);
 		}
 	}
 
@@ -299,11 +221,11 @@ public class PlayerFragment extends MediaBrowserFragment
 		final int colorAccent = ThemeUtil.getColor(getContext(), R.attr.colorAccent);
 		final int colorIconDefault = ThemeUtil.getColor(getContext(), R.attr.tint);
 		if (shuffleMode == PlaybackStateCompat.SHUFFLE_MODE_ALL) {
-			DrawableCompat.setTint(_binding.nowPlayingBtnShuffle.getDrawable(),
+			DrawableCompat.setTint(_binding.playerBtnShuffle.getDrawable(),
 					colorAccent);
 		}
 		else {
-			DrawableCompat.setTint(_binding.nowPlayingBtnShuffle.getDrawable(),
+			DrawableCompat.setTint(_binding.playerBtnShuffle.getDrawable(),
 					colorIconDefault);
 		}
 	}
@@ -312,19 +234,19 @@ public class PlayerFragment extends MediaBrowserFragment
 		final int colorAccent = ThemeUtil.getColor(getContext(), R.attr.colorAccent);
 		final int colorIconDefault = ThemeUtil.getColor(getContext(), R.attr.tint);
 		if (repeatMode == PlaybackStateCompat.REPEAT_MODE_ALL) {
-			_binding.nowPlayingBtnRepeat
+			_binding.playerBtnRepeat
 					.setImageDrawable(getContext().getDrawable(R.drawable.ic_repeat));
-			DrawableCompat.setTint(_binding.nowPlayingBtnRepeat.getDrawable(),
+			DrawableCompat.setTint(_binding.playerBtnRepeat.getDrawable(),
 					colorAccent);
 		}
 		else if (repeatMode == PlaybackStateCompat.REPEAT_MODE_ONE) {
-			_binding.nowPlayingBtnRepeat
+			_binding.playerBtnRepeat
 					.setImageDrawable(getContext().getDrawable(R.drawable.exo_controls_repeat_one));
 		}
 		else {
-			_binding.nowPlayingBtnRepeat
+			_binding.playerBtnRepeat
 					.setImageDrawable(getContext().getDrawable(R.drawable.ic_repeat));
-			DrawableCompat.setTint(_binding.nowPlayingBtnRepeat.getDrawable(),
+			DrawableCompat.setTint(_binding.playerBtnRepeat.getDrawable(),
 					colorIconDefault);
 		}
 	}

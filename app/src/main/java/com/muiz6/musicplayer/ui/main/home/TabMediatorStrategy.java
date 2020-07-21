@@ -17,7 +17,7 @@ public class TabMediatorStrategy implements TabLayoutMediator.TabConfigurationSt
 	private static final int[] _ICONS = {
 			R.drawable.ic_library_music,
 			R.drawable.ic_album,
-			R.drawable.ic_face,
+			R.drawable.ic_music_artist,
 			R.drawable.ic_queue_music,
 			R.drawable.ic_local_offer
 	};

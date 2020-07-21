@@ -9,21 +9,21 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.muiz6.musicplayer.di.scope.FragmentScope;
-
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
- * Wrapper class for MediaControllerCompat.Callback so that activity can implement
+ * Wrapper class for MediaControllerCompat.Callback so that a class can implement
  * methods of MediaControllerCallback.Listener instead of using Callback as inner class
  */
-@FragmentScope
+@Singleton
 public class MediaControllerCallback extends MediaControllerCompat.Callback {
 
-	private final ArrayList<Listener> _listeners = new ArrayList<>();
+	private final Set<Listener> _listeners = new HashSet<>();
 
 	@Inject
 	public MediaControllerCallback() {}
@@ -138,6 +138,14 @@ public class MediaControllerCallback extends MediaControllerCompat.Callback {
 
 	public void addListener(@NonNull Listener listener) {
 		_listeners.add(listener);
+	}
+
+	public void removeListener(Listener listener) {
+		_listeners.remove(listener);
+	}
+
+	public void removeAllListeners() {
+		_listeners.clear();
 	}
 
 	public interface Listener {

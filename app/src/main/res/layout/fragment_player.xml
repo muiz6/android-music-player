@@ -5,19 +5,28 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
 
+	<com.google.android.material.appbar.AppBarLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
+		<androidx.appcompat.widget.Toolbar
+			android:id="@+id/player_toolbar"
+			android:layout_width="match_parent"
+			android:layout_height="?attr/actionBarSize" />
+	</com.google.android.material.appbar.AppBarLayout>
+
 	<com.google.android.material.floatingactionbutton.FloatingActionButton
-		android:id="@+id/now_playing_fab"
+		android:id="@+id/player_fab"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_alignTop="@id/now_playing_container_control"
-		android:layout_alignEnd="@id/now_playing_container_control"
+		android:layout_alignTop="@id/player_container_control"
+		android:layout_alignEnd="@id/player_container_control"
 		android:layout_marginEnd="@dimen/margin_fab"
-		android:onClick="onClick"
-		android:src="@drawable/ic_queue_music"
+		android:src="@drawable/ic_playlist_play"
 		android:translationY="-30dp" />
 
 	<androidx.constraintlayout.widget.ConstraintLayout
-		android:id="@+id/now_playing_container_control"
+		android:id="@+id/player_container_control"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true"
@@ -27,37 +36,37 @@
 		android:paddingBottom="@dimen/padding_container_controls_now_playing">
 
 		<TextView
-			android:id="@+id/now_playing_title"
+			android:id="@+id/player_title"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:padding="@dimen/padding_now_playing_text"
-			app:layout_constraintBottom_toTopOf="@id/now_playing_artist" />
+			app:layout_constraintBottom_toTopOf="@id/player_artist" />
 
 		<TextView
-			android:id="@+id/now_playing_artist"
+			android:id="@+id/player_artist"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:paddingHorizontal="@dimen/padding_now_playing_text"
-			app:layout_constraintBottom_toTopOf="@id/now_playing_album" />
+			app:layout_constraintBottom_toTopOf="@id/player_album" />
 
 		<TextView
-			android:id="@+id/now_playing_album"
+			android:id="@+id/player_album"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:paddingHorizontal="@dimen/padding_now_playing_text"
 			android:paddingTop="@dimen/padding_now_playing_text"
-			app:layout_constraintBottom_toTopOf="@id/now_playing_seek_bar" />
+			app:layout_constraintBottom_toTopOf="@id/player_seek_bar" />
 
 		<SeekBar
-			android:id="@+id/now_playing_seek_bar"
+			android:id="@+id/player_seek_bar"
 			style="@style/Widget.AppCompat.ProgressBar.Horizontal"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:paddingVertical="@dimen/padding_seek_bar_now_playing"
-			app:layout_constraintBottom_toTopOf="@id/now_playing_btn_play" />
+			app:layout_constraintBottom_toTopOf="@id/player_btn_play_pause" />
 
 		<ImageButton
-			android:id="@+id/now_playing_btn_shuffle"
+			android:id="@+id/player_btn_shuffle"
 			android:layout_width="@dimen/size_icon_now_playing"
 			android:layout_height="@dimen/size_icon_now_playing"
 			android:scaleType="fitXY"
@@ -66,18 +75,18 @@
 			app:layout_constraintLeft_toLeftOf="parent" />
 
 		<ImageButton
-			android:id="@+id/now_playing_btn_previous"
+			android:id="@+id/player_btn_previous"
 			android:layout_width="@dimen/size_icon_now_playing"
 			android:layout_height="@dimen/size_icon_now_playing"
 			android:scaleType="fitXY"
 			android:src="@drawable/ic_skip_previous"
 			android:tint="@color/colorWhite"
 			app:layout_constraintBottom_toBottomOf="parent"
-			app:layout_constraintEnd_toStartOf="@id/now_playing_btn_play"
-			app:layout_constraintStart_toEndOf="@id/now_playing_btn_shuffle" />
+			app:layout_constraintEnd_toStartOf="@id/player_btn_play_pause"
+			app:layout_constraintStart_toEndOf="@id/player_btn_shuffle" />
 
 		<ImageButton
-			android:id="@+id/now_playing_btn_play"
+			android:id="@+id/player_btn_play_pause"
 			android:layout_width="@dimen/size_icon_now_playing"
 			android:layout_height="@dimen/size_icon_now_playing"
 			android:scaleType="fitXY"
@@ -88,17 +97,17 @@
 			app:layout_constraintStart_toStartOf="parent" />
 
 		<ImageButton
-			android:id="@+id/now_playing_btn_next"
+			android:id="@+id/player_btn_next"
 			android:layout_width="@dimen/size_icon_now_playing"
 			android:layout_height="@dimen/size_icon_now_playing"
 			android:scaleType="fitXY"
 			android:src="@drawable/ic_skip_next"
 			app:layout_constraintBottom_toBottomOf="parent"
-			app:layout_constraintEnd_toStartOf="@id/now_playing_btn_repeat"
-			app:layout_constraintStart_toEndOf="@id/now_playing_btn_play" />
+			app:layout_constraintEnd_toStartOf="@id/player_btn_repeat"
+			app:layout_constraintStart_toEndOf="@id/player_btn_play_pause" />
 
 		<ImageButton
-			android:id="@+id/now_playing_btn_repeat"
+			android:id="@+id/player_btn_repeat"
 			android:layout_width="@dimen/size_icon_now_playing"
 			android:layout_height="@dimen/size_icon_now_playing"
 			android:scaleType="fitXY"
@@ -106,5 +115,4 @@
 			app:layout_constraintBottom_toBottomOf="parent"
 			app:layout_constraintRight_toRightOf="parent" />
 	</androidx.constraintlayout.widget.ConstraintLayout>
-
 </RelativeLayout>

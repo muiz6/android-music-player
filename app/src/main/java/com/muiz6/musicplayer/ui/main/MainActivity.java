@@ -11,11 +11,10 @@ import com.muiz6.musicplayer.MyApp;
 import com.muiz6.musicplayer.databinding.ActivityMainBinding;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 public class MainActivity extends AppCompatActivity {
 
-	@Inject @Named("MainActivity") FragmentFactory factory;
+	@Inject FragmentFactory factory;
 	private ActivityMainBinding _binding;
 
 	@Override

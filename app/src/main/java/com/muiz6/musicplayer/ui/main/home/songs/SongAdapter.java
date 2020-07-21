@@ -1,10 +1,7 @@
 package com.muiz6.musicplayer.ui.main.home.songs;
 
 import android.content.Context;
-import android.os.RemoteException;
 import android.support.v4.media.MediaBrowserCompat;
-import android.support.v4.media.session.MediaControllerCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,19 +15,15 @@ import com.muiz6.musicplayer.R;
 import com.muiz6.musicplayer.databinding.RowSongItemBinding;
 import com.muiz6.musicplayer.databinding.RowSongItemFirstBinding;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class SongAdapter extends RecyclerView.Adapter {
 
-	private final MediaBrowserCompat _mediaBrowser;
-	private MediaControllerCompat _mediaController;
-	private ArrayList<MediaBrowserCompat.MediaItem> _songList;
+	private List<MediaBrowserCompat.MediaItem> _songList;
 
-	public SongAdapter(ArrayList<MediaBrowserCompat.MediaItem> list,
-			MediaBrowserCompat mediaBrowser) {
+	public SongAdapter(List<MediaBrowserCompat.MediaItem> list) {
 		_songList = list;
-		_mediaBrowser = mediaBrowser;
 	}
 
 	@NonNull
@@ -48,26 +41,6 @@ public class SongAdapter extends RecyclerView.Adapter {
 		}
 		final RecyclerView.ViewHolder holder = new RecyclerView.ViewHolder(view) {
 		};
-		holder.itemView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (_mediaController == null) {
-					try {
-						_mediaController = new MediaControllerCompat(context,
-								_mediaBrowser.getSessionToken());
-					}
-					catch (RemoteException e) {
-						Log.d("SongFragment", "Failed to initialize media controller", e);
-					}
-				}
-				int position = holder.getAdapterPosition();
-
-				// -1 to bring recyclerview items and media items in sync
-				int toPlay = position - 1;
-				_mediaController.getTransportControls()
-						.playFromMediaId(_songList.get(toPlay).getMediaId(), null);
-			}
-		});
 		return holder;
 	}
 
@@ -75,8 +48,7 @@ public class SongAdapter extends RecyclerView.Adapter {
 	public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
 		if (position == 0) {
 			final RowSongItemFirstBinding binding = RowSongItemFirstBinding.bind(holder.itemView);
-			binding.getRoot()
-					.setText(holder.itemView.getContext().getString(R.string.all_songs));
+			binding.getRoot().setText(holder.itemView.getContext().getString(R.string.all_songs));
 		}
 		else {
 			final RowSongItemBinding binding = RowSongItemBinding.bind(holder.itemView);
@@ -107,7 +79,7 @@ public class SongAdapter extends RecyclerView.Adapter {
 	// copied from:
 	// https://github.com/hazems/mvvm-sample-app/blob/part1/app/src/main/java/com/example/test/mvvmsampleapp/view/adapter/ProjectAdapter.java
 	// TODO: try to understand this
-	public void setSongList(final ArrayList<MediaBrowserCompat.MediaItem> songList) {
+	public void setSongList(final List<MediaBrowserCompat.MediaItem> songList) {
 		if (_songList == null) {
 			_songList = songList;
 			notifyDataSetChanged();
@@ -144,6 +116,8 @@ public class SongAdapter extends RecyclerView.Adapter {
 							old.getDescription().getSubtitle());
 				}
 			});
+
+			// todo: optimize this
 			_songList = songList;
 
 			// this statement is causing recyclerview to scroll to the bottom
