@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.di.main.home.songs;
+package com.muiz6.musicplayer.di.main.songs;
 
 import androidx.lifecycle.ViewModel;
 

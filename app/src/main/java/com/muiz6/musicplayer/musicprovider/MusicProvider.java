@@ -21,6 +21,7 @@ import com.google.android.exoplayer2.source.MediaSourceFactory;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.muiz6.musicplayer.BuildConfig;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -28,14 +29,13 @@ import java.util.List;
 
 public class MusicProvider implements MediaSessionConnector.MediaMetadataProvider {
 
-	public static final String MEDIA_ID_ALL_SONGS = "allSongs";
-	public static final String MEDIA_ID_ROOT = "mediaItemRoot";
+	public static final String MEDIA_ID_ROOT = BuildConfig.APPLICATION_ID + ".mediaItemRoot";
+	public static final String MEDIA_ID_ALL_SONGS = BuildConfig.APPLICATION_ID + ".allSongs";
+	public static final String MEDIA_ID_ALBUMS = BuildConfig.APPLICATION_ID + ".albums";
+	public static final String MEDIA_ID_ARTISTS = BuildConfig.APPLICATION_ID + ".artists";
+	public static final String MEDIA_ID_PLAYLISTS = BuildConfig.APPLICATION_ID + ".playlists";
+	public static final String MEDIA_ID_GENRES = BuildConfig.APPLICATION_ID + ".genres";
 	public static final Character SEPARATOR_MEDIA_ID = '.';
-	// public static final String MEDIA_ID_ARTISTS = "artists";
-	// public static final String MEDIA_ID_PLAYLISTS = "playlists";
-	// public static final String MEDIA_ID_ALBUMS = "albums";
-	// public static final String MEDIA_ID_FOLDERS = "folders";
-	// public static final String MEDIA_ID_GENRES = "genres";
 
 	private static final MediaDescriptionCompat.Builder _DESC_BUILDER =
 			new MediaDescriptionCompat.Builder();
@@ -88,7 +88,7 @@ public class MusicProvider implements MediaSessionConnector.MediaMetadataProvide
 	}
 
 	public static int getIndexFromMediaId(String mediaId) {
-		return Integer.parseInt(mediaId.substring(mediaId.indexOf('.') + 1));
+		return Integer.parseInt(mediaId.substring(mediaId.lastIndexOf('.') + 1));
 	}
 
 	/**
@@ -111,8 +111,13 @@ public class MusicProvider implements MediaSessionConnector.MediaMetadataProvide
 			return _allSongList;
 		}
 
+		// todo: fix this
+		else {
+			return _allSongList;
+		}
+
 		// else
-		return new ArrayList<>();
+		// return new ArrayList<>();
 	}
 
 	@Nullable

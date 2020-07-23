@@ -30,7 +30,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true"
-		android:background="@drawable/bottom_bar_bg"
+		android:background="@drawable/bg_bottom_bar"
 		android:paddingHorizontal="@dimen/padding_container"
 		android:paddingTop="@dimen/padding_container"
 		android:paddingBottom="@dimen/padding_container_controls_now_playing">

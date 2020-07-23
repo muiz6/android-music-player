@@ -7,4 +7,4 @@
 	android:clipToPadding="false"
 	android:nestedScrollingEnabled="true"
 	android:scrollbars="vertical"
-	app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+	app:layoutManager="androidx.recyclerview.widget.GridLayoutManager" />

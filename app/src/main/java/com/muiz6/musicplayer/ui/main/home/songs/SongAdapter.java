@@ -57,7 +57,11 @@ public class SongAdapter extends RecyclerView.Adapter {
 
 			// -1 bcz index 0 is occupied by header and item positions are no longer in sync
 			songTitle.setText(_songList.get(position - 1).getDescription().getTitle());
-			songArtist.setText(_songList.get(position - 1).getDescription().getSubtitle());
+			final CharSequence subtitle = _songList.get(position - 1).getDescription()
+					.getSubtitle();
+			if (subtitle != null) {
+				songArtist.setText(subtitle.toString());
+			}
 		}
 	}
 

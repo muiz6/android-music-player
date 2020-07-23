@@ -7,38 +7,37 @@
 	android:padding="@dimen/padding_container">
 
 	<ImageView
-		android:id="@+id/row_song_item_icon"
+		android:id="@+id/row_artist_drawable"
 		android:layout_width="wrap_content"
 		android:layout_height="0dp"
 		android:foregroundGravity="center"
 		android:paddingEnd="@dimen/padding_container"
-		android:src="@drawable/ic_play_circle_filled"
+		android:src="@drawable/ic_music_artist"
 		android:tint="?android:attr/textColorSecondary"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintLeft_toLeftOf="parent"
 		app:layout_constraintTop_toTopOf="parent" />
 
 	<TextView
-		android:id="@+id/row_song_item_title"
+		android:id="@+id/row_artist_title"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
-		app:layout_constraintBottom_toTopOf="@+id/row_song_item_artist"
+		app:layout_constraintBottom_toTopOf="@+id/row_artist_subtitle"
 		app:layout_constraintHorizontal_bias="0.5"
-		app:layout_constraintLeft_toRightOf="@id/row_song_item_icon"
+		app:layout_constraintLeft_toRightOf="@id/row_artist_drawable"
 		app:layout_constraintRight_toRightOf="parent"
 		app:layout_constraintTop_toTopOf="parent" />
 
 	<TextView
-		android:id="@+id/row_song_item_artist"
+		android:id="@+id/row_artist_subtitle"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
-		android:text="@string/unknown_artist"
 		android:textColor="?android:attr/textColorSecondary"
+		android:text="@string/unknown_artist"
 		android:textSize="@dimen/size_text_small"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintHorizontal_bias="0.5"
-		app:layout_constraintLeft_toRightOf="@+id/row_song_item_icon"
+		app:layout_constraintLeft_toRightOf="@+id/row_artist_drawable"
 		app:layout_constraintRight_toRightOf="parent"
-		app:layout_constraintTop_toBottomOf="@+id/row_song_item_title" />
+		app:layout_constraintTop_toBottomOf="@+id/row_artist_title" />
 </androidx.constraintlayout.widget.ConstraintLayout>
-

@@ -6,17 +6,22 @@ import androidx.fragment.app.FragmentFactory;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.muiz6.musicplayer.ui.main.PlaceholderFragment;
+import com.muiz6.musicplayer.ui.main.home.albums.AlbumFragment;
+import com.muiz6.musicplayer.ui.main.home.artists.ArtistFragment;
+import com.muiz6.musicplayer.ui.main.home.genres.GenreFragment;
 import com.muiz6.musicplayer.ui.main.home.songs.SongFragment;
 
 public class HomePagerAdapter extends FragmentStateAdapter {
 
 	private static final Class<?>[] _FRAGMENT_CLASS = {
-		SongFragment.class,
+			SongFragment.class,
+			AlbumFragment.class,
+			ArtistFragment.class
 	};
 	private final ClassLoader _classLoader;
 	private final FragmentFactory _fragmentFactory;
 
-	public HomePagerAdapter(@NonNull Fragment fragment,
+	public HomePagerAdapter(Fragment fragment,
 			ClassLoader classLoader,
 			FragmentFactory fragmentFactory) {
 		super(fragment);
@@ -28,8 +33,11 @@ public class HomePagerAdapter extends FragmentStateAdapter {
 	@NonNull
 	@Override
 	public Fragment createFragment(int position) {
-		if (position == 0) {
-			return _fragmentFactory.instantiate(_classLoader, _FRAGMENT_CLASS[0].getName());
+		if (position <= 2) {
+			return _fragmentFactory.instantiate(_classLoader, _FRAGMENT_CLASS[position].getName());
+		}
+		else if (position == 4) {
+			return _fragmentFactory.instantiate(_classLoader, GenreFragment.class.getName());
 		}
 		else {
 			return new PlaceholderFragment();

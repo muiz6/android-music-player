@@ -8,7 +8,7 @@
 		<item name="android:textColor">@color/colorWhite</item>
 		<item name="android:textColorSecondary">@color/colorGreyLight</item>
 
-		<item name="android:scrollbarThumbVertical">@drawable/scrollbar_thumb</item>
+		<item name="android:scrollbarThumbVertical">@drawable/thumb_scrollbar</item>
 
 		<!--color at the back of icon buttons-->
 		<item name="backgroundTint">@android:color/transparent</item>
