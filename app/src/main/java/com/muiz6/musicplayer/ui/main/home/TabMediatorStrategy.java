@@ -18,7 +18,6 @@ public class TabMediatorStrategy implements TabLayoutMediator.TabConfigurationSt
 			R.drawable.ic_library_music,
 			R.drawable.ic_album,
 			R.drawable.ic_music_artist,
-			R.drawable.ic_queue_music,
 			R.drawable.ic_local_offer
 	};
 	private Context _context;

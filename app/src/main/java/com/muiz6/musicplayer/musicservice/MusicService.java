@@ -26,32 +26,35 @@ import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector;
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.ui.PlayerNotificationManager;
+import com.muiz6.musicplayer.MyApp;
 import com.muiz6.musicplayer.R;
-import com.muiz6.musicplayer.musicprovider.MusicProvider;
+import com.muiz6.musicplayer.data.MusicRepository;
 import com.muiz6.musicplayer.notification.DescriptionAdapter;
 import com.muiz6.musicplayer.notification.MusicNotificationManager;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 // overriding onBind() will result in media browser not binding to service
 public class MusicService extends MediaBrowserServiceCompat
-		implements MediaSessionConnector.PlaybackPreparer {
+		implements MediaSessionConnector.PlaybackPreparer,
+		MusicRepository.Listener {
+
+	@Inject MusicRepository musicRepository;
 
 	private static final String _TAG = "MusicService";
-	private final MusicProvider _musicProvider;
-	// @Inject MusicProvider _musicProvider;
 	private MediaSessionCompat _session;
 	private MediaSessionConnector _sessionConnector;
 	private SimpleExoPlayer _player;
 	private PlayerNotificationManager _notificationMgr;
 	private _NoisyReceiver _noisyReceiver;
 
-	public MusicService() {
-		_musicProvider = MusicProvider.getInstance(this);
-	}
+	// public MusicService() {}
 
 	@Override
 	public void onCreate() {
+		((MyApp) getApplication()).getAppComponent().inject(this);
 		super.onCreate();
 
 		// initializing media session
@@ -63,7 +66,7 @@ public class MusicService extends MediaBrowserServiceCompat
 		// needed to connect media session with exoplayer
 		_sessionConnector = new MediaSessionConnector(_session);
 		_sessionConnector.setPlaybackPreparer(this);
-		_sessionConnector.setQueueNavigator(_musicProvider.getQueueNavigator(_session));
+		_sessionConnector.setQueueNavigator(musicRepository.getQueueNavigator(_session));
 
 		// session activity needed for notification click action
 		// todo: look into request codes
@@ -99,13 +102,17 @@ public class MusicService extends MediaBrowserServiceCompat
 			@Nullable Bundle rootHints) {
 
 		// let everyone connect ;)
-		return MusicProvider.getBrowserRoot();
+		return MusicRepository.getBrowserRoot();
 	}
 
 	@Override
 	public void onLoadChildren(@NonNull String parentId,
 			@NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
-		result.sendResult(_musicProvider.getChildren(parentId));
+		result.sendResult(musicRepository.getChildren(parentId));
+
+		// start responding to data change events when children are accessed for the first time,
+		// recalling this method will have no effect
+		musicRepository.addListener(this);
 	}
 
 	@Override
@@ -122,6 +129,9 @@ public class MusicService extends MediaBrowserServiceCompat
 		// stop playback and related processes
 		_session.getController().getTransportControls().stop();
 		NotificationManagerCompat.from(this).cancelAll();
+
+		// stop responding to data change events
+		musicRepository.removeListener(this);
 		super.onDestroy();
 	}
 
@@ -141,7 +151,7 @@ public class MusicService extends MediaBrowserServiceCompat
 	public void onPrepareFromMediaId(@NonNull String mediaId,
 			boolean playWhenReady,
 			@Nullable Bundle extras) {
-		MediaBrowserCompat.MediaItem mediaItem = _musicProvider.getMediaItemById(mediaId);
+		MediaBrowserCompat.MediaItem mediaItem = musicRepository.getMediaItemById(mediaId);
 		if (mediaItem != null) {
 			_session.setActive(true);
 
@@ -159,10 +169,10 @@ public class MusicService extends MediaBrowserServiceCompat
 			_sessionConnector.setPlayer(_player);
 			_notificationMgr.setPlayer(_player);
 
-			final MediaSource[] sources = _musicProvider.getQueueBytMediaId(mediaId);
+			final MediaSource[] sources = musicRepository.getQueueBytMediaId(mediaId);
 			if (sources != null) {
 				_player.prepare(new ConcatenatingMediaSource(sources));
-				_player.seekTo(MusicProvider.getIndexFromMediaId(mediaId), 0);
+				_player.seekTo(MusicRepository.getIndexFromMediaId(mediaId), 0);
 				_player.setPlayWhenReady(playWhenReady);
 
 				final IntentFilter intentFilter =
@@ -189,5 +199,10 @@ public class MusicService extends MediaBrowserServiceCompat
 			@Nullable Bundle extras,
 			@Nullable ResultReceiver cb) {
 		return false;
+	}
+
+	@Override
+	public void onChildrenChanged(String parentMediaId) {
+		notifyChildrenChanged(parentMediaId);
 	}
 }

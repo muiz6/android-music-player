@@ -8,9 +8,9 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
+import com.muiz6.musicplayer.data.MusicRepository;
 import com.muiz6.musicplayer.di.scope.FragmentScope;
 import com.muiz6.musicplayer.media.MusicServiceConnection;
-import com.muiz6.musicplayer.musicprovider.MusicProvider;
 
 import java.util.Collections;
 import java.util.List;
@@ -39,7 +39,7 @@ public class ArtistViewModel extends ViewModel {
 		@Override
 		public void onChanged(Boolean state) {
 			if (state) {
-				_connection.subscribe(MusicProvider.MEDIA_ID_ARTISTS, _subscriptionCallback);
+				_connection.subscribe(MusicRepository.MEDIA_ID_ARTISTS, _subscriptionCallback);
 			}
 		}
 	};
@@ -55,7 +55,7 @@ public class ArtistViewModel extends ViewModel {
 		super.onCleared();
 
 		_connection.isConnected().removeObserver(_connectionObserver);
-		_connection.unsubscribe(MusicProvider.MEDIA_ID_ARTISTS, _subscriptionCallback);
+		_connection.unsubscribe(MusicRepository.MEDIA_ID_ARTISTS, _subscriptionCallback);
 	}
 
 	public LiveData<List<MediaBrowserCompat.MediaItem>> getArtistList() {

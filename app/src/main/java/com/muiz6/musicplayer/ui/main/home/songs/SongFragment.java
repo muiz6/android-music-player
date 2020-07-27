@@ -1,7 +1,6 @@
 package com.muiz6.musicplayer.ui.main.home.songs;
 
 import android.os.Bundle;
-import android.support.v4.media.MediaBrowserCompat;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -27,7 +26,7 @@ public class SongFragment extends Fragment
 
 	private static final String _TAG = "SongFragment";
 	private final ViewModelProvider.Factory _viewModelFactory;
-	private Integer _activeItemIndex = SongViewModel.NOTHING_PLAYING;
+	// private Integer _activeItemIndex = SongViewModel.NOTHING_PLAYING;
 	private FragmentListBinding _binding;
 	private SongAdapter _songListRecyclerAdapter;
 	private GestureDetector _gestureDetector;
@@ -54,9 +53,10 @@ public class SongFragment extends Fragment
 
 		// initializing adapter with empty song list
 		_songListRecyclerAdapter = new SongAdapter(
-				Collections.<MediaBrowserCompat.MediaItem>emptyList());
+				Collections.<SongItemModel>emptyList());
 		_gestureDetector = new GestureDetector(getActivity(),
 				new GestureDetector.SimpleOnGestureListener() {
+
 					@Override
 					public boolean onSingleTapUp(MotionEvent e) {
 						return true;
@@ -73,13 +73,14 @@ public class SongFragment extends Fragment
 	public void onStart() {
 		super.onStart();
 
-		_viewModel.getSongList().observe(getViewLifecycleOwner(), new Observer<List<MediaBrowserCompat.MediaItem>>() {
+		_viewModel.getSongList().observe(getViewLifecycleOwner(),
+				new Observer<List<SongItemModel>>() {
 
-			@Override
-			public void onChanged(List<MediaBrowserCompat.MediaItem> mediaItems) {
-				_songListRecyclerAdapter.setSongList(mediaItems);
-			}
-		});
+					@Override
+					public void onChanged(List<SongItemModel> mediaItems) {
+						_songListRecyclerAdapter.setSongList(mediaItems);
+					}
+				});
 		// _viewModel.getPlayingItemIndex().observe(getViewLifecycleOwner(), new Observer<Integer>() {
 		// 	@Override
 		// 	public void onChanged(Integer integer) {

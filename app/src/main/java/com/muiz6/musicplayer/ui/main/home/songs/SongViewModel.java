@@ -1,6 +1,7 @@
 package com.muiz6.musicplayer.ui.main.home.songs;
 
 import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaDescriptionCompat;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
@@ -8,10 +9,12 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
+import com.muiz6.musicplayer.data.MusicRepository;
 import com.muiz6.musicplayer.di.scope.FragmentScope;
 import com.muiz6.musicplayer.media.MusicServiceConnection;
-import com.muiz6.musicplayer.musicprovider.MusicProvider;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -21,8 +24,9 @@ public class SongViewModel extends ViewModel {
 
 	public static final int NOTHING_PLAYING = -1;
 
-	private final MutableLiveData<List<MediaBrowserCompat.MediaItem>> _songList =
-			new MutableLiveData<>();
+	private final MutableLiveData<List<SongItemModel>> _songList =
+			new MutableLiveData<>(Collections.<SongItemModel>emptyList());
+	private List<MediaBrowserCompat.MediaItem> _mediaSongList;
 	private MediaBrowserCompat.SubscriptionCallback _subscriptionCallback =
 			new MediaBrowserCompat.SubscriptionCallback() {
 
@@ -31,7 +35,18 @@ public class SongViewModel extends ViewModel {
 						@NonNull List<MediaBrowserCompat.MediaItem> children) {
 					super.onChildrenLoaded(parentId, children);
 
-					_songList.postValue(children);
+					// for use with onSongItemClicked()
+					_mediaSongList = children;
+
+					final List<SongItemModel> newSongList = new ArrayList<>();
+					for (final MediaBrowserCompat.MediaItem mediaItem : children) {
+						final SongItemModel model = new SongItemModel();
+						final MediaDescriptionCompat description = mediaItem.getDescription();
+						model.setTitle(String.valueOf(description.getTitle()));
+						model.setArtist(String.valueOf(description.getSubtitle()));
+						newSongList.add(model);
+					}
+					_songList.postValue(newSongList);
 				}
 			};
 	private final Observer<Boolean> _connectionObserver = new Observer<Boolean>() {
@@ -39,7 +54,7 @@ public class SongViewModel extends ViewModel {
 		@Override
 		public void onChanged(Boolean bool) {
 			if (bool) {
-				_connection.subscribe(MusicProvider.MEDIA_ID_ALL_SONGS, _subscriptionCallback);
+				_connection.subscribe(MusicRepository.MEDIA_ID_ALL_SONGS, _subscriptionCallback);
 				// if (_connection.getMetadata() != null) {
 				// 	_connection.getMetadata().observeForever(_metadataObserver);
 				// }
@@ -77,15 +92,15 @@ public class SongViewModel extends ViewModel {
 		// remove permanent observers
 		_connection.isConnected().removeObserver(_connectionObserver);
 		// _connection.getMetadata().removeObserver(_metadataObserver);
-		_connection.unsubscribe(MusicProvider.MEDIA_ID_ALL_SONGS, _subscriptionCallback);
+		_connection.unsubscribe(MusicRepository.MEDIA_ID_ALL_SONGS, _subscriptionCallback);
 	}
 
-	public LiveData<List<MediaBrowserCompat.MediaItem>> getSongList() {
+	public LiveData<List<SongItemModel>> getSongList() {
 		return _songList;
 	}
 
 	public void songItemClicked(int index) {
-		final String mediaId = _songList.getValue().get(index).getMediaId();
+		final String mediaId = _mediaSongList.get(index).getMediaId();
 		_connection.getTransportControls().playFromMediaId(mediaId, null);
 	}
 
