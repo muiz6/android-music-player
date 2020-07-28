@@ -2,7 +2,6 @@ package com.muiz6.musicplayer.data;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaBrowserCompat.MediaItem;
 import android.support.v4.media.MediaDescriptionCompat;
@@ -11,7 +10,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.media.MediaBrowserServiceCompat.BrowserRoot;
 
@@ -24,11 +23,8 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.muiz6.musicplayer.BuildConfig;
-import com.muiz6.musicplayer.data.db.AudioDatabase;
-import com.muiz6.musicplayer.data.db.AudioEntity;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -50,40 +46,28 @@ public class MusicRepository implements
 
 	private static final MediaDescriptionCompat.Builder _DESC_BUILDER =
 			new MediaDescriptionCompat.Builder();
-	private final MutableLiveData<List<MediaItem>> _allSongList =
-			new MutableLiveData<>(Collections.<MediaItem>emptyList());
-	private final MutableLiveData<List<MediaItem>> _albumList =
-			new MutableLiveData<>(Collections.<MediaItem>emptyList());
 	private final Set<Listener> _listenerSet = new HashSet<>();
-	private final Observer<List<MediaItem>> _songListObserver =
+	private final Observer<List<MediaItem>> _allSongListObserver =
 			new DataObserver(MEDIA_ID_ALL_SONGS, _listenerSet);
 	private final Observer<List<MediaItem>> _albumListObserver =
 			new DataObserver(MEDIA_ID_ALBUMS, _listenerSet);
+	private final Observer<List<MediaItem>> _artistListObserver =
+			new DataObserver(MEDIA_ID_ARTISTS, _listenerSet);
+	private final Observer<List<MediaItem>> _genreListObserver =
+			new DataObserver(MEDIA_ID_GENRES, _listenerSet);
+	private final LiveData<List<MediaItem>> _allSongList;
+	private final LiveData<List<MediaItem>> _albumList;
+	private final LiveData<List<MediaItem>> _artistList;
+	private final LiveData<List<MediaItem>> _genreList;
 	private final Context _context;
-	private final AudioDatabase _db;
 
 	@Inject
-	public MusicRepository(@Named("Application") Context context, AudioDatabase db) {
+	public MusicRepository(@Named("Application") Context context, RoomMediator roomMediator) {
 		_context = context;
-		_db = db;
-		final List<AudioEntity> dbSongList = db.getAudioDao().getAllAudio().getValue();
-		if (dbSongList != null) {
-			_allSongList.postValue(_convert(dbSongList, MediaItem.FLAG_PLAYABLE));
-		}
-		db.getAudioDao().getAllAudio().observeForever(new Observer<List<AudioEntity>>() {
-
-			@Override
-			public void onChanged(List<AudioEntity> audioList) {
-				if (audioList != null) {
-					_allSongList.postValue(_convert(audioList, MediaItem.FLAG_PLAYABLE));
-				}
-			}
-		});
-
-		// fetch music library when provider is created
-		// todo: maybe a memory leak
-		// final Thread thread = new Thread(this);
-		// thread.start();
+		_allSongList = roomMediator.getAllSongList();
+		_albumList = roomMediator.getAlbumList();
+		_artistList = roomMediator.getArtistList();
+		_genreList = roomMediator.getGenreList();
 	}
 
 	@NonNull
@@ -126,12 +110,24 @@ public class MusicRepository implements
 
 		// if accessing from root
 		if (mediaId.equals(MusicRepository.MEDIA_ID_ROOT)) {
+			final MediaDescriptionCompat.Builder builder = new MediaDescriptionCompat.Builder();
 			final List<MediaItem> rootItems = new ArrayList<>();
-			rootItems.add(new MediaItem(_getMediaDescription(MEDIA_ID_ALL_SONGS,
-					"All Songs",
-					null,
-					null,
-					null), MediaItem.FLAG_BROWSABLE));
+			rootItems.add(new MediaItem(builder.setMediaId(MEDIA_ID_ALL_SONGS)
+					.setTitle("All Songs")
+					.build(),
+					MediaItem.FLAG_BROWSABLE));
+			rootItems.add(new MediaItem(builder.setMediaId(MEDIA_ID_ALBUMS)
+					.setTitle("Albums")
+					.build(),
+					MediaItem.FLAG_BROWSABLE));
+			rootItems.add(new MediaItem(builder.setMediaId(MEDIA_ID_ARTISTS)
+					.setTitle("Artists")
+					.build(),
+					MediaItem.FLAG_BROWSABLE));
+			rootItems.add(new MediaItem(builder.setMediaId(MEDIA_ID_GENRES)
+					.setTitle("Genres")
+					.build(),
+					MediaItem.FLAG_BROWSABLE));
 			return rootItems;
 		}
 		else if (mediaId.equals(MEDIA_ID_ALL_SONGS)) {
@@ -140,14 +136,15 @@ public class MusicRepository implements
 		else if (mediaId.equals(MEDIA_ID_ALBUMS)) {
 			return _albumList.getValue();
 		}
-
-		// todo: fix this
-		else {
-			return _allSongList.getValue();
+		else if (mediaId.equals(MEDIA_ID_ARTISTS)) {
+			return _artistList.getValue();
+		}
+		else if (mediaId.equals(MEDIA_ID_GENRES)) {
+			return _genreList.getValue();
 		}
 
 		// else
-		// return new ArrayList<>();
+		return new ArrayList<>();
 	}
 
 	@Nullable
@@ -177,9 +174,8 @@ public class MusicRepository implements
 			final MediaSourceFactory factory = new ProgressiveMediaSource.Factory(dataSourceFactory);
 			int i = 0;
 			for (final MediaBrowserCompat.MediaItem mediaItem : _allSongList.getValue()) {
-				sources[i] = factory
+				sources[i++] = factory
 						.createMediaSource(mediaItem.getDescription().getMediaUri());
-				i++;
 			}
 			return sources;
 		}
@@ -203,8 +199,10 @@ public class MusicRepository implements
 
 		// start observing when first listener is added
 		if (!_listenerSet.isEmpty()) {
-			_allSongList.observeForever(_songListObserver);
+			_allSongList.observeForever(_allSongListObserver);
 			_albumList.observeForever(_albumListObserver);
+			_artistList.observeForever(_artistListObserver);
+			_genreList.observeForever(_genreListObserver);
 		}
 	}
 
@@ -213,8 +211,10 @@ public class MusicRepository implements
 
 		// stop observing when all listeners are removed
 		if (_listenerSet.isEmpty()) {
-			_allSongList.removeObserver(_songListObserver);
+			_allSongList.removeObserver(_allSongListObserver);
 			_albumList.removeObserver(_albumListObserver);
+			_artistList.removeObserver(_artistListObserver);
+			_genreList.removeObserver(_genreListObserver);
 		}
 	}
 
@@ -237,89 +237,6 @@ public class MusicRepository implements
 				.setMediaUri(mediaUri)
 				.setDescription(description)
 				.build();
-	}
-
-	private void _fetchSongList() {
-		// final List<MediaItem> newSongList = new ArrayList<>();
-		// final Set<String> albumSet = new HashSet<>();
-		// final List<MediaItem> newAlbumList = new ArrayList<>();
-		//
-		// final Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-		// final String[] projection = {MediaStore.Audio.AudioColumns.DATA,
-		// 		MediaStore.Audio.AudioColumns.TITLE,
-		// 		MediaStore.Audio.AudioColumns.ALBUM,
-		// 		MediaStore.Audio.ArtistColumns.ARTIST};
-		// final Cursor cursor = _context.getContentResolver().query(uri,
-		// 		projection,
-		// 		null,
-		// 		null,
-		// 		MediaStore.Audio.AudioColumns.TITLE + " ASC");
-		//
-		// if (cursor != null) {
-		// 	int i = 0, albumCount = 0;
-		// 	while (cursor.moveToNext()) {
-		// 		final String path = cursor.getString(0);
-		// 		final String name = cursor.getString(1);
-		// 		final String album = cursor.getString(2);
-		// 		String artist = cursor.getString(3);
-		// 		if (artist.equals("<unknown>")) {
-		// 			artist = null;
-		// 		}
-		// 		final String mediaId = MusicRepository.MEDIA_ID_ALL_SONGS
-		// 				+ MusicRepository.SEPARATOR_MEDIA_ID
-		// 				+ i++;
-		// 		newSongList.add(new MediaBrowserCompat.MediaItem(_getMediaDescription(mediaId,
-		// 				name,
-		// 				Uri.parse(path),
-		// 				artist,
-		// 				album),
-		// 				MediaBrowserCompat.MediaItem.FLAG_PLAYABLE));
-		//
-		// 		// create album data
-		// 		if (album != null && !albumSet.contains(album)) {
-		// 			albumSet.add(album);
-		// 			final String albumId = MEDIA_ID_ALBUMS + SEPARATOR_MEDIA_ID + albumCount++;
-		// 			final MediaDescriptionCompat description = _DESC_BUILDER.setMediaId(albumId)
-		// 					.setTitle(album)
-		// 					.setSubtitle(artist)
-		// 					.setDescription(null)
-		// 					.setMediaUri(null)
-		// 					.setIconBitmap(null)
-		// 					.setIconUri(null)
-		// 					.setExtras(null)
-		// 					.build();
-		// 			final MediaItem albumItem = new MediaItem(description,
-		// 					MediaItem.FLAG_BROWSABLE);
-		// 			newAlbumList.add(albumItem);
-		// 		}
-		// 	}
-		// 	cursor.close();
-		// }
-		// _allSongList.postValue(newSongList);
-		// _albumList.postValue(newAlbumList);
-	}
-
-	private List<MediaItem> _convert(List<AudioEntity> list, int flags) {
-		final List<MediaItem> newList = new ArrayList<>();
-		final MediaDescriptionCompat.Builder builder = new MediaDescriptionCompat.Builder();
-		for (final AudioEntity audio : list) {
-			final Bundle extras = new Bundle();
-			extras.putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, audio.getPath());
-			extras.putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, audio.getTitle());
-			extras.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, audio.getAlbum());
-			extras.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, audio.getArtist());
-			extras.putInt(MediaMetadataCompat.METADATA_KEY_DURATION, audio.getDuration());
-			extras.putString(MediaMetadataCompat.METADATA_KEY_GENRE, audio.getGenre());
-			final MediaDescriptionCompat description = builder
-					.setMediaId(MEDIA_ID_ALL_SONGS + audio.getId())
-					.setTitle(audio.getDisplayName())
-					.setSubtitle(audio.getArtist())
-					.setExtras(extras)
-					.build();
-			final MediaItem mediaItem = new MediaItem(description, flags);
-			newList.add(mediaItem);
-		}
-		return newList;
 	}
 
 	public interface Listener {

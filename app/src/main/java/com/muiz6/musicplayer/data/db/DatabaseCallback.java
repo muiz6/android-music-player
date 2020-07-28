@@ -30,6 +30,10 @@ public class DatabaseCallback extends RoomDatabase.Callback implements Runnable 
 	public void onOpen(@NonNull SupportSQLiteDatabase db) {
 		super.onOpen(db);
 
+		// todo: causing error for some reason
+		// final String msg = _context.getString(R.string.scanning_music_library);
+		// Toast.makeText(_context, msg, Toast.LENGTH_SHORT).show();
+
 		new Thread(this).start();
 	}
 
@@ -37,9 +41,7 @@ public class DatabaseCallback extends RoomDatabase.Callback implements Runnable 
 	public void run() {
 		_dao.deleteAll();
 
-		final MediaMetadataRetriever metadataRetriever = new MediaMetadataRetriever();
-
-		// these constants do work on api 21
+		// these constants do work on api-21
 		final String[] projection = {MediaStore.Audio.AudioColumns.DATA,
 				MediaStore.Audio.AudioColumns.DISPLAY_NAME,
 				MediaStore.Audio.AudioColumns.TITLE,
@@ -54,7 +56,6 @@ public class DatabaseCallback extends RoomDatabase.Callback implements Runnable 
 				null,
 				null);
 		if (cursor != null) {
-			// int i = 0;
 			while (cursor.moveToNext()) {
 				_addRow(cursor);
 			}

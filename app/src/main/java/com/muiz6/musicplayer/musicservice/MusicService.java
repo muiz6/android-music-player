@@ -29,8 +29,6 @@ import com.google.android.exoplayer2.ui.PlayerNotificationManager;
 import com.muiz6.musicplayer.MyApp;
 import com.muiz6.musicplayer.R;
 import com.muiz6.musicplayer.data.MusicRepository;
-import com.muiz6.musicplayer.notification.DescriptionAdapter;
-import com.muiz6.musicplayer.notification.MusicNotificationManager;
 
 import java.util.List;
 
@@ -42,12 +40,12 @@ public class MusicService extends MediaBrowserServiceCompat
 		MusicRepository.Listener {
 
 	@Inject MusicRepository musicRepository;
+	@Inject PlayerNotificationManager _notificationMgr;
 
 	private static final String _TAG = "MusicService";
 	private MediaSessionCompat _session;
 	private MediaSessionConnector _sessionConnector;
 	private SimpleExoPlayer _player;
-	private PlayerNotificationManager _notificationMgr;
 	private _NoisyReceiver _noisyReceiver;
 
 	// public MusicService() {}
@@ -80,9 +78,9 @@ public class MusicService extends MediaBrowserServiceCompat
 
 		_noisyReceiver = new _NoisyReceiver(_session.getController());
 
-		_notificationMgr = new MusicNotificationManager(this,
-				new DescriptionAdapter(_session.getController()),
-				null);
+		// _notificationMgr = new MusicNotificationManager(this,
+		// 		new DescriptionAdapter(_session.getController()),
+		// 		null);
 		_notificationMgr.setMediaSessionToken(_session.getSessionToken());
 	}
 

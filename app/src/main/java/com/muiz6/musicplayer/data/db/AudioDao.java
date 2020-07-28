@@ -16,9 +16,16 @@ public interface AudioDao {
 	@Query("DELETE FROM audio_table;")
 	void deleteAll();
 
-	@Query("SELECT * FROM audio_table ORDER BY display_name ASC;")
-	LiveData<List<AudioEntity>> getAllAudio();
+	@Query("SELECT display_name, title, artist FROM audio_table ORDER BY display_name ASC;")
+	LiveData<List<SongPojo>> getAllSongList();
 
-	@Query("SELECT * FROM audio_table WHERE album='ABC' ORDER BY album ASC;")
-	List<AudioEntity> getAlbumList();
+	// group by artist and not album because different artist may share same album name
+	@Query("SELECT album, artist FROM audio_table GROUP BY artist;")
+	LiveData<List<AlbumPojo>> getAlbumList();
+
+	@Query("Select artist FROM audio_table WHERE artist IS NOT NULL GROUP BY artist;")
+	LiveData<List<ArtistPojo>> getArtistList();
+
+	@Query("Select genre FROM audio_table WHERE genre IS NOT NULL GROUP BY genre;")
+	LiveData<List<GenrePojo>> getGenreList();
 }

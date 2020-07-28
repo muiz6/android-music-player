@@ -14,7 +14,8 @@ import dagger.Component;
 @Singleton
 @Component(modules = {AppModule.class,
 		MediaBrowserModule.class,
-		RoomDatabaseModule.class})
+		RoomDatabaseModule.class,
+		NotificationManagerModule.class})
 public interface AppComponent {
 
 	void inject(MusicService service);
