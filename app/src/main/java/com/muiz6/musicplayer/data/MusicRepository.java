@@ -60,10 +60,12 @@ public class MusicRepository implements
 	private final LiveData<List<MediaItem>> _artistList;
 	private final LiveData<List<MediaItem>> _genreList;
 	private final Context _context;
+	private final RoomMediator _roomMediator;
 
 	@Inject
 	public MusicRepository(@Named("Application") Context context, RoomMediator roomMediator) {
 		_context = context;
+		_roomMediator = roomMediator;
 		_allSongList = roomMediator.getAllSongList();
 		_albumList = roomMediator.getAlbumList();
 		_artistList = roomMediator.getArtistList();
@@ -95,6 +97,8 @@ public class MusicRepository implements
 	}
 
 	public static BrowserRoot getBrowserRoot() {
+
+		// allow everyone to connect ;)
 		return new BrowserRoot(MEDIA_ID_ROOT, null);
 	}
 

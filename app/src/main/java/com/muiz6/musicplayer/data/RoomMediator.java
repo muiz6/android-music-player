@@ -1,5 +1,6 @@
 package com.muiz6.musicplayer.data;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
@@ -7,7 +8,6 @@ import android.support.v4.media.MediaMetadataCompat;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 
 import com.muiz6.musicplayer.data.db.AlbumPojo;
 import com.muiz6.musicplayer.data.db.ArtistPojo;
@@ -29,104 +29,21 @@ import javax.inject.Singleton;
 @Singleton
 public class RoomMediator {
 
-	private MutableLiveData<List<MediaBrowserCompat.MediaItem>> _allSongList =
-			new MutableLiveData<>(Collections.<MediaBrowserCompat.MediaItem>emptyList());
-	private MutableLiveData<List<MediaBrowserCompat.MediaItem>> _albumList =
-			new MutableLiveData<>(Collections.<MediaBrowserCompat.MediaItem>emptyList());
-	private MutableLiveData<List<MediaBrowserCompat.MediaItem>> _artistList =
-			new MutableLiveData<>(Collections.<MediaBrowserCompat.MediaItem>emptyList());
-	private MutableLiveData<List<MediaBrowserCompat.MediaItem>> _genreList =
-			new MutableLiveData<>(Collections.<MediaBrowserCompat.MediaItem>emptyList());
-	private final Observer<List<SongPojo>> _dbSongListObserver =
-			new Observer<List<SongPojo>>() {
-
-				@Override
-				public void onChanged(List<SongPojo> audioEntities) {
-					if (audioEntities != null) {
-						_convertSong(audioEntities);
-					}
-				}
-			};
-	private final Observer<List<AlbumPojo>> _dbAlbumListObserver =
-			new Observer<List<AlbumPojo>>() {
-
-				@Override
-				public void onChanged(List<AlbumPojo> audioEntities) {
-					if (audioEntities != null) {
-						_convertAlbum(audioEntities);
-					}
-				}
-			};
-	private final Observer<List<ArtistPojo>> _dbArtistListObserver =
-			new Observer<List<ArtistPojo>>() {
-
-				@Override
-				public void onChanged(List<ArtistPojo> artistPojos) {
-					if (artistPojos != null) {
-						_convertArtist(artistPojos);
-					}
-				}
-			};
-	private final Observer<List<GenrePojo>> _dbGenreListObserver =
-			new Observer<List<GenrePojo>>() {
-
-				@Override
-				public void onChanged(List<GenrePojo> genrePojos) {
-					if (genrePojos != null) {
-						_convertGenre(genrePojos);
-					}
-				}
-			};
-	private final LiveData<List<SongPojo>> _dbAllSongList;
-	private final LiveData<List<AlbumPojo>> _dbAlbumList;
-	private final LiveData<List<ArtistPojo>> _dbArtistList;
-	private final LiveData<List<GenrePojo>> _dbGenreList;
+	private final AudioDao _dao;
 
 	@Inject
 	public RoomMediator(AudioDatabase db) {
-		final AudioDao dao = db.getAudioDao();
-		_dbAllSongList = dao.getAllSongList();
-		_dbAlbumList = dao.getAlbumList();
-		_dbArtistList = dao.getArtistList();
-		_dbGenreList = dao.getGenreList();
-
-		// todo: this throws NPE for some reason
-		// make sure data is loaded atleast once if there is no change
-		// _convertSong(_dbAllSongList.getValue());
-		// _convertAlbum(_dbAlbumList.getValue());
-		// _convertArtist(_dbArtistList.getValue());
-		// _convertGenre(_dbGenreList.getValue());
-
-		// todo: remove observer when not needed to improve performance
-		_dbAllSongList.observeForever(_dbSongListObserver);
-		_dbAlbumList.observeForever(_dbAlbumListObserver);
-		_dbArtistList.observeForever(_dbArtistListObserver);
-		_dbGenreList.observeForever(_dbGenreListObserver);
+		_dao = db.getAudioDao();
 	}
 
 	public LiveData<List<MediaBrowserCompat.MediaItem>> getAllSongList() {
-		return _allSongList;
-	}
-
-	public LiveData<List<MediaBrowserCompat.MediaItem>> getAlbumList() {
-		return _albumList;
-	}
-
-	public LiveData<List<MediaBrowserCompat.MediaItem>> getArtistList() {
-		return _artistList;
-	}
-
-	public LiveData<List<MediaBrowserCompat.MediaItem>> getGenreList() {
-		return _genreList;
-	}
-
-	private void _convertSong(final List<SongPojo> list) {
-
-		// process in bg thread for performance
+		final MutableLiveData<List<MediaBrowserCompat.MediaItem>> result =
+				new MutableLiveData<>(Collections.<MediaBrowserCompat.MediaItem>emptyList());
 		new Thread(new Runnable() {
 
 			@Override
 			public void run() {
+				final List<SongPojo> list = _dao.getAllSongList();
 				final List<MediaBrowserCompat.MediaItem> newList = new ArrayList<>();
 				final MediaDescriptionCompat.Builder builder = new MediaDescriptionCompat.Builder();
 				int i = 0;
@@ -139,6 +56,7 @@ public class RoomMediator {
 							.setMediaId(MusicRepository.MEDIA_ID_ALL_SONGS
 									+ MusicRepository.SEPARATOR_MEDIA_ID
 									+ i++)
+							.setMediaUri(Uri.parse(audio.getPath()))
 							.setTitle(audio.getDisplayName())
 							.setSubtitle(audio.getArtist())
 							.setExtras(extras)
@@ -148,19 +66,21 @@ public class RoomMediator {
 									MediaBrowserCompat.MediaItem.FLAG_PLAYABLE);
 					newList.add(mediaItem);
 				}
-				_allSongList.postValue(newList);
+				result.postValue(newList);
 			}
 		}).start();
+		return result;
 	}
 
-	private void _convertAlbum(final List<AlbumPojo> list) {
-
-		// process in bg thread for performance
+	public LiveData<List<MediaBrowserCompat.MediaItem>> getAlbumList() {
+		final MutableLiveData<List<MediaBrowserCompat.MediaItem>> result =
+				new MutableLiveData<>(Collections.<MediaBrowserCompat.MediaItem>emptyList());
 		new Thread(new Runnable() {
 
 			@Override
 			public void run() {
-			    final List<MediaBrowserCompat.MediaItem> newList = new ArrayList<>();
+				final List<AlbumPojo> list = _dao.getAlbumList();
+				final List<MediaBrowserCompat.MediaItem> newList = new ArrayList<>();
 				final MediaDescriptionCompat.Builder builder = new MediaDescriptionCompat.Builder();
 				int i = 0;
 				for (final AlbumPojo audio : list) {
@@ -180,16 +100,20 @@ public class RoomMediator {
 									MediaBrowserCompat.MediaItem.FLAG_BROWSABLE);
 					newList.add(mediaItem);
 				}
-				_albumList.postValue(newList);
+				result.postValue(newList);
 			}
 		}).start();
+		return result;
 	}
 
-	private void _convertArtist(final List<ArtistPojo> list) {
+	public LiveData<List<MediaBrowserCompat.MediaItem>> getArtistList() {
+		final MutableLiveData<List<MediaBrowserCompat.MediaItem>> result =
+				new MutableLiveData<>(Collections.<MediaBrowserCompat.MediaItem>emptyList());
 		new Thread(new Runnable() {
 
 			@Override
 			public void run() {
+				final List<ArtistPojo> list = _dao.getArtistList();
 				final List<MediaBrowserCompat.MediaItem> newList = new ArrayList<>();
 				final MediaDescriptionCompat.Builder builder = new MediaDescriptionCompat.Builder();
 				int i = 0;
@@ -208,16 +132,20 @@ public class RoomMediator {
 									MediaBrowserCompat.MediaItem.FLAG_BROWSABLE);
 					newList.add(mediaItem);
 				}
-				_artistList.postValue(newList);
+				result.postValue(newList);
 			}
 		}).start();
+		return result;
 	}
 
-	private void _convertGenre(final List<GenrePojo> list) {
+	public LiveData<List<MediaBrowserCompat.MediaItem>> getGenreList() {
+		final MutableLiveData<List<MediaBrowserCompat.MediaItem>> result =
+				new MutableLiveData<>(Collections.<MediaBrowserCompat.MediaItem>emptyList());
 		new Thread(new Runnable() {
 
 			@Override
 			public void run() {
+				final List<GenrePojo> list = _dao.getGenreList();
 				final List<MediaBrowserCompat.MediaItem> newList = new ArrayList<>();
 				final MediaDescriptionCompat.Builder builder = new MediaDescriptionCompat.Builder();
 				int i = 0;
@@ -236,8 +164,9 @@ public class RoomMediator {
 									MediaBrowserCompat.MediaItem.FLAG_BROWSABLE);
 					newList.add(mediaItem);
 				}
-				_genreList.postValue(newList);
+				result.postValue(newList);
 			}
 		}).start();
+		return result;
 	}
 }

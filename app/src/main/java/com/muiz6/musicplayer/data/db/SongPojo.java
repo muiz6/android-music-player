@@ -6,13 +6,24 @@ import androidx.room.ColumnInfo;
 public class SongPojo {
 
 	@NonNull
+	@ColumnInfo(name = "path") private String _path;
+	@NonNull
 	@ColumnInfo(name = "display_name") // file name
 	private String _displayName;
 	@ColumnInfo(name = "title") private String _title; // title defined in file's metadata
 	@ColumnInfo(name = "artist") private String _artist;
 
-	public SongPojo(@NonNull String displayName) {
+	public SongPojo(String path, @NonNull String displayName) {
 		_displayName = displayName;
+		_path = path;
+	}
+
+	public void setPath(String path) {
+		_path = path;
+	}
+
+	public String getPath() {
+		return _path;
 	}
 
 	public void setDisplayName(String displayName) {

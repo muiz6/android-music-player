@@ -15,7 +15,7 @@ import dagger.Component;
 @Component(modules = {AppModule.class,
 		MediaBrowserModule.class,
 		RoomDatabaseModule.class,
-		NotificationManagerModule.class})
+		MusicServiceModule.class})
 public interface AppComponent {
 
 	void inject(MusicService service);

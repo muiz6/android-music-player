@@ -1,6 +1,6 @@
 package com.muiz6.musicplayer.musicservice;
 
-import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
@@ -15,7 +15,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.media.MediaBrowserServiceCompat;
-import androidx.navigation.NavDeepLinkBuilder;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ControlDispatcher;
@@ -27,12 +26,12 @@ import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.ui.PlayerNotificationManager;
 import com.muiz6.musicplayer.MyApp;
-import com.muiz6.musicplayer.R;
 import com.muiz6.musicplayer.data.MusicRepository;
 
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 // overriding onBind() will result in media browser not binding to service
 public class MusicService extends MediaBrowserServiceCompat
@@ -40,58 +39,32 @@ public class MusicService extends MediaBrowserServiceCompat
 		MusicRepository.Listener {
 
 	@Inject MusicRepository musicRepository;
-	@Inject PlayerNotificationManager _notificationMgr;
+	@Inject PlayerNotificationManager notificationMgr;
+	@Inject MediaSessionConnector sessionConnector;
+	@Inject MediaSessionCompat session;
+	@Inject
+	@Named("NoisyReceiver")
+	BroadcastReceiver _noisyReceiver;
 
-	private static final String _TAG = "MusicService";
-	private MediaSessionCompat _session;
-	private MediaSessionConnector _sessionConnector;
 	private SimpleExoPlayer _player;
-	private _NoisyReceiver _noisyReceiver;
-
-	// public MusicService() {}
 
 	@Override
 	public void onCreate() {
 		((MyApp) getApplication()).getAppComponent().inject(this);
 		super.onCreate();
 
-		// initializing media session
-		_session = new MediaSessionCompat(this, _TAG);
-		this.setSessionToken(_session.getSessionToken());
-		// _session.setCallback(new _MediaSessionCallback(this,
-		// 		_session, _musicProvider));
+		// connect service to media session
+		setSessionToken(session.getSessionToken());
 
-		// needed to connect media session with exoplayer
-		_sessionConnector = new MediaSessionConnector(_session);
-		_sessionConnector.setPlaybackPreparer(this);
-		_sessionConnector.setQueueNavigator(musicRepository.getQueueNavigator(_session));
+		// connect media session with exoplayer
+		sessionConnector.setPlaybackPreparer(this);
+		sessionConnector.setQueueNavigator(musicRepository.getQueueNavigator(session));
 
-		// session activity needed for notification click action
-		// todo: look into request codes
-		final PendingIntent intent = new NavDeepLinkBuilder(this)
-				.setGraph(R.navigation.navigation_main)
-				.setDestination(R.id.main_player_fragment)
-				.createPendingIntent();
-		// _session.setSessionActivity(PendingIntent.getActivity(this, 0,
-		// 		intent, PendingIntent.FLAG_UPDATE_CURRENT));
-		_session.setSessionActivity(intent);
+		_noisyReceiver = new NoisyReceiver(session.getController());
 
-		_noisyReceiver = new _NoisyReceiver(_session.getController());
-
-		// _notificationMgr = new MusicNotificationManager(this,
-		// 		new DescriptionAdapter(_session.getController()),
-		// 		null);
-		_notificationMgr.setMediaSessionToken(_session.getSessionToken());
+		// connect media session to exoplayer notification manager
+		notificationMgr.setMediaSessionToken(session.getSessionToken());
 	}
-
-	// @Override
-	// public int onStartCommand(Intent intent, int flags, int startId) {
-	//
-	// 	// docs say only required below ver 5.0
-	// 	// but its required for notification buttons to work
-	// 	// MediaButtonReceiver.handleIntent(_session, intent);
-	// 	return super.onStartCommand(intent, flags, startId);
-	// }
 
 	@Nullable
 	@Override
@@ -125,7 +98,7 @@ public class MusicService extends MediaBrowserServiceCompat
 	public void onDestroy() {
 
 		// stop playback and related processes
-		_session.getController().getTransportControls().stop();
+		session.getController().getTransportControls().stop();
 		NotificationManagerCompat.from(this).cancelAll();
 
 		// stop responding to data change events
@@ -151,7 +124,7 @@ public class MusicService extends MediaBrowserServiceCompat
 			@Nullable Bundle extras) {
 		MediaBrowserCompat.MediaItem mediaItem = musicRepository.getMediaItemById(mediaId);
 		if (mediaItem != null) {
-			_session.setActive(true);
+			session.setActive(true);
 
 			if (_player == null) {
 				_player = new SimpleExoPlayer.Builder(MusicService.this).build();
@@ -164,8 +137,8 @@ public class MusicService extends MediaBrowserServiceCompat
 					.build();
 			_player.setAudioAttributes(audioAttr, true);
 
-			_sessionConnector.setPlayer(_player);
-			_notificationMgr.setPlayer(_player);
+			sessionConnector.setPlayer(_player);
+			notificationMgr.setPlayer(_player);
 
 			final MediaSource[] sources = musicRepository.getQueueBytMediaId(mediaId);
 			if (sources != null) {
@@ -198,6 +171,10 @@ public class MusicService extends MediaBrowserServiceCompat
 			@Nullable ResultReceiver cb) {
 		return false;
 	}
+
+	// following method
+	// belongs to
+	// MusicRepository.Listener
 
 	@Override
 	public void onChildrenChanged(String parentMediaId) {
