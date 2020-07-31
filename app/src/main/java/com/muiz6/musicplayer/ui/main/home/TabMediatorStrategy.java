@@ -31,15 +31,11 @@ public class TabMediatorStrategy implements TabLayoutMediator.TabConfigurationSt
 	public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
 		tab.setIcon(_ICONS[position]);
 
-		// set different tab color from default drawable color
-		// setting here because tabIconTint attribute not working
-		int color;
+		// first tab is selected by default
+		// it should have different color then
 		if (position == 0) {
-			color = ThemeUtil.getColor(_context, R.attr.colorAccent);
+			final int color = ThemeUtil.getColor(_context, R.attr.colorAccent);
+			DrawableCompat.setTint(tab.getIcon(), color);
 		}
-		else {
-			color = ThemeUtil.getColor(_context, android.R.attr.textColorSecondary);
-		}
-		DrawableCompat.setTint(tab.getIcon(), color);
 	}
 }

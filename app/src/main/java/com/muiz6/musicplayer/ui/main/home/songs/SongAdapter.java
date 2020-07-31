@@ -1,18 +1,23 @@
 package com.muiz6.musicplayer.ui.main.home.songs;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.muiz6.musicplayer.R;
-import com.muiz6.musicplayer.databinding.RowSongItemBinding;
+import com.muiz6.musicplayer.databinding.RowSongBinding;
 import com.muiz6.musicplayer.databinding.RowSongItemFirstBinding;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class SongAdapter extends RecyclerView.Adapter {
@@ -34,7 +39,7 @@ public class SongAdapter extends RecyclerView.Adapter {
 			view = inflator.inflate(R.layout.row_song_item_first, parent, false);
 		}
 		else {
-			view = inflator.inflate(R.layout.row_song_item, parent, false);
+			view = inflator.inflate(R.layout.row_song, parent, false);
 		}
 		final RecyclerView.ViewHolder holder = new RecyclerView.ViewHolder(view) {
 		};
@@ -48,14 +53,42 @@ public class SongAdapter extends RecyclerView.Adapter {
 			binding.getRoot().setText(holder.itemView.getContext().getString(R.string.all_songs));
 		}
 		else {
-			final RowSongItemBinding binding = RowSongItemBinding.bind(holder.itemView);
+			final RowSongBinding binding = RowSongBinding.bind(holder.itemView);
 			final TextView songTitle = binding.rowSongItemTitle;
 			final TextView songArtist = binding.rowSongItemArtist;
 
 			// -1 bcz index 0 is occupied by header and item positions are no longer in sync
 			final int syncedPosition = position - 1;
-			songTitle.setText(_songList.get(syncedPosition).getTitle());
-			songArtist.setText(_songList.get(syncedPosition).getArtist());
+			final SongItemModel model = _songList.get(syncedPosition);
+			songTitle.setText(model.getTitle());
+			songArtist.setText(model.getArtist());
+			binding.rowSongItemDuration.setText(_millisecondToString(model.getDuration()));
+
+			// set album art
+			final Bitmap albumArt = model.getAlbumArt();
+			if (albumArt != null) {
+				binding.rowSongItemIcon.setImageBitmap(model.getAlbumArt());
+				binding.rowSongItemIcon.setScaleType(ImageView.ScaleType.FIT_XY);
+			}
+			else {
+
+				// reset default drawable for other indices
+				// final Drawable drawable = binding.getRoot().getContext()
+				// 		.getDrawable(R.drawable.ic_music_note);
+				// binding.rowSongItemIcon.setImageDrawable(drawable);
+				// binding.rowSongItemIcon.setScaleType(ImageView.ScaleType.CENTER_CROP);
+				binding.rowSongItemIcon.setImageDrawable(null);
+			}
+
+			// highlight active item
+			if (model.isActive()) {
+				final Drawable activeBg = binding.getRoot().getContext()
+						.getDrawable(R.drawable.bg_active_song_item);
+				binding.getRoot().setBackground(activeBg);
+			}
+			else {
+				binding.getRoot().setBackground(null);
+			}
 		}
 	}
 
@@ -86,5 +119,14 @@ public class SongAdapter extends RecyclerView.Adapter {
 
 		// producing error for some reason
 		// notifyItemRangeInserted(0, songList.size());
+	}
+
+	private static String _millisecondToString(int milli) {
+		// milli = milli / 1000;
+		// int h = milli/60;
+		// int m = milli % 60;
+		// return "" + h + ":" + m;
+		final SimpleDateFormat format = new SimpleDateFormat("mm:ss");
+		return format.format(new Date(milli));
 	}
 }

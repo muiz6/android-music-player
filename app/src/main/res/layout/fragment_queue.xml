@@ -9,14 +9,12 @@
 		android:id="@+id/queue_app_bar"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:theme="@style/AppTheme.AppBarOverlay"
 		app:layout_constraintTop_toTopOf="parent">
 
 		<androidx.appcompat.widget.Toolbar
 			android:id="@+id/queue_toolbar"
 			android:layout_width="match_parent"
-			android:layout_height="?attr/actionBarSize"
-			app:popupTheme="@style/AppTheme.PopupOverlay" />
+			android:layout_height="?attr/actionBarSize" />
 	</com.google.android.material.appbar.AppBarLayout>
 
 	<TextView

@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -49,26 +51,17 @@ public class DatabaseCallback extends RoomDatabase.Callback implements Runnable 
 				MediaStore.Audio.AudioColumns.ARTIST,
 				MediaStore.Audio.AudioColumns.DURATION};
 
-		// fetch internal storage content
-		Cursor cursor = _contentResolver.query(MediaStore.Audio.Media.INTERNAL_CONTENT_URI,
-				projection,
-				null,
-				null,
-				null);
-		if (cursor != null) {
-			while (cursor.moveToNext()) {
-				_addRow(cursor);
-			}
-			cursor.close();
-		}
-		cursor = null;
+		// ignore 30s and shorter tracks
+		final String selection = MediaStore.Audio.AudioColumns.DURATION + " > ?";
+		final String[] selectionArgs = {String.valueOf(TimeUnit.MILLISECONDS.convert(30,
+				TimeUnit.SECONDS))};
 
 		// fetch external storage content
 		// todo: add permission request here
-		cursor = _contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+		final Cursor cursor = _contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
 				projection,
-				null,
-				null,
+				selection,
+				selectionArgs,
 				null);
 		if (cursor != null) {
 			while (cursor.moveToNext()) {
@@ -97,6 +90,7 @@ public class DatabaseCallback extends RoomDatabase.Callback implements Runnable 
 		final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
 		retriever.setDataSource(_context, Uri.parse(path));
 		final String genre = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE);
+		retriever.getEmbeddedPicture();
 
 		final AudioEntity audioEntity = new AudioEntity(path, displayName);
 		audioEntity.setTitle(title);

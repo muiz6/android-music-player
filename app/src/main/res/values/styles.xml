@@ -1,33 +1,31 @@
 <resources>
 
-	<!-- Base application theme. -->
-	<style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-		<item name="colorPrimary">@color/colorBlack2</item>
-		<item name="colorPrimaryDark">@color/colorBlack2</item>
-		<item name="colorAccent">@color/colorYellow</item>
-		<item name="android:textColor">@color/colorWhite</item>
-		<item name="android:textColorSecondary">@color/colorGreyLight</item>
+	<style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar">
 
-		<item name="android:scrollbarThumbVertical">@drawable/thumb_scrollbar</item>
+		<item name="colorPrimary">@color/colorGrey900</item>
+		<item name="colorPrimaryDark">@color/colorGrey900</item>
+		<item name="android:colorBackground">@color/colorGrey900</item>
+		<item name="colorAccent">@color/colorYellow600</item>
+		<item name="colorSecondary">@color/colorBlueGrey900</item>
+		<item name="colorSecondaryVariant">@color/colorBlueGrey800</item>
+		<item name="colorSurface">@color/colorGrey850</item>
+		<item name="colorOnPrimary">@android:color/white</item>
+		<item name="colorOnSecondary">@android:color/white</item>
+		<item name="colorOnBackground">@android:color/white</item>
+		<item name="android:textColorSecondary">@color/colorGrey300</item>
 
 		<!--color at the back of icon buttons-->
 		<item name="backgroundTint">@android:color/transparent</item>
-		<item name="android:colorBackground">?android:attr/colorPrimary</item>
+		<item name="android:scrollbarThumbVertical">@drawable/thumb_scrollbar</item>
 
-		<!--toolbar icon tint-->
-		<item name="iconTint">?android:attr/textColor</item>
+		<item name="android:textColor">?attr/colorOnPrimary</item>
+		<item name="cardBackgroundColor">?attr/colorSurface</item>
 
-		<!--default drawable_src/icon color-->
-		<item name="tint">?android:attr/textColor</item>
+		<!--system toolbar icon tint-->
+		<item name="iconTint">?attr/colorOnPrimary</item>
 	</style>
 
-	<style name="AppTheme.NoActionBar">
-		<item name="windowActionBar">false</item>
-		<item name="windowNoTitle">true</item>
-	</style>
+	<!--<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />-->
 
-	<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-	<style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
-
+	<!--<style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />-->
 </resources>

@@ -2,8 +2,8 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
 
 	<!--todo: color should be a style attribute-->
-	<solid android:color="@color/colorGrey"/>
+	<solid android:color="?attr/colorSecondaryVariant"/>
 	<corners
-		android:topLeftRadius="@dimen/radius_bottom_appbar"
-		android:topRightRadius="@dimen/radius_bottom_appbar"/>
+		android:topLeftRadius="@dimen/radius_l"
+		android:topRightRadius="@dimen/radius_l"/>
 </shape>

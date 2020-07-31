@@ -50,7 +50,7 @@ public class MusicService extends MediaBrowserServiceCompat
 
 	@Override
 	public void onCreate() {
-		((MyApp) getApplication()).getAppComponent().inject(this);
+		((MyApp) getApplication()).getAppComponent().getMusicServiceComponent().create().inject(this);
 		super.onCreate();
 
 		// connect service to media session

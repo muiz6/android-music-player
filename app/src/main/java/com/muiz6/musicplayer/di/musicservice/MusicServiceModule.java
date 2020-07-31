@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.di;
+package com.muiz6.musicplayer.di.musicservice;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -13,11 +13,11 @@ import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector;
 import com.google.android.exoplayer2.ui.PlayerNotificationManager;
 import com.muiz6.musicplayer.MyApp;
 import com.muiz6.musicplayer.R;
+import com.muiz6.musicplayer.di.scope.ActivityScope;
 import com.muiz6.musicplayer.musicservice.NoisyReceiver;
 import com.muiz6.musicplayer.musicservice.NotificationDescriptionAdapter;
 
 import javax.inject.Named;
-import javax.inject.Singleton;
 
 import dagger.Binds;
 import dagger.Module;
@@ -31,7 +31,7 @@ public abstract class MusicServiceModule {
 	abstract BroadcastReceiver provideNoisyReceiver(NoisyReceiver receiver);
 
 	@Provides
-	@Singleton
+	@ActivityScope
 	static MediaSessionCompat provideMediaSession(@Named("Application") Context context,
 			@Named("Notification") PendingIntent pIntent) {
 		final MediaSessionCompat session = new MediaSessionCompat(context, "AppMediaSession");
@@ -40,7 +40,7 @@ public abstract class MusicServiceModule {
 	}
 
 	@Provides
-	@Singleton
+	@ActivityScope
 	static MediaControllerCompat provideMediaController(MediaSessionCompat session) {
 		return session.getController();
 	}

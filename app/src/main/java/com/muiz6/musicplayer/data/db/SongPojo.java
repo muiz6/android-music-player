@@ -12,6 +12,7 @@ public class SongPojo {
 	private String _displayName;
 	@ColumnInfo(name = "title") private String _title; // title defined in file's metadata
 	@ColumnInfo(name = "artist") private String _artist;
+	@ColumnInfo(name = "duration") private int _duration;
 
 	public SongPojo(String path, @NonNull String displayName) {
 		_displayName = displayName;
@@ -48,5 +49,13 @@ public class SongPojo {
 
 	public void setArtist(String artist) {
 		this._artist = artist;
+	}
+
+	public int getDuration() {
+		return _duration;
+	}
+
+	public void setDuration(int duration) {
+		this._duration = duration;
 	}
 }

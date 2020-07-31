@@ -7,13 +7,22 @@
     <!--<dimen name="appbar_padding_top">8dp</dimen>-->
     <!--<dimen name="appbar_height">112dp</dimen>-->
 
-    <dimen name="padding_container">16dp</dimen>
-    <dimen name="size_text_small">14sp</dimen>
-    <dimen name="radius_bottom_appbar">25dp</dimen>
-    <dimen name="padding_now_playing_text">10dp</dimen>
+	<dimen name="size_text_small">14sp</dimen>
+
 	<dimen name="size_icon_now_playing">50dp</dimen>
-    <dimen name="margin_fab">16dp</dimen>
+
+    <dimen name="radius_l">25dp</dimen>
+
+    <dimen name="margin_l">16dp</dimen>
+	<dimen name="margin_m">8dp</dimen>
+	<dimen name="margin_s">4dp</dimen>
+
+	<dimen name="padding_now_playing_text">10dp</dimen>
+	<dimen name="padding_container">16dp</dimen>
     <dimen name="padding_seek_bar_now_playing">25dp</dimen>
     <dimen name="padding_container_controls_now_playing">20dp</dimen>
 	<dimen name="padding_main_bottom_bar_title">10dp</dimen>
+
+	<!--todo: remove when not needed-->
+	<dimen name="padding_bottom_home_view_pager">56dp</dimen>
 </resources>

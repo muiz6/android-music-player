@@ -15,7 +15,7 @@ public interface AudioDao {
 	@Query("DELETE FROM audio_table;")
 	void deleteAll();
 
-	@Query("SELECT path, display_name, title, artist FROM audio_table ORDER BY display_name ASC;")
+	@Query("SELECT path, display_name, title, artist, duration FROM audio_table ORDER BY display_name ASC;")
 	List<SongPojo> getAllSongList();
 
 	// group by artist and not album because different artist may share same album name

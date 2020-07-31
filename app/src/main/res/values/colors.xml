@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<color name="colorWhite">#FFFFFF</color>
-	<color name="colorGreyLight">#BBBBBB</color>
-	<color name="colorBlack">#000000</color>
-	<color name="colorBlack2">#0f0f0e</color>
-	<color name="colorGrey">#282f33</color>
-	<color name="colorGrey2">#3a4750</color>
-	<color name="colorYellow">#fece2f</color>
+	<color name="colorGrey300">#CDCDCC</color>
+	<color name="colorGrey850">#1F1F1F</color>
+	<color name="colorGrey900">#0F0F0E</color>
+
+	<color name="colorBlueGrey800">#37474F</color>
+	<color name="colorBlueGrey900">#263238</color>
+
+	<color name="colorYellow500">#fCE300</color>
+	<color name="colorYellow600">#FFD600</color>
 </resources>

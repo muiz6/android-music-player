@@ -52,6 +52,7 @@ public class RoomMediator {
 					extras.putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE,
 							audio.getTitle());
 					extras.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, audio.getArtist());
+					extras.putInt(MediaMetadataCompat.METADATA_KEY_DURATION, audio.getDuration());
 					final MediaDescriptionCompat description = builder
 							.setMediaId(MusicRepository.MEDIA_ID_ALL_SONGS
 									+ MusicRepository.SEPARATOR_MEDIA_ID

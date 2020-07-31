@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--need to specify coordinator layout id to preserve toolbar state on config changes-->
 <androidx.coordinatorlayout.widget.CoordinatorLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:id="@+id/home_root"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
 
 	<com.google.android.material.appbar.AppBarLayout
+		android:id="@+id/home_app_bar"
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:theme="@style/AppTheme.AppBarOverlay">
+		android:layout_height="wrap_content">
 
 		<androidx.appcompat.widget.Toolbar
 			android:id="@+id/main_toolbar"
 			android:layout_width="match_parent"
 			android:layout_height="?attr/actionBarSize"
-			app:layout_scrollFlags="scroll|snap|enterAlways"
-			app:popupTheme="@style/AppTheme.PopupOverlay" />
+			app:layout_scrollFlags="scroll|snap|enterAlways" />
 
 		<com.google.android.material.tabs.TabLayout
 			android:id="@+id/main_tab_layout"
@@ -38,7 +39,7 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_gravity="bottom|end"
-		android:layout_margin="@dimen/margin_fab"
+		android:layout_margin="@dimen/margin_l"
 		android:src="@drawable/ic_shuffle"
 		app:layout_dodgeInsetEdges="bottom" />
 

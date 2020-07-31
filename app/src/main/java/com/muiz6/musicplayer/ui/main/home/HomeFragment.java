@@ -131,11 +131,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 			_binding.mainBottomBarSongTitle.setSelected(true); // for marquee text
 			_binding.mainBottomBar.setVisibility(View.VISIBLE);
 
-			// todo: not working for some reason
+			// todo: get height not working for some reason
+			final int padding = (int) getResources().getDimension(R.dimen.padding_bottom_home_view_pager);
 			_binding.mainViewPager.setPadding(_binding.mainViewPager.getPaddingStart(),
 					_binding.mainViewPager.getPaddingTop(),
 					_binding.mainViewPager.getPaddingEnd(),
-					_binding.mainBottomBar.getHeight());
+					padding);
+					// _binding.mainBottomBar.getHeight());
 		}
 		final String title = metadata.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE);
 		if (title != null) {
@@ -148,7 +150,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 		final Context context = getContext();
 		if (context != null) {
 			Drawable icon = context.getDrawable(R.drawable.ic_play_arrow);
-			int color = ThemeUtil.getColor(getContext(), R.attr.tint);
+			int color = ThemeUtil.getColor(getContext(), R.attr.colorOnPrimary);
 			if (pbState.getState() == PlaybackStateCompat.STATE_PLAYING) {
 				color = ThemeUtil.getColor(getContext(), R.attr.colorAccent);
 				icon = context.getDrawable(R.drawable.ic_pause);

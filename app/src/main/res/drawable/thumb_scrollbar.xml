@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-	<solid android:color="?attr/colorAccent"/>
-	<size android:width="5dp"/>
-	<corners android:topLeftRadius="3dp"
-		android:bottomLeftRadius="3dp"/>
-</shape>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+	<item>
+		<shape>
+			<solid android:color="?attr/colorAccent" />
+			<size android:width="5dp" />
+			<corners android:bottomLeftRadius="3dp"
+				android:topLeftRadius="3dp" />
+		</shape>
+	</item>
+</selector>

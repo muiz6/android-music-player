@@ -21,7 +21,7 @@
 		android:layout_height="wrap_content"
 		android:layout_alignTop="@id/player_container_control"
 		android:layout_alignEnd="@id/player_container_control"
-		android:layout_marginEnd="@dimen/margin_fab"
+		android:layout_marginEnd="@dimen/margin_l"
 		android:src="@drawable/ic_playlist_play"
 		android:translationY="-30dp" />
 
@@ -80,7 +80,6 @@
 			android:layout_height="@dimen/size_icon_now_playing"
 			android:scaleType="fitXY"
 			android:src="@drawable/ic_skip_previous"
-			android:tint="@color/colorWhite"
 			app:layout_constraintBottom_toBottomOf="parent"
 			app:layout_constraintEnd_toStartOf="@id/player_btn_play_pause"
 			app:layout_constraintStart_toEndOf="@id/player_btn_shuffle" />

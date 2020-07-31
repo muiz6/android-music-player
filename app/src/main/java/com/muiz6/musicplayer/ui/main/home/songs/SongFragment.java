@@ -1,6 +1,7 @@
 package com.muiz6.musicplayer.ui.main.home.songs;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -14,6 +15,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.muiz6.musicplayer.BuildConfig;
 import com.muiz6.musicplayer.databinding.FragmentListBinding;
 
 import java.util.Collections;
@@ -25,8 +27,10 @@ public class SongFragment extends Fragment
 		implements RecyclerView.OnItemTouchListener {
 
 	private static final String _TAG = "SongFragment";
+	private static final String _BUNDLE_RECYCLER_LAYOUT = BuildConfig.APPLICATION_ID
+			+ ".recycler.layout";
 	private final ViewModelProvider.Factory _viewModelFactory;
-	// private Integer _activeItemIndex = SongViewModel.NOTHING_PLAYING;
+	private int _activeItemIndex = RecyclerView.NO_POSITION;
 	private FragmentListBinding _binding;
 	private SongAdapter _songListRecyclerAdapter;
 	private GestureDetector _gestureDetector;
@@ -54,6 +58,7 @@ public class SongFragment extends Fragment
 		// initializing adapter with empty song list
 		_songListRecyclerAdapter = new SongAdapter(
 				Collections.<SongItemModel>emptyList());
+		// _songListRecyclerAdapter.restore;
 		_gestureDetector = new GestureDetector(getActivity(),
 				new GestureDetector.SimpleOnGestureListener() {
 
@@ -70,6 +75,17 @@ public class SongFragment extends Fragment
 	}
 
 	@Override
+	public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+		super.onViewStateRestored(savedInstanceState);
+
+		if (savedInstanceState != null) {
+			final Parcelable savedRecyclerLayoutState = savedInstanceState
+					.getParcelable(_BUNDLE_RECYCLER_LAYOUT);
+			_binding.getRoot().getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
+		}
+	}
+
+	@Override
 	public void onStart() {
 		super.onStart();
 
@@ -81,26 +97,31 @@ public class SongFragment extends Fragment
 						_songListRecyclerAdapter.setSongList(mediaItems);
 					}
 				});
-		// _viewModel.getPlayingItemIndex().observe(getViewLifecycleOwner(), new Observer<Integer>() {
-		// 	@Override
-		// 	public void onChanged(Integer integer) {
-		// 		if (integer != SongViewModel.NOTHING_PLAYING) {
-		// 			// if (_activeItemIndex != SongViewModel.NOTHING_PLAYING) {
-		// 			// 	final View oldView = _recyclerView.getChildAt(_activeItemIndex);
-		// 			// 	oldView.setBackground(null);
-		// 			// }
-		//
-		// 			// +1 offset due to fragment title
-		// 			_activeItemIndex = integer + 1;
-		// 			final RecyclerView.ViewHolder newViewHolder = _recyclerView
-		// 					.findViewHolderForAdapterPosition(_activeItemIndex);
-		// 			if (newViewHolder != null) {
-		// 				newViewHolder.itemView.setBackground(getContext()
-		// 						.getDrawable(R.drawable.active_queue_item_bg));
-		// 			}
-		// 		}
-		// 	}
-		// });
+
+		// notify recycler view item when active item is changed
+		_viewModel.getPlayingItemIndex().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+			@Override
+			public void onChanged(Integer integer) {
+				if (integer != RecyclerView.NO_POSITION) {
+					if (_activeItemIndex != RecyclerView.NO_POSITION) {
+						_songListRecyclerAdapter.notifyItemChanged(_activeItemIndex);
+					}
+
+					// +1 offset due to fragment title
+					_activeItemIndex = integer + 1;
+					_songListRecyclerAdapter.notifyItemChanged(_activeItemIndex);
+				}
+			}
+		});
+	}
+
+	@Override
+	public void onSaveInstanceState(@NonNull Bundle outState) {
+		super.onSaveInstanceState(outState);
+
+		// save recyclerview state across configuration changes
+		outState.putParcelable(_BUNDLE_RECYCLER_LAYOUT,
+				_binding.getRoot().getLayoutManager().onSaveInstanceState());
 	}
 
 	@Override
