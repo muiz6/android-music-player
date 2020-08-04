@@ -6,8 +6,7 @@ import com.muiz6.musicplayer.ui.main.home.HomeFragment;
 import dagger.Subcomponent;
 
 @FragmentScope
-@Subcomponent(modules = {HomeModule.class,
-		TabLayoutModule.class})
+@Subcomponent(modules = {HomeModule.class})
 public interface HomeComponent {
 	HomeFragment getHomeFragment();
 

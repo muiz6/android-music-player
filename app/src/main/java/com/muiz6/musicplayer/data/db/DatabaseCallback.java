@@ -5,11 +5,16 @@ import android.content.Context;
 import android.database.Cursor;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
+
+import com.muiz6.musicplayer.R;
 
 import java.util.concurrent.TimeUnit;
 
@@ -18,6 +23,7 @@ import javax.inject.Named;
 
 public class DatabaseCallback extends RoomDatabase.Callback implements Runnable {
 
+	private final Handler _handler = new Handler(Looper.getMainLooper());
 	private final ContentResolver _contentResolver;
 	private final Context _context;
 	private AudioDao _dao;
@@ -31,16 +37,19 @@ public class DatabaseCallback extends RoomDatabase.Callback implements Runnable 
 	@Override
 	public void onOpen(@NonNull SupportSQLiteDatabase db) {
 		super.onOpen(db);
-
-		// todo: causing error for some reason
-		// final String msg = _context.getString(R.string.scanning_music_library);
-		// Toast.makeText(_context, msg, Toast.LENGTH_SHORT).show();
-
 		new Thread(this).start();
 	}
 
 	@Override
 	public void run() {
+		_handler.post(new Runnable() {
+
+			@Override
+			public void run() {
+				final String msg = _context.getString(R.string.scanning_music_library);
+				Toast.makeText(_context, msg, Toast.LENGTH_SHORT).show();
+			}
+		});
 		_dao.deleteAll();
 
 		// these constants do work on api-21

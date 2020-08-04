@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.muiz6.musicplayer.data.MusicRepository;
 import com.muiz6.musicplayer.di.scope.FragmentScope;
+import com.muiz6.musicplayer.media.MediaRunnable;
 import com.muiz6.musicplayer.media.MusicServiceConnection;
 
 import java.util.ArrayList;
@@ -43,29 +44,7 @@ public class SongViewModel extends AndroidViewModel {
 					// for use with onSongItemClicked()
 					_mediaSongList = children;
 
-					// todo: loop this in bg thread
-					final List<SongItemModel> newSongList = new ArrayList<>();
-					for (final MediaBrowserCompat.MediaItem mediaItem : children) {
-						final SongItemModel model = new SongItemModel();
-						final MediaDescriptionCompat description = mediaItem.getDescription();
-						model.setTitle(String.valueOf(description.getTitle()));
-						model.setArtist(String.valueOf(description.getSubtitle()));
-						final int duration = description.getExtras()
-								.getInt(MediaMetadataCompat.METADATA_KEY_DURATION);
-						model.setDuration(duration);
-
-						// retrieve album art and add in model
-						final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-						retriever.setDataSource(getApplication().getApplicationContext(),
-								description.getMediaUri());
-						byte[] byteArr = retriever.getEmbeddedPicture();
-						if (byteArr != null) {
-							final Bitmap bmp = BitmapFactory.decodeByteArray(byteArr, 0, byteArr.length);
-							model.setAlbumArt(Bitmap.createScaledBitmap(bmp, 70, 70, false));
-						}
-						newSongList.add(model);
-					}
-					_songList.postValue(newSongList);
+					new Thread(new _ProcessDataRunnable(children)).start();
 				}
 			};
 	private final Observer<Boolean> _connectionObserver = new Observer<Boolean>() {
@@ -132,11 +111,43 @@ public class SongViewModel extends AndroidViewModel {
 		_connection.getTransportControls().playFromMediaId(mediaId, null);
 	}
 
-	// public LiveData<MediaMetadataCompat> getMetadata() {
-	// 	return _connection.getMetadata();
-	// }
-
 	public LiveData<Integer> getPlayingItemIndex() {
 		return _playingItemIndex;
+	}
+
+	// to convert media item list to song item model list
+	private class _ProcessDataRunnable extends MediaRunnable {
+
+		public _ProcessDataRunnable(@NonNull List<MediaBrowserCompat.MediaItem> mediaItems) {
+			super(mediaItems);
+		}
+
+		@Override
+		public void run() {
+			final List<SongItemModel> newSongList = new ArrayList<>();
+			final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+			for (final MediaBrowserCompat.MediaItem mediaItem : getMediaItemList()) {
+				final SongItemModel model = new SongItemModel();
+				final MediaDescriptionCompat description = mediaItem.getDescription();
+				model.setTitle(String.valueOf(description.getTitle()));
+				model.setArtist(String.valueOf(description.getSubtitle()));
+				final int duration = description.getExtras()
+						.getInt(MediaMetadataCompat.METADATA_KEY_DURATION);
+				model.setDuration(duration);
+
+				// retrieve album art and add in model
+				retriever.setDataSource(getApplication().getApplicationContext(),
+						description.getMediaUri());
+				byte[] byteArr = retriever.getEmbeddedPicture();
+				if (byteArr != null) {
+					final Bitmap bmp = BitmapFactory
+							.decodeByteArray(byteArr, 0, byteArr.length);
+					model.setAlbumArt(Bitmap
+							.createScaledBitmap(bmp, 70, 70, false));
+				}
+				newSongList.add(model);
+			}
+			_songList.postValue(newSongList);
+		}
 	}
 }

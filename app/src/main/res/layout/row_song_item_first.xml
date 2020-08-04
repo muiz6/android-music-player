@@ -8,6 +8,6 @@
 	android:layout_height="wrap_content"
 	android:paddingTop="10dp"
 	android:paddingStart="@dimen/padding_container"
-	android:textColor="?attr/colorAccent"
+	android:textColor="?attr/colorSecondary"
 	app:layout_constraintTop_toTopOf="parent" />
 <!--todo extract padding as dimension res-->

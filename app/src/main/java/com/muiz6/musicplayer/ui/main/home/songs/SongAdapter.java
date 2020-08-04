@@ -69,25 +69,24 @@ public class SongAdapter extends RecyclerView.Adapter {
 			if (albumArt != null) {
 				binding.rowSongItemIcon.setImageBitmap(model.getAlbumArt());
 				binding.rowSongItemIcon.setScaleType(ImageView.ScaleType.FIT_XY);
+				binding.rowSongItemIconContainer.setStrokeWidth(0);
 			}
 			else {
 
 				// reset default drawable for other indices
-				// final Drawable drawable = binding.getRoot().getContext()
-				// 		.getDrawable(R.drawable.ic_music_note);
-				// binding.rowSongItemIcon.setImageDrawable(drawable);
-				// binding.rowSongItemIcon.setScaleType(ImageView.ScaleType.CENTER_CROP);
-				binding.rowSongItemIcon.setImageDrawable(null);
+				final Drawable drawable = binding.getRoot().getContext()
+						.getDrawable(R.drawable.ic_music_note);
+				binding.rowSongItemIcon.setImageDrawable(drawable);
+				binding.rowSongItemIcon.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+				binding.rowSongItemIconContainer.setStrokeWidth(2);
 			}
 
 			// highlight active item
 			if (model.isActive()) {
-				final Drawable activeBg = binding.getRoot().getContext()
-						.getDrawable(R.drawable.bg_active_song_item);
-				binding.getRoot().setBackground(activeBg);
+				binding.getRoot().setSelected(true);
 			}
 			else {
-				binding.getRoot().setBackground(null);
+				binding.getRoot().setSelected(false);
 			}
 		}
 	}

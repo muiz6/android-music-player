@@ -4,40 +4,65 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
-	android:padding="@dimen/padding_container">
+	android:layout_marginHorizontal="@dimen/margin_m"
+	android:layout_marginVertical="@dimen/margin_s">
 
-	<ImageView
-		android:id="@+id/row_artist_drawable"
-		android:layout_width="wrap_content"
+	<androidx.cardview.widget.CardView
+		android:id="@+id/row_artist_drawable_container"
+		android:layout_width="0dp"
 		android:layout_height="0dp"
-		android:foregroundGravity="center"
-		android:paddingEnd="@dimen/padding_container"
-		android:src="@drawable/ic_music_artist"
-		android:tint="?android:attr/textColorSecondary"
+		app:cardCornerRadius="@dimen/radius_l"
 		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintLeft_toLeftOf="parent"
-		app:layout_constraintTop_toTopOf="parent" />
+		app:layout_constraintDimensionRatio="1:1"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent">
+
+		<ImageView
+			android:id="@+id/row_artist_drawable"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:scaleType="centerInside"
+			android:src="@drawable/ic_music_artist" />
+	</androidx.cardview.widget.CardView>
 
 	<TextView
 		android:id="@+id/row_artist_title"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
-		app:layout_constraintBottom_toTopOf="@+id/row_artist_subtitle"
+		android:layout_marginStart="@dimen/margin_m"
+		android:layout_marginTop="@dimen/margin_l"
+		android:ellipsize="end"
+		android:lines="1"
+		app:layout_constraintBottom_toTopOf="@+id/row_artist_album_count"
 		app:layout_constraintHorizontal_bias="0.5"
-		app:layout_constraintLeft_toRightOf="@id/row_artist_drawable"
+		app:layout_constraintLeft_toRightOf="@id/row_artist_drawable_container"
 		app:layout_constraintRight_toRightOf="parent"
 		app:layout_constraintTop_toTopOf="parent" />
 
 	<TextView
-		android:id="@+id/row_artist_subtitle"
+		android:id="@+id/row_artist_album_count"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
+		android:layout_marginStart="@dimen/margin_m"
+		android:layout_marginBottom="@dimen/margin_l"
 		android:textColor="?android:attr/textColorSecondary"
-		android:text="@string/unknown_artist"
 		android:textSize="@dimen/size_text_small"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintHorizontal_bias="0.5"
-		app:layout_constraintLeft_toRightOf="@+id/row_artist_drawable"
-		app:layout_constraintRight_toRightOf="parent"
+		app:layout_constraintLeft_toRightOf="@+id/row_artist_drawable_container"
+		app:layout_constraintRight_toLeftOf="@id/row_artist_song_count"
+		app:layout_constraintTop_toBottomOf="@+id/row_artist_title" />
+
+	<TextView
+		android:id="@+id/row_artist_song_count"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="@dimen/margin_l"
+		android:paddingHorizontal="@dimen/radius_l"
+		android:textColor="?android:attr/textColorSecondary"
+		android:textSize="@dimen/size_text_small"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintHorizontal_bias="0.5"
 		app:layout_constraintTop_toBottomOf="@+id/row_artist_title" />
 </androidx.constraintlayout.widget.ConstraintLayout>

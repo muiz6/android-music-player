@@ -22,7 +22,6 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.muiz6.musicplayer.R;
 import com.muiz6.musicplayer.databinding.FragmentHomeBinding;
@@ -34,7 +33,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
 	private final FragmentFactory _fragmentFactory;
 	private final TabLayoutMediator.TabConfigurationStrategy _tabMediatorStrategy;
-	private final TabLayout.OnTabSelectedListener _tabListener;
 	private final ViewModelProvider.Factory _viewModelFactory;
 	private HomeViewModel _viewModel;
 	private FragmentHomeBinding _binding; // only available on runtime
@@ -43,11 +41,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 	@Inject
 	public HomeFragment(FragmentFactory factory,
 			ViewModelProvider.Factory viewModelFactory,
-			TabLayoutMediator.TabConfigurationStrategy tabMediatorStrategy,
-			TabLayout.OnTabSelectedListener tabListener) {
+			TabLayoutMediator.TabConfigurationStrategy tabMediatorStrategy) {
 		_fragmentFactory = factory;
 		_tabMediatorStrategy = tabMediatorStrategy;
-		_tabListener = tabListener;
 		_viewModelFactory = viewModelFactory;
 	}
 
@@ -87,7 +83,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 		new TabLayoutMediator(_binding.mainTabLayout,
 				_binding.mainViewPager,
 				_tabMediatorStrategy).attach();
-		_binding.mainTabLayout.addOnTabSelectedListener(_tabListener);
 
 		// sync with media session
 		_viewModel.getMetadata().observe(getViewLifecycleOwner(),
@@ -128,7 +123,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
 		// make bottom appbar visible if metadata exists
 		if (_binding.mainBottomBar.getVisibility() != View.VISIBLE) {
-			_binding.mainBottomBarSongTitle.setSelected(true); // for marquee text
+			// _binding.mainBottomBarSongTitle.setSelected(true); // for marquee text
 			_binding.mainBottomBar.setVisibility(View.VISIBLE);
 
 			// todo: get height not working for some reason
@@ -152,7 +147,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 			Drawable icon = context.getDrawable(R.drawable.ic_play_arrow);
 			int color = ThemeUtil.getColor(getContext(), R.attr.colorOnPrimary);
 			if (pbState.getState() == PlaybackStateCompat.STATE_PLAYING) {
-				color = ThemeUtil.getColor(getContext(), R.attr.colorAccent);
+				color = ThemeUtil.getColor(getContext(), R.attr.colorSecondary);
 				icon = context.getDrawable(R.drawable.ic_pause);
 			}
 			btn.setImageDrawable(icon);

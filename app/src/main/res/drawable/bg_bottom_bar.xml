@@ -2,7 +2,7 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
 
 	<!--todo: color should be a style attribute-->
-	<solid android:color="?attr/colorSecondaryVariant"/>
+	<solid android:color="?attr/colorPrimaryVariant"/>
 	<corners
 		android:topLeftRadius="@dimen/radius_l"
 		android:topRightRadius="@dimen/radius_l"/>

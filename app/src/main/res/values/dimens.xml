@@ -12,6 +12,8 @@
 	<dimen name="size_icon_now_playing">50dp</dimen>
 
     <dimen name="radius_l">25dp</dimen>
+	<dimen name="radius_m">18dp</dimen>
+	<dimen name="radius_s">12dp</dimen>
 
     <dimen name="margin_l">16dp</dimen>
 	<dimen name="margin_m">8dp</dimen>

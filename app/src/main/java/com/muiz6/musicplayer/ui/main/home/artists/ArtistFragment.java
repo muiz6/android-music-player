@@ -1,7 +1,6 @@
 package com.muiz6.musicplayer.ui.main.home.artists;
 
 import android.os.Bundle;
-import android.support.v4.media.MediaBrowserCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +33,6 @@ public class ArtistFragment extends Fragment {
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		_viewModel = new ViewModelProvider(this, _viewModelFactory).get(ArtistViewModel.class);
 	}
 
@@ -46,19 +44,18 @@ public class ArtistFragment extends Fragment {
 		_binding = FragmentListBinding.inflate(inflater, container, false);
 		final RecyclerView recyclerView = _binding.getRoot();
 		recyclerView.setAdapter(new ArtistAdapter(
-				Collections.<MediaBrowserCompat.MediaItem>emptyList()));
+				Collections.<ArtistItemModel>emptyList()));
 		return recyclerView;
 	}
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-
 		_viewModel.getArtistList().observe(getViewLifecycleOwner(),
-				new Observer<List<MediaBrowserCompat.MediaItem>>() {
+				new Observer<List<ArtistItemModel>>() {
 
 					@Override
-					public void onChanged(List<MediaBrowserCompat.MediaItem> mediaItems) {
+					public void onChanged(List<ArtistItemModel> mediaItems) {
 						_binding.getRoot().setAdapter(new ArtistAdapter(mediaItems));
 					}
 				});
@@ -67,7 +64,6 @@ public class ArtistFragment extends Fragment {
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
-
 		_binding = null;
 	}
 }

@@ -5,26 +5,30 @@
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:layout_marginHorizontal="@dimen/margin_m"
-	android:layout_marginVertical="@dimen/margin_s">
+	android:layout_marginVertical="@dimen/margin_m"
+	android:background="@drawable/bg_item">
 
-	<androidx.cardview.widget.CardView
+	<!--stroke width is defined in SongAdapter class-->
+	<com.google.android.material.card.MaterialCardView
 		android:id="@+id/row_song_item_icon_container"
 		android:layout_width="0dp"
 		android:layout_height="0dp"
-		app:cardCornerRadius="@dimen/radius_l"
+		android:layout_margin="@dimen/margin_m"
+		app:cardCornerRadius="@dimen/radius_s"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintDimensionRatio="1:1"
 		app:layout_constraintStart_toStartOf="parent"
-		app:layout_constraintTop_toTopOf="parent">
+		app:layout_constraintTop_toTopOf="parent"
+		app:strokeColor="@android:color/white">
 
 		<ImageView
 			android:id="@+id/row_song_item_icon"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
+			android:layout_gravity="center"
 			android:foregroundGravity="center"
-			android:scaleType="centerCrop"
-			android:layout_gravity="center" />
-	</androidx.cardview.widget.CardView>
+			android:scaleType="centerCrop" />
+	</com.google.android.material.card.MaterialCardView>
 
 	<TextView
 		android:id="@+id/row_song_item_title"
@@ -64,7 +68,7 @@
 		android:textColor="?android:attr/textColorSecondary"
 		android:textSize="@dimen/size_text_small"
 		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintHorizontal_bias="0.5"
 		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintHorizontal_bias="0.5"
 		app:layout_constraintTop_toBottomOf="@+id/row_song_item_title" />
 </androidx.constraintlayout.widget.ConstraintLayout>

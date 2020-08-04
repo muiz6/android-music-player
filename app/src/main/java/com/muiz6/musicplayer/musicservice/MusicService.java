@@ -35,22 +35,23 @@ import javax.inject.Named;
 
 // overriding onBind() will result in media browser not binding to service
 public class MusicService extends MediaBrowserServiceCompat
-		implements MediaSessionConnector.PlaybackPreparer,
-		MusicRepository.Listener {
+		implements MediaSessionConnector.PlaybackPreparer {
 
 	@Inject MusicRepository musicRepository;
 	@Inject PlayerNotificationManager notificationMgr;
 	@Inject MediaSessionConnector sessionConnector;
 	@Inject MediaSessionCompat session;
+	@Inject MediaSessionConnector.QueueNavigator queueNavigator;
 	@Inject
 	@Named("NoisyReceiver")
-	BroadcastReceiver _noisyReceiver;
+	BroadcastReceiver noisyReceiver;
 
 	private SimpleExoPlayer _player;
 
 	@Override
 	public void onCreate() {
-		((MyApp) getApplication()).getAppComponent().getMusicServiceComponent().create().inject(this);
+		((MyApp) getApplication()).getAppComponent().getMusicServiceComponent().create()
+				.inject(this);
 		super.onCreate();
 
 		// connect service to media session
@@ -59,8 +60,10 @@ public class MusicService extends MediaBrowserServiceCompat
 		// connect media session with exoplayer
 		sessionConnector.setPlaybackPreparer(this);
 		sessionConnector.setQueueNavigator(musicRepository.getQueueNavigator(session));
+		// sessionConnector.setQueueNavigator(queueNavigator);
 
-		_noisyReceiver = new NoisyReceiver(session.getController());
+		// to stop playback when headphones are removed
+		noisyReceiver = new NoisyReceiver(session.getController());
 
 		// connect media session to exoplayer notification manager
 		notificationMgr.setMediaSessionToken(session.getSessionToken());
@@ -79,11 +82,7 @@ public class MusicService extends MediaBrowserServiceCompat
 	@Override
 	public void onLoadChildren(@NonNull String parentId,
 			@NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
-		result.sendResult(musicRepository.getChildren(parentId));
-
-		// start responding to data change events when children are accessed for the first time,
-		// recalling this method will have no effect
-		musicRepository.addListener(this);
+		musicRepository.sendResult(parentId, result);
 	}
 
 	@Override
@@ -100,9 +99,6 @@ public class MusicService extends MediaBrowserServiceCompat
 		// stop playback and related processes
 		session.getController().getTransportControls().stop();
 		NotificationManagerCompat.from(this).cancelAll();
-
-		// stop responding to data change events
-		musicRepository.removeListener(this);
 		super.onDestroy();
 	}
 
@@ -148,7 +144,7 @@ public class MusicService extends MediaBrowserServiceCompat
 
 				final IntentFilter intentFilter =
 						new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
-				MusicService.this.registerReceiver(_noisyReceiver, intentFilter);
+				MusicService.this.registerReceiver(noisyReceiver, intentFilter);
 			}
 		}
 	}
@@ -170,14 +166,5 @@ public class MusicService extends MediaBrowserServiceCompat
 			@Nullable Bundle extras,
 			@Nullable ResultReceiver cb) {
 		return false;
-	}
-
-	// following method
-	// belongs to
-	// MusicRepository.Listener
-
-	@Override
-	public void onChildrenChanged(String parentMediaId) {
-		notifyChildrenChanged(parentMediaId);
 	}
 }

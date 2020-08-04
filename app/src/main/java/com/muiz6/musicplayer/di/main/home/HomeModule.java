@@ -3,9 +3,11 @@ package com.muiz6.musicplayer.di.main.home;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.muiz6.musicplayer.di.main.albums.AlbumComponent;
 import com.muiz6.musicplayer.di.main.songs.SongComponent;
 import com.muiz6.musicplayer.ui.main.home.HomeViewModel;
+import com.muiz6.musicplayer.ui.main.home.TabMediatorStrategy;
 import com.muiz6.musicplayer.ui.main.home.albums.AlbumFragment;
 import com.muiz6.musicplayer.ui.main.home.songs.SongFragment;
 
@@ -17,6 +19,10 @@ import dagger.multibindings.IntoMap;
 
 @Module
 public abstract class HomeModule {
+
+	@Binds
+	abstract TabLayoutMediator.TabConfigurationStrategy provideTabMediatorStrategy(
+			TabMediatorStrategy strategy);
 
 	@Binds
 	@IntoMap

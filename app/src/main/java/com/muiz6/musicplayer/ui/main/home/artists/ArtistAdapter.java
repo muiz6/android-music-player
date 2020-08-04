@@ -1,7 +1,5 @@
 package com.muiz6.musicplayer.ui.main.home.artists;
 
-import android.support.v4.media.MediaBrowserCompat;
-import android.support.v4.media.MediaDescriptionCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +15,9 @@ import java.util.List;
 
 public class ArtistAdapter extends RecyclerView.Adapter<MyViewHolder> {
 
-	private final List<MediaBrowserCompat.MediaItem> _artistList;
+	private final List<ArtistItemModel> _artistList;
 
-	public ArtistAdapter(List<MediaBrowserCompat.MediaItem> artistList) {
+	public ArtistAdapter(List<ArtistItemModel> artistList) {
 		_artistList = artistList;
 	}
 
@@ -34,12 +32,10 @@ public class ArtistAdapter extends RecyclerView.Adapter<MyViewHolder> {
 	@Override
 	public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
 		final RowArtistBinding binding = RowArtistBinding.bind(holder.itemView);
-		final MediaDescriptionCompat mediaDescription = _artistList.get(position).getDescription();
-		binding.rowArtistTitle.setText(mediaDescription.getTitle());
-		final CharSequence subtitle = mediaDescription.getSubtitle();
-		if (subtitle != null) {
-			binding.rowArtistSubtitle.setText(subtitle.toString());
-		}
+		final ArtistItemModel model = _artistList.get(position);
+		binding.rowArtistTitle.setText(model.getName());
+		binding.rowArtistAlbumCount.setText(String.valueOf(model.getAlbumCount()));
+		binding.rowArtistSongCount.setText(String.valueOf(model.getSongCount()));
 	}
 
 	@Override
