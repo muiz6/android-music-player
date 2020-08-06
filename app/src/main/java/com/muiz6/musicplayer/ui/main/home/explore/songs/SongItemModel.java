@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.ui.main.home.songs;
+package com.muiz6.musicplayer.ui.main.home.explore.songs;
 
 import android.graphics.Bitmap;
 

@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.ui.main.home.artists;
+package com.muiz6.musicplayer.ui.main.home.explore.artists;
 
 import androidx.annotation.Nullable;
 

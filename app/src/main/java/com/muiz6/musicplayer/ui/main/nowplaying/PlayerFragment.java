@@ -202,7 +202,7 @@ public class PlayerFragment extends Fragment
 
 	private void _updateFromPlaybackState(PlaybackStateCompat state) {
 		final int colorAccent = ThemeUtil.getColor(getContext(), R.attr.colorSecondary);
-		final int colorIconDefault = ThemeUtil.getColor(getContext(), R.attr.colorOnPrimary);
+		final int colorIconDefault = ThemeUtil.getColor(getContext(), R.attr.colorOnSurface);
 		if (state.getState() == PlaybackStateCompat.STATE_PLAYING) {
 			_binding.playerBtnPlayPause.setImageDrawable(ContextCompat.getDrawable(getContext(),
 					R.drawable.ic_pause));
@@ -219,7 +219,7 @@ public class PlayerFragment extends Fragment
 
 	private void _updateFromShuffleMode(int shuffleMode) {
 		final int colorAccent = ThemeUtil.getColor(getContext(), R.attr.colorSecondary);
-		final int colorIconDefault = ThemeUtil.getColor(getContext(), R.attr.colorOnPrimary);
+		final int colorIconDefault = ThemeUtil.getColor(getContext(), R.attr.colorOnSurface);
 		if (shuffleMode == PlaybackStateCompat.SHUFFLE_MODE_ALL) {
 			DrawableCompat.setTint(_binding.playerBtnShuffle.getDrawable(),
 					colorAccent);
@@ -232,7 +232,7 @@ public class PlayerFragment extends Fragment
 
 	private void _updateFromRepeatMode(int repeatMode) {
 		final int colorAccent = ThemeUtil.getColor(getContext(), R.attr.colorSecondary);
-		final int colorIconDefault = ThemeUtil.getColor(getContext(), R.attr.colorOnPrimary);
+		final int colorIconDefault = ThemeUtil.getColor(getContext(), R.attr.colorOnSurface);
 		if (repeatMode == PlaybackStateCompat.REPEAT_MODE_ALL) {
 			_binding.playerBtnRepeat
 					.setImageDrawable(getContext().getDrawable(R.drawable.ic_repeat));

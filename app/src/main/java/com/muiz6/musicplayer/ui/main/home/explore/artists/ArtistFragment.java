@@ -1,7 +1,6 @@
-package com.muiz6.musicplayer.ui.main.home.albums;
+package com.muiz6.musicplayer.ui.main.home.explore.artists;
 
 import android.os.Bundle;
-import android.support.v4.media.MediaBrowserCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,32 +10,30 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.muiz6.musicplayer.databinding.FragmentGridBinding;
+import com.muiz6.musicplayer.databinding.FragmentListBinding;
 
 import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 
-public class AlbumFragment extends Fragment {
+public class ArtistFragment extends Fragment {
 
 	private final ViewModelProvider.Factory _viewModelFactory;
-	private AlbumViewModel _viewModel;
-	private FragmentGridBinding _binding;
+	private ArtistViewModel _viewModel;
+	private FragmentListBinding _binding;
 
 	@Inject
-	public AlbumFragment(ViewModelProvider.Factory viewModelFactory) {
+	public ArtistFragment(ViewModelProvider.Factory viewModelFactory) {
 		_viewModelFactory = viewModelFactory;
 	}
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		_viewModel = new ViewModelProvider(this, _viewModelFactory).get(AlbumViewModel.class);
+		_viewModel = new ViewModelProvider(this, _viewModelFactory).get(ArtistViewModel.class);
 	}
 
 	@Nullable
@@ -44,24 +41,22 @@ public class AlbumFragment extends Fragment {
 	public View onCreateView(@NonNull LayoutInflater inflater,
 			@Nullable ViewGroup container,
 			@Nullable Bundle savedInstanceState) {
-		_binding = FragmentGridBinding.inflate(inflater, container, false);
+		_binding = FragmentListBinding.inflate(inflater, container, false);
 		final RecyclerView recyclerView = _binding.getRoot();
-		recyclerView.setLayoutManager(new GridLayoutManager(recyclerView.getContext(), 3));
-		recyclerView.setAdapter(new AlbumAdapter(
-				Collections.<MediaBrowserCompat.MediaItem>emptyList()));
+		recyclerView.setAdapter(new ArtistAdapter(
+				Collections.<ArtistItemModel>emptyList()));
 		return recyclerView;
 	}
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-
-		_viewModel.getAlbumList().observe(getViewLifecycleOwner(),
-				new Observer<List<MediaBrowserCompat.MediaItem>>() {
+		_viewModel.getArtistList().observe(getViewLifecycleOwner(),
+				new Observer<List<ArtistItemModel>>() {
 
 					@Override
-					public void onChanged(List<MediaBrowserCompat.MediaItem> albumList) {
-						_binding.getRoot().setAdapter(new AlbumAdapter(albumList));
+					public void onChanged(List<ArtistItemModel> mediaItems) {
+						_binding.getRoot().setAdapter(new ArtistAdapter(mediaItems));
 					}
 				});
 	}
@@ -69,7 +64,6 @@ public class AlbumFragment extends Fragment {
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
-
 		_binding = null;
 	}
 }

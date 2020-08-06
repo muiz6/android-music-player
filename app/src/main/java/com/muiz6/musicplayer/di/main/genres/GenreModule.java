@@ -2,7 +2,7 @@ package com.muiz6.musicplayer.di.main.genres;
 
 import androidx.lifecycle.ViewModel;
 
-import com.muiz6.musicplayer.ui.main.home.genres.GenreViewModel;
+import com.muiz6.musicplayer.ui.main.home.explore.genres.GenreViewModel;
 
 import dagger.Binds;
 import dagger.Module;

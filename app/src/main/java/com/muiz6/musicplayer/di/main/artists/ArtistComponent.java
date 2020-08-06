@@ -1,7 +1,7 @@
 package com.muiz6.musicplayer.di.main.artists;
 
 import com.muiz6.musicplayer.di.scope.FragmentScope;
-import com.muiz6.musicplayer.ui.main.home.artists.ArtistFragment;
+import com.muiz6.musicplayer.ui.main.home.explore.artists.ArtistFragment;
 
 import dagger.Subcomponent;
 

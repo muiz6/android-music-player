@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.ui.main.home.genres;
+package com.muiz6.musicplayer.ui.main.home.explore.genres;
 
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.muiz6.musicplayer.R;
 import com.muiz6.musicplayer.databinding.RowGenreBinding;
-import com.muiz6.musicplayer.ui.main.home.MyViewHolder;
+import com.muiz6.musicplayer.ui.MyViewHolder;
 
 import java.util.List;
 

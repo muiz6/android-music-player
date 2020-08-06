@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
-	<item android:state_selected="true">
+	<item android:state_activated="true">
 		<shape>
 			<corners android:radius="@dimen/radius_m" />
 			<solid android:color="?attr/colorSecondary" />
@@ -11,7 +11,7 @@
 	<item>
 		<shape>
 			<corners android:radius="@dimen/radius_m" />
-			<solid android:color="?attr/colorPrimary" />
+			<solid android:color="?attr/colorSurface" />
 		</shape>
 	</item>
 </selector>

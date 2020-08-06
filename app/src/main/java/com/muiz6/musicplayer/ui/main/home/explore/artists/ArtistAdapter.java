@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.ui.main.home.artists;
+package com.muiz6.musicplayer.ui.main.home.explore.artists;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.muiz6.musicplayer.R;
 import com.muiz6.musicplayer.databinding.RowArtistBinding;
-import com.muiz6.musicplayer.ui.main.home.MyViewHolder;
+import com.muiz6.musicplayer.ui.MyViewHolder;
 
 import java.util.List;
 

@@ -19,6 +19,8 @@
 	<dimen name="margin_m">8dp</dimen>
 	<dimen name="margin_s">4dp</dimen>
 
+	<dimen name="stroke_m">1.5dp</dimen>
+
 	<dimen name="padding_now_playing_text">10dp</dimen>
 	<dimen name="padding_container">16dp</dimen>
     <dimen name="padding_seek_bar_now_playing">25dp</dimen>

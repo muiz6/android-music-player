@@ -6,6 +6,7 @@ import com.muiz6.musicplayer.di.FragmentFactoryModule;
 import com.muiz6.musicplayer.di.ViewModelFactoryModule;
 import com.muiz6.musicplayer.di.main.albums.AlbumComponent;
 import com.muiz6.musicplayer.di.main.artists.ArtistComponent;
+import com.muiz6.musicplayer.di.main.explore.ExploreComponent;
 import com.muiz6.musicplayer.di.main.genres.GenreComponent;
 import com.muiz6.musicplayer.di.main.home.HomeComponent;
 import com.muiz6.musicplayer.di.main.nowplaying.PlayerComponent;
@@ -35,6 +36,8 @@ public interface MainComponent {
 	GenreComponent.Factory getGenreComponent();
 
 	PlayerComponent.Factory getPlayerComponent();
+
+	ExploreComponent.Factory getExploreComponent();
 
 	@Subcomponent.Factory
 	interface Factory {

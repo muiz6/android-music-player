@@ -1,9 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
+<layer-list>
+	<item>
+		<shape
+			xmlns:android="http://schemas.android.com/apk/res/android">
 
-	<!--todo: color should be a style attribute-->
-	<solid android:color="?attr/colorPrimaryVariant"/>
-	<corners
-		android:topLeftRadius="@dimen/radius_l"
-		android:topRightRadius="@dimen/radius_l"/>
-</shape>
+			<solid android:color="?attr/colorSurface" />
+			<corners
+				android:topLeftRadius="@dimen/radius_l"
+				android:topRightRadius="@dimen/radius_l" />
+		</shape>
+	</item>
+
+	<!--elevation overlay 7%-->
+	<item>
+		<shape
+			xmlns:android="http://schemas.android.com/apk/res/android">
+
+			<solid android:color="#12FFFFFF" />
+			<corners
+				android:topLeftRadius="@dimen/radius_l"
+				android:topRightRadius="@dimen/radius_l" />
+		</shape>
+	</item>
+</layer-list>

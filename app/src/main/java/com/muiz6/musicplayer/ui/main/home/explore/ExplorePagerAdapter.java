@@ -1,16 +1,16 @@
-package com.muiz6.musicplayer.ui.main.home;
+package com.muiz6.musicplayer.ui.main.home.explore;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentFactory;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.muiz6.musicplayer.ui.main.home.albums.AlbumFragment;
-import com.muiz6.musicplayer.ui.main.home.artists.ArtistFragment;
-import com.muiz6.musicplayer.ui.main.home.genres.GenreFragment;
-import com.muiz6.musicplayer.ui.main.home.songs.SongFragment;
+import com.muiz6.musicplayer.ui.main.home.explore.albums.AlbumFragment;
+import com.muiz6.musicplayer.ui.main.home.explore.artists.ArtistFragment;
+import com.muiz6.musicplayer.ui.main.home.explore.genres.GenreFragment;
+import com.muiz6.musicplayer.ui.main.home.explore.songs.SongFragment;
 
-public class HomePagerAdapter extends FragmentStateAdapter {
+public class ExplorePagerAdapter extends FragmentStateAdapter {
 
 	private static final Class<?>[] _FRAGMENT_CLASSES = {
 			SongFragment.class,
@@ -21,7 +21,7 @@ public class HomePagerAdapter extends FragmentStateAdapter {
 	private final ClassLoader _classLoader;
 	private final FragmentFactory _fragmentFactory;
 
-	public HomePagerAdapter(Fragment fragment,
+	public ExplorePagerAdapter(Fragment fragment,
 			ClassLoader classLoader,
 			FragmentFactory fragmentFactory) {
 		super(fragment);

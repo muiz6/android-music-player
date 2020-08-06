@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.ui.main.home.genres;
+package com.muiz6.musicplayer.ui.main.home.explore.genres;
 
 import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;

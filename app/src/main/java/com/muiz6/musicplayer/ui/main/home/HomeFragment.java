@@ -8,6 +8,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
@@ -18,39 +19,34 @@ import androidx.fragment.app.FragmentFactory;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 
-import com.google.android.material.tabs.TabLayoutMediator;
 import com.muiz6.musicplayer.R;
 import com.muiz6.musicplayer.databinding.FragmentHomeBinding;
 import com.muiz6.musicplayer.ui.ThemeUtil;
 
 import javax.inject.Inject;
 
-public class HomeFragment extends Fragment implements View.OnClickListener {
+public class HomeFragment extends Fragment implements View.OnClickListener,
+		NavController.OnDestinationChangedListener{
 
 	private final FragmentFactory _fragmentFactory;
-	private final TabLayoutMediator.TabConfigurationStrategy _tabMediatorStrategy;
 	private final ViewModelProvider.Factory _viewModelFactory;
 	private HomeViewModel _viewModel;
 	private FragmentHomeBinding _binding; // only available on runtime
 
 	// arged ctor for fragment factory
 	@Inject
-	public HomeFragment(FragmentFactory factory,
-			ViewModelProvider.Factory viewModelFactory,
-			TabLayoutMediator.TabConfigurationStrategy tabMediatorStrategy) {
-		_fragmentFactory = factory;
-		_tabMediatorStrategy = tabMediatorStrategy;
+	public HomeFragment(FragmentFactory fragmentFactory,
+			ViewModelProvider.Factory viewModelFactory) {
+		_fragmentFactory = fragmentFactory;
 		_viewModelFactory = viewModelFactory;
 	}
 
 	@Override
 	public void onAttach(@NonNull Context context) {
 		super.onAttach(context);
-
 		_viewModel = new ViewModelProvider(this, _viewModelFactory).get(HomeViewModel.class);
 		getChildFragmentManager().setFragmentFactory(_fragmentFactory);
 	}
@@ -68,21 +64,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
-		// setup toolbar
-		final NavController navController = Navigation.findNavController(view);
-		final AppBarConfiguration appBarConfiguration =
-				new AppBarConfiguration.Builder(navController.getGraph()).build();
-		NavigationUI.setupWithNavController(_binding.mainToolbar,
-				navController,
-				appBarConfiguration);
-
-		// setup tab layout
-		_binding.mainViewPager.setAdapter(new HomePagerAdapter(this,
-				getActivity().getClassLoader(),
-				_fragmentFactory));
-		new TabLayoutMediator(_binding.mainTabLayout,
-				_binding.mainViewPager,
-				_tabMediatorStrategy).attach();
+		// add navigation listener to home navigation fragment
+		// todo: not working smh ;C
+		// final NavController navController = Navigation.findNavController(view);
+		// navController.addOnDestinationChangedListener(this);
 
 		// sync with media session
 		_viewModel.getMetadata().observe(getViewLifecycleOwner(),
@@ -123,16 +108,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
 		// make bottom appbar visible if metadata exists
 		if (_binding.mainBottomBar.getVisibility() != View.VISIBLE) {
-			// _binding.mainBottomBarSongTitle.setSelected(true); // for marquee text
+			_binding.mainBottomBarSongTitle.setSelected(true); // for marquee text
 			_binding.mainBottomBar.setVisibility(View.VISIBLE);
-
-			// todo: get height not working for some reason
-			final int padding = (int) getResources().getDimension(R.dimen.padding_bottom_home_view_pager);
-			_binding.mainViewPager.setPadding(_binding.mainViewPager.getPaddingStart(),
-					_binding.mainViewPager.getPaddingTop(),
-					_binding.mainViewPager.getPaddingEnd(),
-					padding);
-					// _binding.mainBottomBar.getHeight());
 		}
 		final String title = metadata.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE);
 		if (title != null) {
@@ -145,7 +122,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 		final Context context = getContext();
 		if (context != null) {
 			Drawable icon = context.getDrawable(R.drawable.ic_play_arrow);
-			int color = ThemeUtil.getColor(getContext(), R.attr.colorOnPrimary);
+			int color = ThemeUtil.getColor(getContext(), R.attr.colorOnSurface);
 			if (pbState.getState() == PlaybackStateCompat.STATE_PLAYING) {
 				color = ThemeUtil.getColor(getContext(), R.attr.colorSecondary);
 				icon = context.getDrawable(R.drawable.ic_pause);
@@ -170,5 +147,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 			final NavController navController = Navigation.findNavController(getView());
 			navController.navigate(R.id.main_player_fragment);
 		}
+	}
+
+	@Override
+	public void onDestinationChanged(@NonNull NavController controller,
+			@NonNull NavDestination destination,
+			@Nullable Bundle arguments) {
+		final InputMethodManager imm = (InputMethodManager) getActivity()
+				.getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
 	}
 }

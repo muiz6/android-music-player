@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.ui.main.home.albums;
+package com.muiz6.musicplayer.ui.main.home.explore.albums;
 
 import android.support.v4.media.MediaBrowserCompat;
 

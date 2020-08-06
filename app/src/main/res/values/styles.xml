@@ -1,13 +1,11 @@
 <resources>
-
 	<style name="AppTheme.Dark" parent="Theme.MaterialComponents.NoActionBar">
 
 		<item name="android:colorBackground">@color/colorGrey900</item>
-		<item name="colorPrimary">@color/colorBlueGrey900</item>
-		<item name="colorPrimaryVariant">@color/colorBlueGrey800</item>
-		<item name="colorOnPrimary">@android:color/white</item>
-		<item name="colorSecondary">@color/colorYellow600</item>
-		<item name="colorSecondaryVariant">@color/colorYellow500</item>
+		<item name="colorOnBackground">@android:color/white</item>
+		<item name="colorPrimary">@color/colorYellow600</item>
+		<item name="colorPrimaryVariant">@color/colorYellow500</item>
+		<item name="colorOnPrimary">@color/colorGrey900</item>
 		<item name="android:textColor">@color/color_text_primary_dark</item>
 		<item name="android:textColorSecondary">@color/color_text_secondary_dark</item>
 
@@ -15,26 +13,41 @@
 		<item name="backgroundTint">@android:color/transparent</item>
 		<item name="android:scrollbarThumbVertical">@drawable/thumb_scrollbar</item>
 
-		<!--appbar/toolbar styling-->
-		<!--in dark theme color surface defines toolbar bg color-->
-		<item name="colorSurface">@color/colorGrey900</item>
-		<item name="elevationOverlayEnabled">false</item>
+		<!--in dark theme color surface also defines toolbar bg color-->
+		<item name="colorSurface">@color/colorBlueGrey900</item>
+		<item name="colorOnSurface">@android:color/white</item>
 
 		<!--attr used by @color/color_tab_icon-->
 		<item name="tabIconTint">@color/colorGrey300</item>
-		<item name="tabStyle">@style/Widget.App.TabLayout</item>
+		<item name="tabStyle">@style/Widget.App.TabLayout.Background</item>
+		<item name="appBarLayoutStyle">@style/Widget.App.AppBar.Background</item>
 
 		<!--system toolbar icon tint-->
-		<item name="iconTint">?attr/colorOnPrimary</item>
+		<item name="iconTint">?attr/colorOnBackground</item>
+
+		<!--accent colors-->
+		<item name="colorSecondary">?attr/colorPrimary</item>
+		<item name="colorSecondaryVariant">?attr/colorPrimaryVariant</item>
+		<item name="colorOnSecondary">?attr/colorOnPrimary</item>
 	</style>
 
-	<style name="Widget.App.TabLayout" parent="Widget.MaterialComponents.TabLayout.Colored">
+	<style name="Widget.App.AppBar.Background"
+		parent="Widget.MaterialComponents.AppBarLayout.Surface">
+
+		<item name="elevationOverlayEnabled">false</item>
 		<item name="android:background">?android:attr/colorBackground</item>
-		<item name="tabIconTint">@color/color_tab_icon</item>
-		<item name="tabIndicatorColor">?attr/colorSecondary</item>
 	</style>
 
-	<!--<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />-->
+	<style name="Widget.App.TabLayout.Background" parent="Widget.MaterialComponents.TabLayout">
+		<item name="android:background">?android:attr/colorBackground</item>
+	</style>
 
-	<!--<style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents" />-->
+	<style name="Widget.App.CardView.Outlined" parent="Widget.MaterialComponents.CardView">
+		<item name="strokeWidth">@dimen/stroke_m</item>
+		<item name="strokeColor">?attr/colorOnSurface</item>
+		<item name="cardCornerRadius">@dimen/radius_s</item>
+		<item name="cardBackgroundColor">@android:color/transparent</item>
+		<item name="cardForegroundColor">@null</item>
+		<item name="android:layout_margin">@dimen/margin_m</item>
+	</style>
 </resources>

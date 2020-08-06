@@ -1,42 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
-	android:orientation="vertical"
+	android:layout_margin="@dimen/margin_s"
 	android:background="@drawable/bg_item"
-	android:layout_margin="@dimen/margin_s">
+	android:orientation="vertical">
 
-	<androidx.appcompat.widget.AppCompatImageView
-		android:id="@+id/item_album_drawable"
+	<com.google.android.material.card.MaterialCardView
+		android:id="@+id/item_album_drawable_container"
+		style="@style/Widget.App.CardView.Outlined"
 		android:layout_width="match_parent"
-		android:layout_height="100dp"
-		android:scaleType="center"
-		android:src="@drawable/ic_music_note" />
+		android:layout_height="0dp"
+		app:layout_constraintDimensionRatio="1:1"
+		app:layout_constraintTop_toTopOf="parent">
 
-	<LinearLayout
+		<androidx.appcompat.widget.AppCompatImageView
+			android:id="@+id/item_album_drawable"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:scaleType="centerInside"
+			android:src="@drawable/ic_music_note" />
+	</com.google.android.material.card.MaterialCardView>
+
+	<TextView
+		android:id="@+id/item_album_title"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:orientation="vertical"
-		android:padding="@dimen/padding_container">
+		android:layout_margin="@dimen/margin_m"
+		android:maxLines="1"
+		app:layout_constraintTop_toBottomOf="@id/item_album_drawable_container" />
 
-		<TextView
-			android:id="@+id/item_album_title"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:maxLines="1" />
+	<TextView
+		android:id="@+id/item_album_subtitle"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginHorizontal="@dimen/margin_m"
+		android:maxLines="1"
+		android:text="@string/unknown_artist"
+		app:layout_constraintTop_toBottomOf="@id/item_album_title" />
 
-		<TextView
-			android:id="@+id/item_album_subtitle"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:maxLines="1"
-			android:text="@string/unknown_artist" />
-
-		<TextView
-			android:id="@+id/item_album_track_count"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:maxLines="1" />
-	</LinearLayout>
-</LinearLayout>
+	<TextView
+		android:id="@+id/item_album_track_count"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_margin="@dimen/margin_m"
+		android:maxLines="1"
+		app:layout_constraintTop_toBottomOf="@id/item_album_subtitle" />
+</androidx.constraintlayout.widget.ConstraintLayout>

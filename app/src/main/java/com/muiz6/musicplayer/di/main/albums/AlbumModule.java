@@ -2,7 +2,7 @@ package com.muiz6.musicplayer.di.main.albums;
 
 import androidx.lifecycle.ViewModel;
 
-import com.muiz6.musicplayer.ui.main.home.albums.AlbumViewModel;
+import com.muiz6.musicplayer.ui.main.home.explore.albums.AlbumViewModel;
 
 import dagger.Binds;
 import dagger.Module;

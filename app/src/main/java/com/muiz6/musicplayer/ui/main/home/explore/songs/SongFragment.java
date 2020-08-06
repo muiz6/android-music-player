@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.ui.main.home.songs;
+package com.muiz6.musicplayer.ui.main.home.explore.songs;
 
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -120,8 +120,11 @@ public class SongFragment extends Fragment
 		super.onSaveInstanceState(outState);
 
 		// save recyclerview state across configuration changes
-		outState.putParcelable(_BUNDLE_RECYCLER_LAYOUT,
-				_binding.getRoot().getLayoutManager().onSaveInstanceState());
+		// todo: causing crash
+		// final RecyclerView.LayoutManager layoutManager = _binding.getRoot().getLayoutManager();
+		// if (layoutManager != null) {
+		// 	outState.putParcelable(_BUNDLE_RECYCLER_LAYOUT, layoutManager.onSaveInstanceState());
+		// }
 	}
 
 	@Override

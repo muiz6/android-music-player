@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.ui.main.home;
+package com.muiz6.musicplayer.ui.main.home.explore;
 
 import androidx.annotation.NonNull;
 
