@@ -30,16 +30,17 @@ public class SongFragment extends Fragment
 	private static final String _BUNDLE_RECYCLER_LAYOUT = BuildConfig.APPLICATION_ID
 			+ ".recycler.layout";
 	private final ViewModelProvider.Factory _viewModelFactory;
+	private final GestureDetector _gestureDetector;
 	private int _activeItemIndex = RecyclerView.NO_POSITION;
 	private FragmentListBinding _binding;
 	private SongAdapter _songListRecyclerAdapter;
-	private GestureDetector _gestureDetector;
 	private SongViewModel _viewModel;
 
 	// public arged ctor to use with fragment factory
 	@Inject
-	public SongFragment(ViewModelProvider.Factory viewModelFactory) {
+	public SongFragment(ViewModelProvider.Factory viewModelFactory, GestureDetector gestureDetector) {
 		_viewModelFactory = viewModelFactory;
+		_gestureDetector = gestureDetector;
 	}
 
 	@Override
@@ -59,14 +60,6 @@ public class SongFragment extends Fragment
 		_songListRecyclerAdapter = new SongAdapter(
 				Collections.<SongItemModel>emptyList());
 		// _songListRecyclerAdapter.restore;
-		_gestureDetector = new GestureDetector(getActivity(),
-				new GestureDetector.SimpleOnGestureListener() {
-
-					@Override
-					public boolean onSingleTapUp(MotionEvent e) {
-						return true;
-					}
-				});
 		_binding = FragmentListBinding.inflate(inflater, container, false);
 		final RecyclerView recyclerView = _binding.getRoot();
 		recyclerView.setAdapter(_songListRecyclerAdapter);

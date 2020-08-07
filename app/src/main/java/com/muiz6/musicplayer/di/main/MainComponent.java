@@ -3,6 +3,7 @@ package com.muiz6.musicplayer.di.main;
 import android.content.Context;
 
 import com.muiz6.musicplayer.di.FragmentFactoryModule;
+import com.muiz6.musicplayer.di.GestureDetectorModule;
 import com.muiz6.musicplayer.di.ViewModelFactoryModule;
 import com.muiz6.musicplayer.di.main.albums.AlbumComponent;
 import com.muiz6.musicplayer.di.main.artists.ArtistComponent;
@@ -20,7 +21,8 @@ import dagger.Subcomponent;
 @ActivityScope
 @Subcomponent(modules = {MainModule.class,
 		FragmentFactoryModule.class,
-		ViewModelFactoryModule.class})
+		ViewModelFactoryModule.class,
+		GestureDetectorModule.class})
 public interface MainComponent {
 
 	void inject(MainActivity activity);

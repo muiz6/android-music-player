@@ -9,7 +9,6 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
 import com.muiz6.musicplayer.data.MusicRepository;
-import com.muiz6.musicplayer.di.scope.FragmentScope;
 import com.muiz6.musicplayer.media.MusicServiceConnection;
 
 import java.util.Collections;
@@ -17,7 +16,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-@FragmentScope
 public class AlbumViewModel extends ViewModel {
 
 	private final MutableLiveData<List<MediaBrowserCompat.MediaItem>> _albumList =

@@ -10,7 +10,6 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
 import com.muiz6.musicplayer.data.MusicRepository;
-import com.muiz6.musicplayer.di.scope.FragmentScope;
 import com.muiz6.musicplayer.media.MusicServiceConnection;
 
 import java.util.ArrayList;
@@ -19,7 +18,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-@FragmentScope
 public class ArtistViewModel extends ViewModel {
 
 	private final MutableLiveData<List<ArtistItemModel>> _artistList =
@@ -67,5 +65,9 @@ public class ArtistViewModel extends ViewModel {
 
 	public LiveData<List<ArtistItemModel>> getArtistList() {
 		return _artistList;
+	}
+
+	public String getArtistName(int index) {
+		return _artistList.getValue().get(index).getName();
 	}
 }

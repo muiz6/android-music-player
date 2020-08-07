@@ -16,7 +16,6 @@ import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.muiz6.musicplayer.data.MusicRepository;
-import com.muiz6.musicplayer.di.scope.FragmentScope;
 import com.muiz6.musicplayer.media.MediaRunnable;
 import com.muiz6.musicplayer.media.MusicServiceConnection;
 
@@ -26,7 +25,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-@FragmentScope
 public class SongViewModel extends AndroidViewModel {
 
 	private final MutableLiveData<Integer> _playingItemIndex =

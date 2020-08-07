@@ -14,7 +14,9 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.muiz6.musicplayer.R;
 import com.muiz6.musicplayer.databinding.FragmentQueueBinding;
+import com.muiz6.musicplayer.di.scope.FragmentScope;
 
+@FragmentScope
 public class QueueFragment extends Fragment {
 
 	private FragmentQueueBinding _binding;

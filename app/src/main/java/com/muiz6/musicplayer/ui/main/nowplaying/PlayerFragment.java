@@ -22,10 +22,12 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.muiz6.musicplayer.R;
 import com.muiz6.musicplayer.databinding.FragmentPlayerBinding;
+import com.muiz6.musicplayer.di.scope.FragmentScope;
 import com.muiz6.musicplayer.ui.ThemeUtil;
 
 import javax.inject.Inject;
 
+@FragmentScope
 public class PlayerFragment extends Fragment
 		implements View.OnClickListener,
 		SeekBar.OnSeekBarChangeListener {

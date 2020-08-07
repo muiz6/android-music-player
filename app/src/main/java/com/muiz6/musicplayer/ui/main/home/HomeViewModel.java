@@ -6,12 +6,10 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.muiz6.musicplayer.di.scope.FragmentScope;
 import com.muiz6.musicplayer.media.MusicServiceConnection;
 
 import javax.inject.Inject;
 
-@FragmentScope
 public class HomeViewModel extends ViewModel {
 
 	private final MusicServiceConnection _connection;
