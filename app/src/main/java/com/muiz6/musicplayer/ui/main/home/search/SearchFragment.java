@@ -18,13 +18,13 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.muiz6.musicplayer.databinding.FragmentSearchBinding;
 import com.muiz6.musicplayer.di.scope.FragmentScope;
-import com.muiz6.musicplayer.ui.main.QueryViewModel;
+import com.muiz6.musicplayer.ui.main.SharedQueryViewModel;
 
 @FragmentScope
 public class SearchFragment extends Fragment implements SearchView.OnQueryTextListener {
 
 	private final Uri.Builder _uriBuilder = new Uri.Builder();
-	private QueryViewModel _queryViewModel;
+	private SharedQueryViewModel _queryViewModel;
 	private FragmentSearchBinding _binding;
 
 	public SearchFragment() {}
@@ -61,7 +61,7 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
 		// final InputMethodManager imm = (InputMethodManager) getActivity()
 		// 		.getSystemService(Context.INPUT_METHOD_SERVICE);
 
-		_queryViewModel = new ViewModelProvider(requireActivity()).get(QueryViewModel.class);
+		_queryViewModel = new ViewModelProvider(requireActivity()).get(SharedQueryViewModel.class);
 		_binding.searchSearchView.setOnQueryTextListener(this);
 	}
 
@@ -77,8 +77,8 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
 	@Override
 	public boolean onQueryTextSubmit(String s) {
 		_uriBuilder.clearQuery();
-		_uriBuilder.appendQueryParameter(QueryViewModel.KEY_TYPE, QueryViewModel.TYPE_QUERY);
-		_uriBuilder.appendQueryParameter(QueryViewModel.KEY_VALUE, s);
+		_uriBuilder.appendQueryParameter(SharedQueryViewModel.KEY_TYPE, SharedQueryViewModel.TYPE_SEARCH);
+		_uriBuilder.appendQueryParameter(SharedQueryViewModel.KEY_VALUE, s);
 		_queryViewModel.setSearchUri(_uriBuilder.build());
 		return false;
 	}

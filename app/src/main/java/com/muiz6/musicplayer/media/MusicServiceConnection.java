@@ -20,6 +20,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+// intermediary class between music service and clients. clients connect to MusicServiceConnetion
+// instead of binding to service directly
 @Singleton
 public class MusicServiceConnection
 		implements MediaConnectionCallback.Listener,

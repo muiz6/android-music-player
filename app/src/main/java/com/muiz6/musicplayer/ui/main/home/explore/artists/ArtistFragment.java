@@ -17,7 +17,7 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.muiz6.musicplayer.databinding.FragmentListBinding;
-import com.muiz6.musicplayer.ui.main.QueryViewModel;
+import com.muiz6.musicplayer.ui.main.SharedQueryViewModel;
 import com.muiz6.musicplayer.ui.main.home.explore.ExploreFragmentDirections;
 
 import java.util.Collections;
@@ -85,7 +85,7 @@ public class ArtistFragment extends Fragment implements RecyclerView.OnItemTouch
 			final String artist = _viewModel.getArtistName(index);
 			final ExploreFragmentDirections.ActionExploreFragmentToBrowseFragment action =
 					ExploreFragmentDirections
-							.actionExploreFragmentToBrowseFragment(QueryViewModel.TYPE_ARTIST,
+							.actionExploreFragmentToBrowseFragment(SharedQueryViewModel.TYPE_ARTIST,
 									artist);
 			final NavController navController = Navigation.findNavController(requireView());
 			navController.navigate(action);

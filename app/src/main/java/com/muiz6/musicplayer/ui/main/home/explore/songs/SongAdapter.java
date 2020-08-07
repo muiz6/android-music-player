@@ -25,6 +25,9 @@ import java.util.List;
 
 public class SongAdapter extends RecyclerView.Adapter {
 
+	public static final int VIEW_TYPE_ROW_TITLE = 0;
+	public static final int VIEW_TYPE_ROW_ITEM = 1;
+
 	private List<SongItemModel> _songList;
 
 	public SongAdapter(List<SongItemModel> list) {
@@ -38,7 +41,7 @@ public class SongAdapter extends RecyclerView.Adapter {
 		final Context context = parent.getContext();
 		final LayoutInflater inflator = LayoutInflater.from(context);
 		View view;
-		if (viewType == 0) {
+		if (viewType == VIEW_TYPE_ROW_TITLE) {
 			view = inflator.inflate(R.layout.row_song_item_first, parent, false);
 		}
 		else {
@@ -102,9 +105,9 @@ public class SongAdapter extends RecyclerView.Adapter {
 	@Override
 	public int getItemViewType(int position) {
 		if (position == 0) {
-			return 0;
+			return VIEW_TYPE_ROW_TITLE;
 		}
-		return 1;
+		return VIEW_TYPE_ROW_ITEM;
 	}
 
 	@Override

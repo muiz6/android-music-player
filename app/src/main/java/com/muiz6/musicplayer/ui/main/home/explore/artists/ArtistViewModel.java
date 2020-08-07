@@ -1,7 +1,6 @@
 package com.muiz6.musicplayer.ui.main.home.explore.artists;
 
 import android.support.v4.media.MediaBrowserCompat;
-import android.support.v4.media.MediaDescriptionCompat;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
@@ -10,9 +9,9 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
 import com.muiz6.musicplayer.data.MusicRepository;
+import com.muiz6.musicplayer.media.MediaRunnable;
 import com.muiz6.musicplayer.media.MusicServiceConnection;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,16 +27,15 @@ public class ArtistViewModel extends ViewModel {
 
 				@Override
 				public void onChildrenLoaded(@NonNull String parentId,
-						@NonNull List<MediaBrowserCompat.MediaItem> children) {
+						@NonNull final List<MediaBrowserCompat.MediaItem> children) {
 					super.onChildrenLoaded(parentId, children);
-					final List<ArtistItemModel> newArtists = new ArrayList<>();
-					for (final MediaBrowserCompat.MediaItem artist: children) {
-						final ArtistItemModel model = new ArtistItemModel();
-						final MediaDescriptionCompat description = artist.getDescription();
-						model.setName(String.valueOf(description.getTitle()));
-						newArtists.add(model);
-					}
-					_artistList.setValue(newArtists);
+					new Thread(new MediaRunnable(children) {
+
+						@Override
+						public void run() {
+							_artistList.postValue(ArtistUtil.getArtistList(getMediaItemList()));
+						}
+					}).start();
 				}
 			};
 	private final Observer<Boolean> _connectionObserver = new Observer<Boolean>() {

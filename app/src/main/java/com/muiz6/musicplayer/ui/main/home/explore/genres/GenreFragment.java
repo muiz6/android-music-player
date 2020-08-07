@@ -18,7 +18,7 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.muiz6.musicplayer.databinding.FragmentListBinding;
-import com.muiz6.musicplayer.ui.main.QueryViewModel;
+import com.muiz6.musicplayer.ui.main.SharedQueryViewModel;
 import com.muiz6.musicplayer.ui.main.home.explore.ExploreFragmentDirections;
 
 import java.util.Collections;
@@ -89,7 +89,7 @@ public class GenreFragment extends Fragment implements RecyclerView.OnItemTouchL
 			final String genre = _viewModel.getGenreTitle(index);
 			final ExploreFragmentDirections.ActionExploreFragmentToBrowseFragment action =
 					ExploreFragmentDirections
-							.actionExploreFragmentToBrowseFragment(QueryViewModel.TYPE_GENRE,
+							.actionExploreFragmentToBrowseFragment(SharedQueryViewModel.TYPE_GENRE,
 									genre);
 			final NavController navController = Navigation.findNavController(requireView());
 			navController.navigate(action);

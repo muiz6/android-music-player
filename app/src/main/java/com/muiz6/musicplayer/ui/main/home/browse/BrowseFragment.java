@@ -15,7 +15,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
 import com.muiz6.musicplayer.databinding.FragmentBrowseBinding;
-import com.muiz6.musicplayer.ui.main.QueryViewModel;
+import com.muiz6.musicplayer.ui.main.SharedQueryViewModel;
 
 /**
  * fragment to browse simple list items eg. artists, genre etc.
@@ -23,7 +23,7 @@ import com.muiz6.musicplayer.ui.main.QueryViewModel;
 public class BrowseFragment extends Fragment {
 
 	private FragmentBrowseBinding _binding;
-	private QueryViewModel _queryViewModel;
+	private SharedQueryViewModel _queryViewModel;
 	private BrowseFragmentArgs _arguments;
 
 	public BrowseFragment() {}
@@ -40,7 +40,7 @@ public class BrowseFragment extends Fragment {
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		_queryViewModel = new ViewModelProvider(requireActivity()).get(QueryViewModel.class);
+		_queryViewModel = new ViewModelProvider(requireActivity()).get(SharedQueryViewModel.class);
 		_arguments = BrowseFragmentArgs.fromBundle(getArguments());
 
 		// set toolbar
@@ -51,10 +51,10 @@ public class BrowseFragment extends Fragment {
 		// send query to query fragment
 		final Uri.Builder uriBuilder = new Uri.Builder();
 		final String queryTypeId = _arguments.getQueryTypeId();
-		if (queryTypeId.equals(QueryViewModel.TYPE_ARTIST)
-				|| queryTypeId.equals(QueryViewModel.TYPE_GENRE)) {
-			uriBuilder.appendQueryParameter(QueryViewModel.KEY_TYPE, queryTypeId)
-					.appendQueryParameter(QueryViewModel.KEY_VALUE, _arguments.getQuery());
+		if (queryTypeId.equals(SharedQueryViewModel.TYPE_ARTIST)
+				|| queryTypeId.equals(SharedQueryViewModel.TYPE_GENRE)) {
+			uriBuilder.appendQueryParameter(SharedQueryViewModel.KEY_TYPE, queryTypeId)
+					.appendQueryParameter(SharedQueryViewModel.KEY_VALUE, _arguments.getQuery());
 			_queryViewModel.setSearchUri(uriBuilder.build());
 		}
 		else {
