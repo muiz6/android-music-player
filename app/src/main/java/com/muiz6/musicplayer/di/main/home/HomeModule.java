@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.muiz6.musicplayer.di.main.explore.ExploreComponent;
 import com.muiz6.musicplayer.ui.main.home.HomeViewModel;
-import com.muiz6.musicplayer.ui.main.home.explore.ExploreFragment;
+import com.muiz6.musicplayer.ui.main.home.library.LibraryFragment;
 
 import dagger.Binds;
 import dagger.Module;
@@ -23,7 +23,7 @@ public abstract class HomeModule {
 
 	@Provides
 	@IntoMap
-	@ClassKey(ExploreFragment.class)
+	@ClassKey(LibraryFragment.class)
 	static Fragment getSongFragment(ExploreComponent.Factory factory) {
 		return factory.create().getExploreFragment();
 	}

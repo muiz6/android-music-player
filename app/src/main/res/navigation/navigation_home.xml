@@ -4,27 +4,18 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:id="@+id/navigation_home"
-	app:startDestination="@id/exploreFragment">
+	app:startDestination="@id/libraryFragment">
 
 	<fragment
-		android:id="@+id/exploreFragment"
-		android:name="com.muiz6.musicplayer.ui.main.home.explore.ExploreFragment"
+		android:id="@+id/libraryFragment"
+		android:name="com.muiz6.musicplayer.ui.main.home.library.LibraryFragment"
 		android:label="@string/app_name"
-		tools:layout="@layout/fragment_explore">
+		tools:layout="@layout/fragment_library">
 
 		<action
-			android:id="@+id/action_exploreFragment_to_searchFragment"
-			app:destination="@id/searchFragment" />
-
-		<action
-			android:id="@+id/action_exploreFragment_to_browseFragment"
+			android:id="@+id/action_libraryFragment_to_browseFragment"
 			app:destination="@id/browseFragment" />
 	</fragment>
-
-	<fragment
-		android:id="@+id/searchFragment"
-		android:name="com.muiz6.musicplayer.ui.main.home.search.SearchFragment"
-		tools:layout="@layout/fragment_search" />
 
 	<fragment
 		android:id="@+id/browseFragment"
@@ -32,11 +23,7 @@
 		tools:layout="@layout/fragment_browse">
 
 		<argument
-			android:name="queryTypeId"
-			app:argType="string" />
-
-		<argument
-			android:name="query"
+			android:name="parentMediaId"
 			app:argType="string" />
 	</fragment>
 </navigation>

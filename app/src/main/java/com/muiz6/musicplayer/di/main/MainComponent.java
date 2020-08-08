@@ -7,11 +7,11 @@ import com.muiz6.musicplayer.di.GestureDetectorModule;
 import com.muiz6.musicplayer.di.ViewModelFactoryModule;
 import com.muiz6.musicplayer.di.main.albums.AlbumComponent;
 import com.muiz6.musicplayer.di.main.artists.ArtistComponent;
+import com.muiz6.musicplayer.di.main.browse.BrowseComponent;
 import com.muiz6.musicplayer.di.main.explore.ExploreComponent;
 import com.muiz6.musicplayer.di.main.genres.GenreComponent;
 import com.muiz6.musicplayer.di.main.home.HomeComponent;
 import com.muiz6.musicplayer.di.main.nowplaying.PlayerComponent;
-import com.muiz6.musicplayer.di.main.query.QueryComponent;
 import com.muiz6.musicplayer.di.main.songs.SongComponent;
 import com.muiz6.musicplayer.di.scope.ActivityScope;
 import com.muiz6.musicplayer.ui.main.MainActivity;
@@ -42,7 +42,7 @@ public interface MainComponent {
 
 	ExploreComponent.Factory getExploreComponent();
 
-	QueryComponent.Factory getQueryComponent();
+	BrowseComponent.Factory getBrowseComponent();
 
 	@Subcomponent.Factory
 	interface Factory {

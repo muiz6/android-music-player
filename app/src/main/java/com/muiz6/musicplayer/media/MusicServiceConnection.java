@@ -10,6 +10,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -130,7 +131,8 @@ public class MusicServiceConnection
 	@Override
 	public void onShuffleModeChanged(int shuffleMode) {}
 
-	public void subscribe(String parentId, MediaBrowserCompat.SubscriptionCallback callback) {
+	public void subscribe(@NonNull String parentId,
+			@NonNull MediaBrowserCompat.SubscriptionCallback callback) {
 		_mediaBrowser.subscribe(parentId, callback);
 	}
 

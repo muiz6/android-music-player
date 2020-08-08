@@ -1,7 +1,7 @@
 package com.muiz6.musicplayer.di.main.explore;
 
 import com.muiz6.musicplayer.di.scope.FragmentScope;
-import com.muiz6.musicplayer.ui.main.home.explore.ExploreFragment;
+import com.muiz6.musicplayer.ui.main.home.library.LibraryFragment;
 
 import dagger.Subcomponent;
 
@@ -9,7 +9,7 @@ import dagger.Subcomponent;
 @Subcomponent(modules = {ExploreModule.class})
 public interface ExploreComponent {
 
-	ExploreFragment getExploreFragment();
+	LibraryFragment getExploreFragment();
 
 	@Subcomponent.Factory
 	interface Factory {
