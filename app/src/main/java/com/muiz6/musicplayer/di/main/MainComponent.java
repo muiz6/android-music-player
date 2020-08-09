@@ -8,9 +8,9 @@ import com.muiz6.musicplayer.di.ViewModelFactoryModule;
 import com.muiz6.musicplayer.di.main.albums.AlbumComponent;
 import com.muiz6.musicplayer.di.main.artists.ArtistComponent;
 import com.muiz6.musicplayer.di.main.browse.BrowseComponent;
-import com.muiz6.musicplayer.di.main.explore.ExploreComponent;
 import com.muiz6.musicplayer.di.main.genres.GenreComponent;
 import com.muiz6.musicplayer.di.main.home.HomeComponent;
+import com.muiz6.musicplayer.di.main.library.LibraryComponent;
 import com.muiz6.musicplayer.di.main.nowplaying.PlayerComponent;
 import com.muiz6.musicplayer.di.main.songs.SongComponent;
 import com.muiz6.musicplayer.di.scope.ActivityScope;
@@ -40,7 +40,7 @@ public interface MainComponent {
 
 	PlayerComponent.Factory getPlayerComponent();
 
-	ExploreComponent.Factory getExploreComponent();
+	LibraryComponent.Factory getExploreComponent();
 
 	BrowseComponent.Factory getBrowseComponent();
 

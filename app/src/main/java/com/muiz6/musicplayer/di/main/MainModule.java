@@ -5,15 +5,13 @@ import androidx.fragment.app.Fragment;
 import com.muiz6.musicplayer.di.main.albums.AlbumComponent;
 import com.muiz6.musicplayer.di.main.artists.ArtistComponent;
 import com.muiz6.musicplayer.di.main.browse.BrowseComponent;
-import com.muiz6.musicplayer.di.main.explore.ExploreComponent;
 import com.muiz6.musicplayer.di.main.genres.GenreComponent;
 import com.muiz6.musicplayer.di.main.home.HomeComponent;
+import com.muiz6.musicplayer.di.main.library.LibraryComponent;
 import com.muiz6.musicplayer.di.main.nowplaying.PlayerComponent;
 import com.muiz6.musicplayer.di.main.songs.SongComponent;
 import com.muiz6.musicplayer.ui.main.home.HomeFragment;
 import com.muiz6.musicplayer.ui.main.home.browse.BrowseFragment;
-import com.muiz6.musicplayer.ui.main.home.library.artists.ArtistFragment;
-import com.muiz6.musicplayer.ui.main.home.library.genres.GenreFragment;
 import com.muiz6.musicplayer.ui.main.nowplaying.PlayerFragment;
 
 import dagger.Module;
@@ -27,7 +25,7 @@ import dagger.multibindings.IntoMap;
 		AlbumComponent.class,
 		ArtistComponent.class,
 		GenreComponent.class,
-		ExploreComponent.class,
+		LibraryComponent.class,
 		BrowseComponent.class})
 public abstract class MainModule {
 
@@ -43,20 +41,6 @@ public abstract class MainModule {
 	@ClassKey(PlayerFragment.class)
 	static Fragment providePlayerFragment(PlayerComponent.Factory factory) {
 		return factory.create().getPlayerFragment();
-	}
-
-	@Provides
-	@IntoMap
-	@ClassKey(ArtistFragment.class)
-	static Fragment provideArtistFragment(ArtistComponent.Factory factory) {
-		return factory.create().getArtistFragment();
-	}
-
-	@Provides
-	@IntoMap
-	@ClassKey(GenreFragment.class)
-	static Fragment provideGenreFragment(GenreComponent.Factory factory) {
-		return factory.create().getGenreFragment();
 	}
 
 	@Provides

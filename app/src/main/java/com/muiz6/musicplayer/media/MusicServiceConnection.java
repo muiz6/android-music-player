@@ -54,6 +54,8 @@ public class MusicServiceConnection
 	public void prepare() {
 		_connectionCallback.addListener(this);
 		_controllerCallback.addListener(this);
+
+		// bind to music service
 		_mediaBrowser.connect();
 	}
 

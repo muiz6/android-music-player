@@ -26,12 +26,12 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.muiz6.musicplayer.BuildConfig;
-import com.muiz6.musicplayer.data.db.AlbumPojo;
-import com.muiz6.musicplayer.data.db.ArtistPojo;
 import com.muiz6.musicplayer.data.db.AudioDao;
 import com.muiz6.musicplayer.data.db.AudioDatabase;
-import com.muiz6.musicplayer.data.db.GenrePojo;
-import com.muiz6.musicplayer.data.db.SongPojo;
+import com.muiz6.musicplayer.data.db.pojos.AlbumPojo;
+import com.muiz6.musicplayer.data.db.pojos.ArtistPojo;
+import com.muiz6.musicplayer.data.db.pojos.GenrePojo;
+import com.muiz6.musicplayer.data.db.pojos.SongPojo;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,7 +42,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 @Singleton
-public class MusicRepository {
+public class MusicRepository implements AudioDatabase.Callback {
 
 	public static final String MEDIA_ID_ROOT = BuildConfig.APPLICATION_ID + ".mediaItemRoot";
 	public static final String MEDIA_ID_SONGS = BuildConfig.APPLICATION_ID + ".songs";
@@ -61,13 +61,35 @@ public class MusicRepository {
 			new MutableLiveData<>(Collections.<MediaItem>emptyList());
 	private final Handler _handler = new Handler(Looper.getMainLooper());
 	private final Context _context;
+	private final AudioDatabase _db;
 	private final AudioDao _dao;
+	private Listener _listener;
 
 	@Inject
-	public MusicRepository(@Named("Application") Context context,
-			AudioDatabase db) {
+	public MusicRepository(@Named("Application") Context context, AudioDatabase db) {
 		_context = context;
+		_db = db;
 		_dao = db.getAudioDao();
+		// db.setCallback(this);
+	}
+
+	@Override
+	public void onCompletion(boolean success) {
+		if (_listener != null) {
+			_handler.post(new Runnable() {
+
+				@Override
+				public void run() {
+
+					// notify all that all data has changed
+					// just notifying root id will not change
+					_listener.notifyChildrenChanged(MEDIA_ID_SONGS);
+					_listener.notifyChildrenChanged(MEDIA_ID_ALBUMS);
+					_listener.notifyChildrenChanged(MEDIA_ID_ARTISTS);
+					_listener.notifyChildrenChanged(MEDIA_ID_GENRES);
+				}
+			});
+		}
 	}
 
 	@NonNull
@@ -181,23 +203,18 @@ public class MusicRepository {
 		}
 	}
 
-	public void searchArtistsByGenre(final String genre,
-			final MediaBrowserCompat.SearchCallback callback) {
-		new Thread(new Runnable() {
+	public void scanMusicLibrary() {
+		_db.scanMusicLibrary();
+	}
 
-			@Override
-			public void run() {
-				final List<MediaItem> artistMediaItems =
-						_getArtistMediaItems(_dao.getArtistListByGenre(genre));
-				_handler.post(new Runnable() {
-
-					@Override
-					public void run() {
-						callback.onSearchResult(genre, null, artistMediaItems);
-					}
-				});
-			}
-		}).start();
+	public void setListener(@Nullable Listener listener) {
+		_listener = listener;
+		if (_listener != null) {
+			_db.setCallback(this);
+		}
+		else {
+			_db.setCallback(null);
+		}
 	}
 
 	private static List<MediaItem> _getSongMediaItems(List<SongPojo> list) {
@@ -234,7 +251,7 @@ public class MusicRepository {
 		int i = 0;
 		for (final ArtistPojo audio : list) {
 			final Bundle extras = new Bundle();
-			extras.putString(KEY_EXTRAS_MEDIA_TYPE, MEDIA_ID_ARTISTS);
+			extras.putString(KEY_EXTRAS_MEDIA_TYPE, MEDIA_TYPE_ARTIST);
 			extras.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, audio.getArtist());
 			final MediaDescriptionCompat description = builder
 					.setMediaId(MusicRepository.MEDIA_ID_ARTISTS
@@ -328,6 +345,8 @@ public class MusicRepository {
 				int i = 0;
 				for (final GenrePojo audio : list) {
 					final Bundle extras = new Bundle();
+					extras.putString(MusicRepository.KEY_EXTRAS_MEDIA_TYPE,
+							MusicRepository.MEDIA_TYPE_GENRE);
 					extras.putString(MediaMetadataCompat.METADATA_KEY_GENRE, audio.getGenre());
 					final MediaDescriptionCompat description = builder
 							.setMediaId(MusicRepository.MEDIA_ID_GENRES
@@ -391,5 +410,10 @@ public class MusicRepository {
 				result.sendResult(_getSongMediaItems(_dao.getSongListByAlbum(album)));
 			}
 		}).start();
+	}
+
+	public interface Listener {
+
+		void notifyChildrenChanged(String string);
 	}
 }

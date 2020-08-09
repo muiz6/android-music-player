@@ -12,10 +12,11 @@ import dagger.Module;
 import dagger.Provides;
 
 @Module
-public class ViewModelFactoryModule {
+public abstract class ViewModelFactoryModule {
 
 	@Provides
-	ViewModelProvider.Factory getViewModelFactory(final Map<Class<?>, Provider<ViewModel>> providerMap) {
+	static ViewModelProvider.Factory getViewModelFactory(final Map<Class<?>,
+			Provider<ViewModel>> providerMap) {
 		return new ViewModelProvider.Factory() {
 
 			@NonNull

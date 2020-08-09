@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.data.db;
+package com.muiz6.musicplayer.data.db.pojos;
 
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;

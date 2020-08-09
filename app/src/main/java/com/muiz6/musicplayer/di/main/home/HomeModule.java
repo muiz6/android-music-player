@@ -3,7 +3,7 @@ package com.muiz6.musicplayer.di.main.home;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
-import com.muiz6.musicplayer.di.main.explore.ExploreComponent;
+import com.muiz6.musicplayer.di.main.library.LibraryComponent;
 import com.muiz6.musicplayer.ui.main.home.HomeViewModel;
 import com.muiz6.musicplayer.ui.main.home.library.LibraryFragment;
 
@@ -24,7 +24,7 @@ public abstract class HomeModule {
 	@Provides
 	@IntoMap
 	@ClassKey(LibraryFragment.class)
-	static Fragment getSongFragment(ExploreComponent.Factory factory) {
+	static Fragment getSongFragment(LibraryComponent.Factory factory) {
 		return factory.create().getExploreFragment();
 	}
 }

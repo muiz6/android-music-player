@@ -2,19 +2,19 @@ package com.muiz6.musicplayer.ui.main.home.library;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.media.MediaMetadataCompat;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentFactory;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.muiz6.musicplayer.R;
@@ -26,13 +26,24 @@ public class LibraryFragment extends Fragment {
 
 	private final FragmentFactory _fragmentFactory;
 	private final TabLayoutMediator.TabConfigurationStrategy _tabMediatorStrategy;
+	private final ViewModelProvider.Factory _viewModelFactory;
 	private FragmentLibraryBinding _binding;
+	private LibraryViewModel _viewModel;
 
 	@Inject
 	public LibraryFragment(FragmentFactory factory,
+			ViewModelProvider.Factory viewModelFactory,
 			TabLayoutMediator.TabConfigurationStrategy tabMediatorStrategy) {
 		_fragmentFactory = factory;
+		_viewModelFactory = viewModelFactory;
 		_tabMediatorStrategy = tabMediatorStrategy;
+	}
+
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true); // better to call here to avoid unexpected behaviour
+		_viewModel = new ViewModelProvider(this, _viewModelFactory).get(LibraryViewModel.class);
 	}
 
 	@Override
@@ -55,13 +66,13 @@ public class LibraryFragment extends Fragment {
 		super.onViewCreated(view, savedInstanceState);
 
 		// setup toolbar
-		// ((AppCompatActivity) getActivity()).setSupportActionBar(_binding.mainToolbar);
-		final NavController navController = Navigation.findNavController(view);
-		final AppBarConfiguration appBarConfiguration =
-				new AppBarConfiguration.Builder(navController.getGraph()).build();
-		NavigationUI.setupWithNavController(_binding.mainToolbar,
-				navController,
-				appBarConfiguration);
+		((AppCompatActivity) getActivity()).setSupportActionBar(_binding.mainToolbar);
+		// final NavController navController = Navigation.findNavController(view);
+		// final AppBarConfiguration appBarConfiguration =
+		// 		new AppBarConfiguration.Builder(navController.getGraph()).build();
+		// NavigationUI.setupWithNavController(_binding.mainToolbar,
+		// 		navController,
+		// 		appBarConfiguration);
 
 		// setup tab layout
 		_binding.mainViewPager.setAdapter(new LibraryPagerAdapter(this,
@@ -73,18 +84,32 @@ public class LibraryFragment extends Fragment {
 	}
 
 	@Override
+	public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+		super.onCreateOptionsMenu(menu, inflater);
+		inflater.inflate(R.menu.menu_library, menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+		if (item.getItemId() == R.id.action_rescan_library) {
+			_viewModel.onRescanLibraryAction();
+		}
+		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
 		_binding = null;
 	}
 
-	private void _updateFromMetadata(MediaMetadataCompat metadata) {
-
-		// todo: get height not working for some reason
-		final int padding = (int) getResources().getDimension(R.dimen.padding_bottom_home_view_pager);
-		_binding.mainViewPager.setPadding(_binding.mainViewPager.getPaddingStart(),
-				_binding.mainViewPager.getPaddingTop(),
-				_binding.mainViewPager.getPaddingEnd(),
-				padding);
-	}
+	// private void _updateFromMetadata(MediaMetadataCompat metadata) {
+	//
+	// 	// todo: get height not working for some reason
+	// 	final int padding = (int) getResources().getDimension(R.dimen.padding_bottom_home_view_pager);
+	// 	_binding.mainViewPager.setPadding(_binding.mainViewPager.getPaddingStart(),
+	// 			_binding.mainViewPager.getPaddingTop(),
+	// 			_binding.mainViewPager.getPaddingEnd(),
+	// 			padding);
+	// }
 }

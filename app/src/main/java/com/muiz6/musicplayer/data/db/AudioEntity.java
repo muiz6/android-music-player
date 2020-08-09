@@ -3,14 +3,16 @@ package com.muiz6.musicplayer.data.db;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Fts4;
 import androidx.room.PrimaryKey;
 
+@Fts4
 @Entity(tableName = "audio_table")
 public class AudioEntity {
 
 	@PrimaryKey(autoGenerate = true)
-	@ColumnInfo(name = "id")
-	private int _id;
+	@ColumnInfo(name = "rowid")
+	private int _rowid;
 	@NonNull
 	@ColumnInfo(name = "path")
 	private String _path; // contains uri of audio file
@@ -29,12 +31,14 @@ public class AudioEntity {
 		_displayName = displayName;
 	}
 
-	public int getId() {
-		return _id;
+	// casing has to be like this for primary key to be full text compatible according to docs
+	// room will not let compile if private field name is not similar to column/getter/setter name
+	public int getRowid() {
+		return _rowid;
 	}
 
-	public void setId(int id) {
-		_id = id;
+	public void setRowid(int id) {
+		_rowid = id;
 	}
 
 	public void setPath(String path) {

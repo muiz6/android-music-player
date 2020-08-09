@@ -12,10 +12,10 @@ import dagger.Module;
 import dagger.Provides;
 
 @Module
-public class FragmentFactoryModule {
+public abstract class FragmentFactoryModule {
 
 	@Provides
-	FragmentFactory getFragmentFactory(final Map<Class<?>, Provider<Fragment>> providerMap) {
+	static FragmentFactory getFragmentFactory(final Map<Class<?>, Provider<Fragment>> providerMap) {
 		return new FragmentFactory() {
 
 			@NonNull

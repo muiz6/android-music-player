@@ -35,7 +35,8 @@ import javax.inject.Named;
 
 // overriding onBind() will result in media browser not binding to service
 public class MusicService extends MediaBrowserServiceCompat
-		implements MediaSessionConnector.PlaybackPreparer {
+		implements MediaSessionConnector.PlaybackPreparer,
+		MusicRepository.Listener {
 
 	@Inject MusicRepository musicRepository;
 	@Inject PlayerNotificationManager notificationMgr;
@@ -52,6 +53,7 @@ public class MusicService extends MediaBrowserServiceCompat
 	public void onCreate() {
 		((MyApp) getApplication()).getAppComponent().getMusicServiceComponent().create()
 				.inject(this);
+		musicRepository.setListener(this);
 		super.onCreate();
 
 		// connect service to media session
@@ -67,6 +69,10 @@ public class MusicService extends MediaBrowserServiceCompat
 
 		// connect media session to exoplayer notification manager
 		notificationMgr.setMediaSessionToken(session.getSessionToken());
+
+		// if service is killed by system or crash
+		// auto kill any old notification on next service creation
+		NotificationManagerCompat.from(this).cancelAll();
 	}
 
 	@Nullable
@@ -85,12 +91,26 @@ public class MusicService extends MediaBrowserServiceCompat
 		musicRepository.sendResult(parentId, result);
 	}
 
-	@Override
-	public void onTaskRemoved(Intent rootIntent) {
-		super.onTaskRemoved(rootIntent);
+	// @Override
+	// public void onTaskRemoved(Intent rootIntent) {
+	// 	super.onTaskRemoved(rootIntent);
+	//
+	// 	// end the service when application is closed
+	// 	stopSelf();
+	// }
 
-		// end the service when application is closed
-		stopSelf();
+	@Override
+	public void onCustomAction(@NonNull String action, Bundle extras, @NonNull Result<Bundle> result) {
+		super.onCustomAction(action, extras, result);
+	}
+
+	@Override
+	public boolean onUnbind(Intent intent) {
+
+		// cancel notification when application unbinds
+		NotificationManagerCompat.from(this).cancelAll();
+		musicRepository.setListener(null);
+		return super.onUnbind(intent);
 	}
 
 	@Override
@@ -99,6 +119,7 @@ public class MusicService extends MediaBrowserServiceCompat
 		// stop playback and related processes
 		session.getController().getTransportControls().stop();
 		NotificationManagerCompat.from(this).cancelAll();
+		musicRepository.setListener(null);
 		super.onDestroy();
 	}
 

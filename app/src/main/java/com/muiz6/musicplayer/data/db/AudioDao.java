@@ -4,6 +4,11 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 
+import com.muiz6.musicplayer.data.db.pojos.AlbumPojo;
+import com.muiz6.musicplayer.data.db.pojos.ArtistPojo;
+import com.muiz6.musicplayer.data.db.pojos.GenrePojo;
+import com.muiz6.musicplayer.data.db.pojos.SongPojo;
+
 import java.util.List;
 
 @Dao
