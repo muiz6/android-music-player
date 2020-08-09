@@ -7,7 +7,7 @@
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:paddingTop="10dp"
-	android:paddingStart="@dimen/padding_container"
+	android:paddingStart="@dimen/padding_l"
 	android:textColor="?attr/colorPrimary"
 	app:layout_constraintTop_toTopOf="parent" />
 <!--todo extract padding as dimension res-->

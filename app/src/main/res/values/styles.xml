@@ -25,6 +25,11 @@
 		<!--system toolbar icon tint-->
 		<item name="iconTint">?attr/colorOnBackground</item>
 
+		<!--bottom sheet styling-->
+		<!--bottom sheet will cause crash without peekHeight attribute here-->
+		<item name="behavior_peekHeight">?attr/actionBarSize</item>
+		<item name="bottomSheetStyle">@style/Widget.App.BottomSheet</item>
+
 		<!--accent colors-->
 		<item name="colorSecondary">?attr/colorPrimary</item>
 		<item name="colorSecondaryVariant">?attr/colorPrimaryVariant</item>
@@ -49,5 +54,12 @@
 		<item name="cardBackgroundColor">@android:color/transparent</item>
 		<item name="cardForegroundColor">@null</item>
 		<item name="android:layout_margin">@dimen/margin_m</item>
+	</style>
+
+	<style name="Widget.App.BottomSheet" parent="Widget.MaterialComponents.BottomSheet">
+		<item name="behavior_hideable">false</item>
+
+		<!--peekHeight not working if not redefined here-->
+		<item name="behavior_peekHeight">?attr/actionBarSize</item>
 	</style>
 </resources>

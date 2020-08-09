@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--need to specify style here explicitly for it to work.
+	also need to set clickable attribute to true to avoid clicking through bottom sheet-->
+<androidx.constraintlayout.widget.ConstraintLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	style="@style/Widget.App.BottomSheet"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:clickable="true"
+	android:focusable="true"
+	app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+	<ImageView
+		android:id="@+id/bottom_sheet_album_art"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:scaleType="centerCrop" />
+
+	<LinearLayout
+		android:id="@+id/bottom_sheet_collapsed_view"
+		android:layout_width="match_parent"
+		android:layout_height="?attr/behavior_peekHeight"
+		app:layout_constraintTop_toTopOf="parent">
+
+		<ImageButton
+			android:id="@+id/bottom_sheet_collapsed_view_btn_expand_collapse"
+			android:layout_width="50dp"
+			android:layout_height="match_parent"
+			android:src="@drawable/ic_keyboard_arrow_up" />
+
+		<TextView
+			android:id="@+id/bottom_sheet_collapsed_view_song_title"
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
+			android:ellipsize="marquee"
+			android:fadingEdge="horizontal"
+			android:gravity="center"
+
+			android:marqueeRepeatLimit="marquee_forever"
+			android:paddingStart="@dimen/padding_m"
+			android:scrollHorizontally="true"
+			android:singleLine="true" />
+
+		<ImageButton
+			android:id="@+id/bottom_sheet_collapsed_view_btn_previous"
+			android:layout_width="50dp"
+			android:layout_height="match_parent"
+			android:src="@drawable/ic_skip_previous" />
+
+		<ImageButton
+			android:id="@+id/bottom_sheet_collapsed_view_btn_play_pause"
+			android:layout_width="50dp"
+			android:layout_height="match_parent"
+			android:src="@drawable/ic_play_arrow" />
+
+		<ImageButton
+			android:id="@+id/bottom_sheet_collapsed_view_btn_next"
+			android:layout_width="50dp"
+			android:layout_height="match_parent"
+			android:src="@drawable/ic_skip_next" />
+	</LinearLayout>
+
+	<com.google.android.material.floatingactionbutton.FloatingActionButton
+		android:id="@+id/bottom_sheet_fab"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginEnd="@dimen/margin_l"
+		android:src="@drawable/ic_playlist_play"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintTop_toTopOf="parent" />
+
+	<TextView
+		android:id="@+id/bottom_sheet_title"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:padding="@dimen/padding_m"
+		app:layout_constraintBottom_toTopOf="@id/bottom_sheet_artist" />
+
+	<TextView
+		android:id="@+id/bottom_sheet_artist"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingHorizontal="@dimen/padding_m"
+		app:layout_constraintBottom_toTopOf="@id/bottom_sheet_album" />
+
+	<TextView
+		android:id="@+id/bottom_sheet_album"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingHorizontal="@dimen/padding_m"
+		android:paddingTop="@dimen/padding_m"
+		app:layout_constraintBottom_toTopOf="@id/bottom_sheet_seek_bar" />
+
+	<SeekBar
+		android:id="@+id/bottom_sheet_seek_bar"
+		style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingVertical="@dimen/padding_xl"
+		app:layout_constraintBottom_toTopOf="@id/bottom_sheet_btn_play_pause" />
+
+	<ImageButton
+		android:id="@+id/bottom_sheet_btn_shuffle"
+		android:layout_width="@dimen/size_icon_now_playing"
+		android:layout_height="@dimen/size_icon_now_playing"
+		android:scaleType="fitXY"
+		android:src="@drawable/ic_shuffle"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintLeft_toLeftOf="parent" />
+
+	<ImageButton
+		android:id="@+id/bottom_sheet_btn_previous"
+		android:layout_width="@dimen/size_icon_now_playing"
+		android:layout_height="@dimen/size_icon_now_playing"
+		android:scaleType="fitXY"
+		android:src="@drawable/ic_skip_previous"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toStartOf="@id/bottom_sheet_btn_play_pause"
+		app:layout_constraintStart_toEndOf="@id/bottom_sheet_btn_shuffle" />
+
+	<ImageButton
+		android:id="@+id/bottom_sheet_btn_play_pause"
+		android:layout_width="@dimen/size_icon_now_playing"
+		android:layout_height="@dimen/size_icon_now_playing"
+		android:scaleType="fitXY"
+		android:src="@drawable/ic_play_arrow"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintHorizontal_bias="0.5"
+		app:layout_constraintStart_toStartOf="parent" />
+
+	<ImageButton
+		android:id="@+id/bottom_sheet_btn_next"
+		android:layout_width="@dimen/size_icon_now_playing"
+		android:layout_height="@dimen/size_icon_now_playing"
+		android:scaleType="fitXY"
+		android:src="@drawable/ic_skip_next"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toStartOf="@id/bottom_sheet_btn_repeat"
+		app:layout_constraintStart_toEndOf="@id/bottom_sheet_btn_play_pause" />
+
+	<ImageButton
+		android:id="@+id/bottom_sheet_btn_repeat"
+		android:layout_width="@dimen/size_icon_now_playing"
+		android:layout_height="@dimen/size_icon_now_playing"
+		android:scaleType="fitXY"
+		android:src="@drawable/ic_repeat"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintRight_toRightOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

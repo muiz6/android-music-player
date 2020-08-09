@@ -31,30 +31,30 @@
 		android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true"
 		android:background="@drawable/bg_bottom_bar"
-		android:paddingHorizontal="@dimen/padding_container"
-		android:paddingTop="@dimen/padding_container"
-		android:paddingBottom="@dimen/padding_container_controls_now_playing">
+		android:paddingHorizontal="@dimen/padding_l"
+		android:paddingTop="@dimen/padding_l"
+		android:paddingBottom="@dimen/padding_xl">
 
 		<TextView
 			android:id="@+id/player_title"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:padding="@dimen/padding_now_playing_text"
+			android:padding="@dimen/padding_l"
 			app:layout_constraintBottom_toTopOf="@id/player_artist" />
 
 		<TextView
 			android:id="@+id/player_artist"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:paddingHorizontal="@dimen/padding_now_playing_text"
+			android:paddingHorizontal="@dimen/padding_l"
 			app:layout_constraintBottom_toTopOf="@id/player_album" />
 
 		<TextView
 			android:id="@+id/player_album"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:paddingHorizontal="@dimen/padding_now_playing_text"
-			android:paddingTop="@dimen/padding_now_playing_text"
+			android:paddingHorizontal="@dimen/padding_l"
+			android:paddingTop="@dimen/padding_l"
 			app:layout_constraintBottom_toTopOf="@id/player_seek_bar" />
 
 		<SeekBar
@@ -62,7 +62,7 @@
 			style="@style/Widget.AppCompat.ProgressBar.Horizontal"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:paddingVertical="@dimen/padding_seek_bar_now_playing"
+			android:paddingVertical="@dimen/padding_xl"
 			app:layout_constraintBottom_toTopOf="@id/player_btn_play_pause" />
 
 		<ImageButton
