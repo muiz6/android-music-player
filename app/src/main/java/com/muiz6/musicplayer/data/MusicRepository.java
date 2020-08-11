@@ -9,22 +9,13 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaBrowserCompat.MediaItem;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.media.session.MediaSessionCompat;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.MutableLiveData;
-import androidx.media.MediaBrowserServiceCompat;
 import androidx.media.MediaBrowserServiceCompat.BrowserRoot;
+import androidx.media.MediaBrowserServiceCompat.Result;
 
-import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector;
-import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator;
-import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.source.MediaSourceFactory;
-import com.google.android.exoplayer2.source.ProgressiveMediaSource;
-import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.gson.Gson;
 import com.muiz6.musicplayer.BuildConfig;
 import com.muiz6.musicplayer.data.db.AudioDao;
 import com.muiz6.musicplayer.data.db.AudioDatabase;
@@ -35,7 +26,9 @@ import com.muiz6.musicplayer.data.db.pojos.SongPojo;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -44,33 +37,42 @@ import javax.inject.Singleton;
 @Singleton
 public class MusicRepository implements AudioDatabase.Callback {
 
-	public static final String MEDIA_ID_ROOT = BuildConfig.APPLICATION_ID + ".mediaItemRoot";
-	public static final String MEDIA_ID_SONGS = BuildConfig.APPLICATION_ID + ".songs";
-	public static final String MEDIA_ID_ALBUMS = BuildConfig.APPLICATION_ID + ".albums";
-	public static final String MEDIA_ID_ARTISTS = BuildConfig.APPLICATION_ID + ".artists";
-	public static final String MEDIA_ID_GENRES = BuildConfig.APPLICATION_ID + ".genres";
-	public static final Character SEPARATOR_MEDIA_ID = '.';
-	public static final String KEY_EXTRAS_MEDIA_TYPE = BuildConfig.APPLICATION_ID + ".mediaType";
-	public static final String MEDIA_TYPE_SONG = BuildConfig.APPLICATION_ID + ".mediaType.Song";
-	public static final String MEDIA_TYPE_ARTIST = BuildConfig.APPLICATION_ID + ".mediaType.Artist";
-	public static final String MEDIA_TYPE_ALBUM = BuildConfig.APPLICATION_ID + ".mediaType.Album";
-	public static final String MEDIA_TYPE_GENRE = BuildConfig.APPLICATION_ID + ".mediaType.Genre";
+	public static final String MEDIA_ID_ROOT;
+	public static final String KEY_EXTRAS_MEDIA_CATEGORY = BuildConfig.APPLICATION_ID + ".mediaType";
+	public static final String MEDIA_ID_SONGS;
+	public static final String MEDIA_ID_ALBUMS;
+	public static final String MEDIA_ID_ARTISTS;
+	public static final String MEDIA_ID_GENRES;
 
-	// todo remove this from here
-	private final MutableLiveData<List<MediaItem>> _allSongList =
-			new MutableLiveData<>(Collections.<MediaItem>emptyList());
+	private static final Gson _GSON = new Gson();
 	private final Handler _handler = new Handler(Looper.getMainLooper());
-	private final Context _context;
+	private final Map<String, _LoadLevel1> _mapLoadLevel1 = new HashMap<>();
+	private final Map<String, _LoadLevel2> _mapLoadLevel2 = new HashMap<>();
 	private final AudioDatabase _db;
 	private final AudioDao _dao;
 	private Listener _listener;
 
+	static {
+		MEDIA_ID_ROOT = _GSON.toJson(new MediaIdPojo(MediaIdPojo.CATEGORY_ROOT,
+				MediaIdPojo.VALUE_ROOT, 0, null, null));
+		MEDIA_ID_SONGS = _GSON.toJson(new MediaIdPojo(MediaIdPojo.CATEGORY_LIBRARY,
+				MediaIdPojo.VALUE_LIBRARY_SONGS, 0 ,null, null));
+		MEDIA_ID_ALBUMS = _GSON.toJson(new MediaIdPojo(MediaIdPojo.CATEGORY_LIBRARY,
+				MediaIdPojo.VALUE_LIBRARY_ALBUMS, 0 ,null, null));
+		MEDIA_ID_ARTISTS = _GSON.toJson(new MediaIdPojo(MediaIdPojo.CATEGORY_LIBRARY,
+				MediaIdPojo.VALUE_LIBRARY_ARTISTS, 0 ,null, null));
+		MEDIA_ID_GENRES = _GSON.toJson(new MediaIdPojo(MediaIdPojo.CATEGORY_LIBRARY,
+				MediaIdPojo.VALUE_LIBRARY_GENRES, 0 ,null, null));
+	}
+
 	@Inject
 	public MusicRepository(@Named("Application") Context context, AudioDatabase db) {
-		_context = context;
 		_db = db;
 		_dao = db.getAudioDao();
-		// db.setCallback(this);
+
+		// populate map collections to use with adapter pattern
+		_populateMapLevel1();
+		_populateMapLevel2();
 	}
 
 	@Override
@@ -81,8 +83,8 @@ public class MusicRepository implements AudioDatabase.Callback {
 				@Override
 				public void run() {
 
-					// notify all that all data has changed
-					// just notifying root id will not change
+					// notify everyone that all data has changed
+					// just notifying root id is not working
 					_listener.notifyChildrenChanged(MEDIA_ID_SONGS);
 					_listener.notifyChildrenChanged(MEDIA_ID_ALBUMS);
 					_listener.notifyChildrenChanged(MEDIA_ID_ARTISTS);
@@ -97,109 +99,71 @@ public class MusicRepository implements AudioDatabase.Callback {
 		return new BrowserRoot(MEDIA_ID_ROOT, null);
 	}
 
+	/**
+	 * @param mediaId media id of playable only media item,
+	 * @return Get index of a playable only media item in queue, returns 0 if mediaid is invalid
+	 */
 	public static int getIndexFromMediaId(@NonNull String mediaId) {
-		return Integer.parseInt(mediaId.substring(mediaId.lastIndexOf('.') + 1));
+		final MediaIdPojo objMediaId = _GSON.fromJson(mediaId, MediaIdPojo.class);
+		if (objMediaId != null) {
+			return objMediaId.getIndex();
+		}
+		return 0;
 	}
 
+	/**
+	 * Gets title of media item associated with a browsable media id
+	 * @param parentId media id of a browsable media item
+	 * @return title of browsable media item
+	 */
 	@NonNull
-	public static String getArtistFromArtistMediaId(@NonNull String mediaId) {
-		return mediaId.substring(mediaId.lastIndexOf(SEPARATOR_MEDIA_ID) + 1);
-	}
-
-	@NonNull
-	public static String getGenreFromGenreMediaId(@NonNull String mediaId) {
-		return mediaId.substring(mediaId.lastIndexOf(SEPARATOR_MEDIA_ID) + 1);
+	public static String getTitleFromMediaId(@NonNull String parentId) {
+		final MediaIdPojo objMediaId = _GSON.fromJson(parentId, MediaIdPojo.class);
+		if (objMediaId != null) {
+			final String  value = objMediaId.getValue();
+			if (value != null) {
+				return value;
+			}
+		}
+		return parentId;
 	}
 
 	@Nullable
-	public MediaItem getMediaItemById(String mediaId) {
-		for (final MediaItem i : _allSongList.getValue()) {
-			if (i.getMediaId().equals(mediaId)) {
-				return i;
-			}
-		}
-
-		// else
-		return null;
+	public static MediaIdPojo getMediaId(@NonNull String mediaId) {
+		return _GSON.fromJson(mediaId, MediaIdPojo.class);
 	}
 
-	@Nullable
-	public MediaSource[] getQueueBytMediaId(String mediaId) {
-
-		// todo: use media id to provide queue
-		if (_allSongList.getValue().size() > 0) {
-			final MediaSource[] sources = new MediaSource[_allSongList.getValue().size()];
-			final DataSource.Factory dataSourceFactory =
-					new DefaultDataSourceFactory(_context, "exoplayer-codelab");
-			final MediaSourceFactory factory = new ProgressiveMediaSource.Factory(dataSourceFactory);
-			int i = 0;
-			for (final MediaBrowserCompat.MediaItem mediaItem : _allSongList.getValue()) {
-				sources[i++] = factory.createMediaSource(mediaItem.getDescription().getMediaUri());
+	public void loadChildren(@NonNull String parentMediaId,
+			@NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
+		boolean flagHandled = false;
+		final MediaIdPojo objMediaId = _GSON.fromJson(parentMediaId, MediaIdPojo.class);
+		if (objMediaId != null) {
+			final String category = objMediaId.getCategory();
+			final String value = objMediaId.getValue();
+			switch (category) {
+				case MediaIdPojo.CATEGORY_ROOT:
+					_browseRoot(result);
+					flagHandled = true;
+					break;
+				case MediaIdPojo.CATEGORY_LIBRARY:
+					final _LoadLevel1 action = _mapLoadLevel1.get(value);
+					if (action != null) {
+						action.action(result);
+						flagHandled = true;
+					}
+					break;
+				case MediaIdPojo.CATEGORY_ALBUM:
+				case MediaIdPojo.CATEGORY_ARTIST:
+				case MediaIdPojo.CATEGORY_GENRE:
+					final _LoadLevel2 action2 = _mapLoadLevel2.get(category);
+					if (action2 != null) {
+						action2.action(value, result);
+						flagHandled = true;
+					}
 			}
-			return sources;
 		}
-		return null;
-	}
-
-	// todo: remove this from here
-	public MediaSessionConnector.QueueNavigator getQueueNavigator(MediaSessionCompat session) {
-		return new TimelineQueueNavigator(session) {
-
-			@Override
-			public MediaDescriptionCompat getMediaDescription(Player player, int windowIndex) {
-				return _allSongList.getValue().get(windowIndex).getDescription();
-			}
-		};
-	}
-
-	public void sendResult(String parentMediaId,
-			@NonNull MediaBrowserServiceCompat.Result<List<MediaBrowserCompat.MediaItem>> result) {
-
-		// if accessing from root
-		if (parentMediaId.equals(MusicRepository.MEDIA_ID_ROOT)) {
-			final MediaDescriptionCompat.Builder builder = new MediaDescriptionCompat.Builder();
-			final List<MediaItem> rootItems = new ArrayList<>();
-			rootItems.add(new MediaItem(builder.setMediaId(MEDIA_ID_SONGS)
-					.setTitle("All Songs")
-					.build(),
-					MediaItem.FLAG_BROWSABLE));
-			rootItems.add(new MediaItem(builder.setMediaId(MEDIA_ID_ALBUMS)
-					.setTitle("Albums")
-					.build(),
-					MediaItem.FLAG_BROWSABLE));
-			rootItems.add(new MediaItem(builder.setMediaId(MEDIA_ID_ARTISTS)
-					.setTitle("Artists")
-					.build(),
-					MediaItem.FLAG_BROWSABLE));
-			rootItems.add(new MediaItem(builder.setMediaId(MEDIA_ID_GENRES)
-					.setTitle("Genres")
-					.build(),
-					MediaItem.FLAG_BROWSABLE));
-			result.sendResult(rootItems);
-		}
-		else if (parentMediaId.equals(MEDIA_ID_SONGS)) {
-			_sendAllSongList(result);
-		}
-		else if (parentMediaId.equals(MEDIA_ID_ALBUMS)) {
-			_sendAlbumList(result);
-		}
-		else if (parentMediaId.equals(MEDIA_ID_ARTISTS)) {
-			_sendArtistList(result);
-		}
-		else if (parentMediaId.equals(MEDIA_ID_GENRES)) {
-			_sendGenreList(result);
-		}
-		else if (parentMediaId.startsWith(MEDIA_ID_ARTISTS)) {
-			_browseArtist(parentMediaId, result);
-		}
-		else if (parentMediaId.startsWith(MEDIA_ID_GENRES)) {
-			_browseGenre(parentMediaId, result);
-		}
-		else if (parentMediaId.startsWith(MEDIA_ID_ALBUMS)) {
-			_browseAlbum(parentMediaId, result);
-		}
-		else {
-			result.sendResult(null);
+		if (!flagHandled) {
+			result.sendResult(Collections.<MediaItem>emptyList());
 		}
 	}
 
@@ -217,21 +181,52 @@ public class MusicRepository implements AudioDatabase.Callback {
 		}
 	}
 
-	private static List<MediaItem> _getSongMediaItems(List<SongPojo> list) {
+	private static void _browseRoot(@NonNull final Result<List<MediaItem>> result) {
+		result.detach();
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				final MediaDescriptionCompat.Builder builder = new MediaDescriptionCompat.Builder();
+				final List<MediaItem> rootItems = new ArrayList<>();
+				rootItems.add(new MediaItem(builder.setMediaId(MEDIA_ID_SONGS)
+						.setTitle("All Songs")
+						.build(),
+						MediaItem.FLAG_BROWSABLE));
+				rootItems.add(new MediaItem(builder.setMediaId(MEDIA_ID_ALBUMS)
+						.setTitle("Albums")
+						.build(),
+						MediaItem.FLAG_BROWSABLE));
+				rootItems.add(new MediaItem(builder.setMediaId(MEDIA_ID_ARTISTS)
+						.setTitle("Artists")
+						.build(),
+						MediaItem.FLAG_BROWSABLE));
+				rootItems.add(new MediaItem(builder.setMediaId(MEDIA_ID_GENRES)
+						.setTitle("Genres")
+						.build(),
+						MediaItem.FLAG_BROWSABLE));
+				result.sendResult(rootItems);
+			}
+		}).start();
+	}
+
+	public static List<MediaItem> getSongMediaItems(List<SongPojo> list) {
 		final List<MediaBrowserCompat.MediaItem> newList = new ArrayList<>();
 		final MediaDescriptionCompat.Builder builder = new MediaDescriptionCompat.Builder();
 		int i = 0;
+		final MediaIdPojo objMediaId = new MediaIdPojo();
+		objMediaId.setCategory(MediaIdPojo.CATEGORY_SONG);
 		for (final SongPojo audio : list) {
+			objMediaId.setValue(audio.getTitle());
+			objMediaId.setIndex(i++);
 			final Bundle extras = new Bundle();
-			extras.putString(KEY_EXTRAS_MEDIA_TYPE, MEDIA_TYPE_SONG);
+			extras.putString(KEY_EXTRAS_MEDIA_CATEGORY, MediaIdPojo.CATEGORY_SONG);
 			extras.putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE,
 					audio.getTitle());
 			extras.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, audio.getArtist());
 			extras.putInt(MediaMetadataCompat.METADATA_KEY_DURATION, audio.getDuration());
 			final MediaDescriptionCompat description = builder
-					.setMediaId(MusicRepository.MEDIA_ID_SONGS
-							+ MusicRepository.SEPARATOR_MEDIA_ID
-							+ i++)
+					.setMediaId(_GSON.toJson(objMediaId))
 					.setMediaUri(Uri.parse(audio.getPath()))
 					.setTitle(audio.getDisplayName())
 					.setSubtitle(audio.getArtist())
@@ -248,17 +243,19 @@ public class MusicRepository implements AudioDatabase.Callback {
 	private static List<MediaItem> _getArtistMediaItems(List<ArtistPojo> list) {
 		final List<MediaBrowserCompat.MediaItem> newList = new ArrayList<>();
 		final MediaDescriptionCompat.Builder builder = new MediaDescriptionCompat.Builder();
-		int i = 0;
+
+		final MediaIdPojo objMediaId = new MediaIdPojo();
+		objMediaId.setCategory(MediaIdPojo.CATEGORY_ARTIST);
+
 		for (final ArtistPojo audio : list) {
 			final Bundle extras = new Bundle();
-			extras.putString(KEY_EXTRAS_MEDIA_TYPE, MEDIA_TYPE_ARTIST);
+
+			objMediaId.setValue(audio.getArtist());
+
+			extras.putString(KEY_EXTRAS_MEDIA_CATEGORY, MediaIdPojo.CATEGORY_ARTIST);
 			extras.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, audio.getArtist());
 			final MediaDescriptionCompat description = builder
-					.setMediaId(MusicRepository.MEDIA_ID_ARTISTS
-							+ MusicRepository.SEPARATOR_MEDIA_ID
-							+ i++
-							+ MusicRepository.SEPARATOR_MEDIA_ID
-							+ audio.getArtist())
+					.setMediaId(_GSON.toJson(objMediaId))
 					.setTitle(audio.getArtist())
 					.setExtras(extras)
 					.build();
@@ -274,18 +271,19 @@ public class MusicRepository implements AudioDatabase.Callback {
 
 		final List<MediaBrowserCompat.MediaItem> newList = new ArrayList<>();
 		final MediaDescriptionCompat.Builder builder = new MediaDescriptionCompat.Builder();
-		int i = 0;
+
+		final MediaIdPojo objMediaId = new MediaIdPojo();
+		objMediaId.setCategory(MediaIdPojo.CATEGORY_ALBUM);
+
 		for (final AlbumPojo audio : list) {
+			objMediaId.setValue(audio.getAlbum());
+
 			final Bundle extras = new Bundle();
-			extras.putString(KEY_EXTRAS_MEDIA_TYPE, MEDIA_TYPE_ALBUM);
+			extras.putString(KEY_EXTRAS_MEDIA_CATEGORY, MediaIdPojo.CATEGORY_ALBUM);
 			extras.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, audio.getAlbum());
 			extras.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, audio.getArtist());
 			final MediaDescriptionCompat description = builder
-					.setMediaId(MEDIA_ID_ALBUMS
-							+ SEPARATOR_MEDIA_ID
-							+ i++
-							+ SEPARATOR_MEDIA_ID
-							+ audio.getAlbum())
+					.setMediaId(_GSON.toJson(objMediaId))
 					.setTitle(audio.getAlbum())
 					.setSubtitle(audio.getArtist())
 					.setExtras(extras)
@@ -298,122 +296,168 @@ public class MusicRepository implements AudioDatabase.Callback {
 		return newList;
 	}
 
-	private void _sendAllSongList(final MediaBrowserServiceCompat.Result<List<MediaItem>> result) {
-		result.detach();
-		new Thread(new Runnable() {
+	private static List<MediaItem> _getGenreList(List<GenrePojo> list) {
+		final List<MediaBrowserCompat.MediaItem> newList = new ArrayList<>();
+		final MediaDescriptionCompat.Builder builder = new MediaDescriptionCompat.Builder();
 
-			@Override
-			public void run() {
-				final List<MediaItem> songItems = _getSongMediaItems(_dao.getAllSongList());
-				_allSongList.postValue(songItems);
-				result.sendResult(songItems);
-			}
-		}).start();
+		final MediaIdPojo objMediaId = new MediaIdPojo();
+		objMediaId.setCategory(MediaIdPojo.CATEGORY_GENRE);
+
+		for (final GenrePojo audio : list) {
+			objMediaId.setValue(audio.getGenre());
+
+			final Bundle extras = new Bundle();
+			extras.putString(MusicRepository.KEY_EXTRAS_MEDIA_CATEGORY,
+					MediaIdPojo.CATEGORY_GENRE);
+			extras.putString(MediaMetadataCompat.METADATA_KEY_GENRE, audio.getGenre());
+			final MediaDescriptionCompat description = builder
+					.setMediaId(_GSON.toJson(objMediaId))
+					.setTitle(audio.getGenre())
+					.setExtras(extras)
+					.build();
+			final MediaBrowserCompat.MediaItem mediaItem =
+					new MediaBrowserCompat.MediaItem(description,
+							MediaBrowserCompat.MediaItem.FLAG_BROWSABLE);
+			newList.add(mediaItem);
+		}
+		return newList;
 	}
 
-	private void _sendAlbumList(final MediaBrowserServiceCompat.Result<List<MediaItem>> result) {
-		result.detach();
-		new Thread(new Runnable() {
+	private void _populateMapLevel1() {
+		final _LoadLevel1 loadLevel1Songs = new _LoadLevel1() {
 
 			@Override
-			public void run() {
-				result.sendResult(_getAlbumMediaItems(_dao.getAllAlbumList()));
+			public void action(@NonNull final Result<List<MediaItem>> result) {
+				result.detach();
+				new Thread(new Runnable() {
+
+					@Override
+					public void run() {
+						final List<MediaItem> songItems = getSongMediaItems(_dao.getAllSongList());
+						result.sendResult(songItems);
+					}
+				}).start();
 			}
-		}).start();
+		};
+		final _LoadLevel1 loadLevel1Albums = new _LoadLevel1() {
+
+			@Override
+			public void action(@NonNull final Result<List<MediaItem>> result) {
+				result.detach();
+				new Thread(new Runnable() {
+
+					@Override
+					public void run() {
+						result.sendResult(_getAlbumMediaItems(_dao.getAllAlbumList()));
+					}
+				}).start();
+			}
+		};
+		final _LoadLevel1 loadLevel1Artists = new _LoadLevel1() {
+
+			@Override
+			public void action(@NonNull final Result<List<MediaItem>> result) {
+				result.detach();
+				new Thread(new Runnable() {
+
+					@Override
+					public void run() {
+						result.sendResult(_getArtistMediaItems(_dao.getAllArtistList()));
+					}
+				}).start();
+			}
+		};
+		final _LoadLevel1 loadLevel1Genres = new _LoadLevel1() {
+
+			@Override
+			public void action(@NonNull final Result<List<MediaItem>> result) {
+				result.detach();
+				new Thread(new Runnable() {
+
+					@Override
+					public void run() {
+						result.sendResult(_getGenreList(_dao.getGenreList()));
+					}
+				}).start();
+			}
+		};
+		_mapLoadLevel1.put(MediaIdPojo.VALUE_LIBRARY_SONGS, loadLevel1Songs);
+		_mapLoadLevel1.put(MediaIdPojo.VALUE_LIBRARY_ALBUMS, loadLevel1Albums);
+		_mapLoadLevel1.put(MediaIdPojo.VALUE_LIBRARY_ARTISTS, loadLevel1Artists);
+		_mapLoadLevel1.put(MediaIdPojo.VALUE_LIBRARY_GENRES, loadLevel1Genres);
 	}
 
-	private void _sendArtistList(final MediaBrowserServiceCompat.Result<List<MediaItem>> result) {
-		result.detach();
-		new Thread(new Runnable() {
+	private void _populateMapLevel2() {
+		final _LoadLevel2 actionBrowseArtist = new _LoadLevel2() {
 
 			@Override
-			public void run() {
-				result.sendResult(_getArtistMediaItems(_dao.getAllArtistList()));
-			}
-		}).start();
-	}
+			public void action(@NonNull final String value,
+					@NonNull final Result<List<MediaItem>> result) {
+				result.detach();
+				new Thread(new Runnable() {
 
-	private void _sendGenreList(final MediaBrowserServiceCompat.Result<List<MediaItem>> result) {
-		result.detach();
-		new Thread(new Runnable() {
+					@Override
+					public void run() {
+						final List<MediaItem> resultList = new ArrayList<>();
+						resultList.addAll(getSongMediaItems(_dao.getSongListByArtist(value)));
+						resultList.addAll(_getAlbumMediaItems(_dao.getAlbumListByArtist(value)));
+						result.sendResult(resultList);
+					}
+				}).start();
+			}
+		};
+		final _LoadLevel2 actionBrowseGenre = new _LoadLevel2() {
 
 			@Override
-			public void run() {
-				final List<GenrePojo> list = _dao.getGenreList();
-				final List<MediaBrowserCompat.MediaItem> newList = new ArrayList<>();
-				final MediaDescriptionCompat.Builder builder = new MediaDescriptionCompat.Builder();
-				int i = 0;
-				for (final GenrePojo audio : list) {
-					final Bundle extras = new Bundle();
-					extras.putString(MusicRepository.KEY_EXTRAS_MEDIA_TYPE,
-							MusicRepository.MEDIA_TYPE_GENRE);
-					extras.putString(MediaMetadataCompat.METADATA_KEY_GENRE, audio.getGenre());
-					final MediaDescriptionCompat description = builder
-							.setMediaId(MusicRepository.MEDIA_ID_GENRES
-									+ MusicRepository.SEPARATOR_MEDIA_ID
-									+ i++
-									+ MusicRepository.SEPARATOR_MEDIA_ID
-									+ audio.getGenre())
-							.setTitle(audio.getGenre())
-							.setExtras(extras)
-							.build();
-					final MediaBrowserCompat.MediaItem mediaItem =
-							new MediaBrowserCompat.MediaItem(description,
-									MediaBrowserCompat.MediaItem.FLAG_BROWSABLE);
-					newList.add(mediaItem);
-				}
-				result.sendResult(newList);
-			}
-		}).start();
-	}
+			public void action(@NonNull final String value,
+					@NonNull final Result<List<MediaItem>> result) {
+				result.detach();
+				new Thread(new Runnable() {
 
-	private void _browseArtist(@NonNull String parentId,
-			@NonNull final MediaBrowserServiceCompat.Result<List<MediaItem>> result) {
-		final String artist = getArtistFromArtistMediaId(parentId);
-		result.detach();
-		new Thread(new Runnable() {
+					@Override
+					public void run() {
+						final List<MediaItem> resultList = new ArrayList<>();
+						resultList.addAll(getSongMediaItems(_dao.getSongListByGenre(value)));
+						resultList.addAll(_getAlbumMediaItems(_dao.getAlbumListByGenre(value)));
+						result.sendResult(resultList);
+					}
+				}).start();
+			}
+		};
+		final _LoadLevel2 actionBrowseAlbum = new _LoadLevel2() {
 
 			@Override
-			public void run() {
-				final List<MediaItem> resultList = new ArrayList<>();
-				resultList.addAll(_getSongMediaItems(_dao.getSongListByArtist(artist)));
-				resultList.addAll(_getAlbumMediaItems(_dao.getAlbumListByArtist(artist)));
-				result.sendResult(resultList);
+			public void action(@NonNull final String value,
+					@NonNull final Result<List<MediaItem>> result) {
+				result.detach();
+				new Thread(new Runnable() {
+
+					@Override
+					public void run() {
+						result.sendResult(getSongMediaItems(_dao.getSongListByAlbum(value)));
+					}
+				}).start();
 			}
-		}).start();
-	}
-
-	private void _browseGenre(@NonNull String parentId,
-			@NonNull final MediaBrowserServiceCompat.Result<List<MediaItem>> result) {
-		final String genre = getGenreFromGenreMediaId(parentId);
-		result.detach();
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				final List<MediaItem> resultList = new ArrayList<>();
-				resultList.addAll(_getSongMediaItems(_dao.getSongListByGenre(genre)));
-				resultList.addAll(_getAlbumMediaItems(_dao.getAlbumListByGenre(genre)));
-				result.sendResult(resultList);
-			}
-		}).start();
-	}
-
-	private void _browseAlbum(@NonNull String parentId,
-			@NonNull final MediaBrowserServiceCompat.Result<List<MediaItem>> result) {
-		final String album = getArtistFromArtistMediaId(parentId); // same impl
-		result.detach();
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				result.sendResult(_getSongMediaItems(_dao.getSongListByAlbum(album)));
-			}
-		}).start();
+		};
+		_mapLoadLevel2.put(MediaIdPojo.CATEGORY_ALBUM, actionBrowseAlbum);
+		_mapLoadLevel2.put(MediaIdPojo.CATEGORY_ARTIST, actionBrowseArtist);
+		_mapLoadLevel2.put(MediaIdPojo.CATEGORY_GENRE, actionBrowseGenre);
 	}
 
 	public interface Listener {
 
 		void notifyChildrenChanged(String string);
+	}
+
+	// action associated for level 1 of the tree hierarchy
+	// loading all songs, all alums etc.
+	private interface _LoadLevel1 {
+		void action(@NonNull Result<List<MediaItem>> result);
+	}
+
+	// action associated for level 2 of the tree hierarchy
+	// loading one album, artist etc.
+	private interface _LoadLevel2 {
+		void action(@NonNull String value, @NonNull Result<List<MediaItem>> result);
 	}
 }

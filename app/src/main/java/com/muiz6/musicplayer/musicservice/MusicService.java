@@ -23,17 +23,17 @@ import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.audio.AudioAttributes;
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector;
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
-import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.ui.PlayerNotificationManager;
 import com.muiz6.musicplayer.MyApp;
 import com.muiz6.musicplayer.data.MusicRepository;
+import com.muiz6.musicplayer.data.QueueManager;
 
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-// overriding onBind() will result in media browser not binding to service
+// overriding onBind() may result in media browser not binding to service
 public class MusicService extends MediaBrowserServiceCompat
 		implements MediaSessionConnector.PlaybackPreparer,
 		MusicRepository.Listener {
@@ -43,10 +43,15 @@ public class MusicService extends MediaBrowserServiceCompat
 	@Inject MediaSessionConnector sessionConnector;
 	@Inject MediaSessionCompat session;
 	@Inject MediaSessionConnector.QueueNavigator queueNavigator;
+	@Inject QueueManager queueManager;
 	@Inject
 	@Named("NoisyReceiver")
 	BroadcastReceiver noisyReceiver;
 
+	private final AudioAttributes _audioAttr = new AudioAttributes.Builder()
+			.setUsage(C.USAGE_MEDIA)
+			.setContentType(C.CONTENT_TYPE_MUSIC)
+			.build();
 	private SimpleExoPlayer _player;
 
 	@Override
@@ -61,7 +66,7 @@ public class MusicService extends MediaBrowserServiceCompat
 
 		// connect media session with exoplayer
 		sessionConnector.setPlaybackPreparer(this);
-		sessionConnector.setQueueNavigator(musicRepository.getQueueNavigator(session));
+		sessionConnector.setQueueNavigator(queueManager.getQueueNavigator(session));
 		// sessionConnector.setQueueNavigator(queueNavigator);
 
 		// to stop playback when headphones are removed
@@ -88,20 +93,7 @@ public class MusicService extends MediaBrowserServiceCompat
 	@Override
 	public void onLoadChildren(@NonNull String parentId,
 			@NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
-		musicRepository.sendResult(parentId, result);
-	}
-
-	// @Override
-	// public void onTaskRemoved(Intent rootIntent) {
-	// 	super.onTaskRemoved(rootIntent);
-	//
-	// 	// end the service when application is closed
-	// 	stopSelf();
-	// }
-
-	@Override
-	public void onCustomAction(@NonNull String action, Bundle extras, @NonNull Result<Bundle> result) {
-		super.onCustomAction(action, extras, result);
+		musicRepository.loadChildren(parentId, result);
 	}
 
 	@Override
@@ -136,38 +128,36 @@ public class MusicService extends MediaBrowserServiceCompat
 	public void onPrepare(boolean playWhenReady) {}
 
 	@Override
-	public void onPrepareFromMediaId(@NonNull String mediaId,
-			boolean playWhenReady,
+	public void onPrepareFromMediaId(@NonNull final String mediaId,
+			final boolean playWhenReady,
 			@Nullable Bundle extras) {
-		MediaBrowserCompat.MediaItem mediaItem = musicRepository.getMediaItemById(mediaId);
-		if (mediaItem != null) {
-			session.setActive(true);
+		queueManager.getQueueBytMediaId(mediaId, new QueueManager.Callback() {
 
-			if (_player == null) {
-				_player = new SimpleExoPlayer.Builder(MusicService.this).build();
+			@Override
+			public void onCompletion(ConcatenatingMediaSource queue) {
+				if (queue.getSize() > 0) {
+					session.setActive(true);
+
+					if (_player == null) {
+						_player = new SimpleExoPlayer.Builder(MusicService.this).build();
+					}
+
+					// exoplayer can handle audio focus itself when attributes are set
+					_player.setAudioAttributes(_audioAttr, true);
+
+					sessionConnector.setPlayer(_player);
+					notificationMgr.setPlayer(_player);
+
+					_player.prepare(queue);
+					_player.seekTo(MusicRepository.getIndexFromMediaId(mediaId), 0);
+					_player.setPlayWhenReady(playWhenReady);
+
+					final IntentFilter intentFilter =
+							new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+					MusicService.this.registerReceiver(noisyReceiver, intentFilter);
+				}
 			}
-
-			// exoplayer handles audio focus itself when attributes are set
-			final AudioAttributes audioAttr = new AudioAttributes.Builder()
-					.setUsage(C.USAGE_MEDIA)
-					.setContentType(C.CONTENT_TYPE_MUSIC)
-					.build();
-			_player.setAudioAttributes(audioAttr, true);
-
-			sessionConnector.setPlayer(_player);
-			notificationMgr.setPlayer(_player);
-
-			final MediaSource[] sources = musicRepository.getQueueBytMediaId(mediaId);
-			if (sources != null) {
-				_player.prepare(new ConcatenatingMediaSource(sources));
-				_player.seekTo(MusicRepository.getIndexFromMediaId(mediaId), 0);
-				_player.setPlayWhenReady(playWhenReady);
-
-				final IntentFilter intentFilter =
-						new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
-				MusicService.this.registerReceiver(noisyReceiver, intentFilter);
-			}
-		}
+		});
 	}
 
 	@Override

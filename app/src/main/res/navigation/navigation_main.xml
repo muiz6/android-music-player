@@ -11,24 +11,5 @@
 		android:name="com.muiz6.musicplayer.ui.main.home.HomeFragment"
 		android:label="@string/app_name"
 		tools:layout="@layout/fragment_home">
-		<action
-			android:id="@+id/action_main_home_to_player"
-			app:destination="@id/main_player_fragment" />
 	</fragment>
-
-	<fragment
-		android:id="@+id/main_player_fragment"
-		android:name="com.muiz6.musicplayer.ui.main.nowplaying.PlayerFragment"
-		android:label="Now Playing"
-		tools:layout="@layout/fragment_player">
-		<action
-			android:id="@+id/action_main_player_to_queue"
-			app:destination="@id/main_queue_fragment" />
-	</fragment>
-
-	<fragment
-		android:id="@+id/main_queue_fragment"
-		android:name="com.muiz6.musicplayer.ui.main.nowplaying.QueueFragment"
-		android:label="Queue Fragment"
-		tools:layout="@layout/fragment_queue" />
 </navigation>

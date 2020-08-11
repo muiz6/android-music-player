@@ -60,8 +60,8 @@ public abstract class MusicServiceModule {
 	@Named("Notification")
 	static PendingIntent provideNotificationIntent(@Named("Application") Context context) {
 		return new NavDeepLinkBuilder(context)
-				.setGraph(R.navigation.navigation_main)
-				.setDestination(R.id.main_player_fragment)
+				.setGraph(R.navigation.navigation_home)
+				.setDestination(R.id.libraryFragment)
 				.createPendingIntent();
 	}
 

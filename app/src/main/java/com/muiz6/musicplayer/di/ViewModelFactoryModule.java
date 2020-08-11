@@ -15,8 +15,8 @@ import dagger.Provides;
 public abstract class ViewModelFactoryModule {
 
 	@Provides
-	static ViewModelProvider.Factory getViewModelFactory(final Map<Class<?>,
-			Provider<ViewModel>> providerMap) {
+	static ViewModelProvider.Factory getViewModelFactory(
+			final Map<Class<?>, Provider<ViewModel>> providerMap) {
 		return new ViewModelProvider.Factory() {
 
 			@NonNull

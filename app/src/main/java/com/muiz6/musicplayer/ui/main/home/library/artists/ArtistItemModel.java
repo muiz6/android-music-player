@@ -1,23 +1,13 @@
 package com.muiz6.musicplayer.ui.main.home.library.artists;
 
-import androidx.annotation.Nullable;
+import com.muiz6.musicplayer.data.db.pojos.ArtistPojo;
 
-public class ArtistItemModel {
+public class ArtistItemModel extends ArtistPojo {
 
 	public static final int UNDEFINED = -1;
 
-	private String _name;
 	private int _albumCount = UNDEFINED;
 	private int _songCount = UNDEFINED;
-
-	@Nullable
-	public String getName() {
-		return _name;
-	}
-
-	public void setName(String name) {
-		this._name = name;
-	}
 
 	/**
 	 * @return count of albums by the artist or ArtistItemModel#UNDEFINED if not known

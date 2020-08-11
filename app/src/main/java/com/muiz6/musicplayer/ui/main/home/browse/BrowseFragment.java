@@ -1,7 +1,9 @@
 package com.muiz6.musicplayer.ui.main.home.browse;
 
 import android.os.Bundle;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -29,16 +31,18 @@ import javax.inject.Inject;
 /**
  * fragment to browse simple list items eg. artists, genre etc.
  */
-public class BrowseFragment extends Fragment {
+public class BrowseFragment extends Fragment implements RecyclerView.OnItemTouchListener {
 
+	private final ViewModelProvider.Factory _viewModelFactory;
+	private final  GestureDetector _gestureDetector;
 	private BrowseViewModel _browseViewModel;
 	private FragmentBrowseBinding _binding;
 	private BrowseFragmentArgs _arguments;
-	private ViewModelProvider.Factory _viewModelFactory;
 
 	@Inject
-	public BrowseFragment(ViewModelProvider.Factory viewModelFactory) {
+	public BrowseFragment(ViewModelProvider.Factory viewModelFactory, GestureDetector gestureDetector) {
 		_viewModelFactory = viewModelFactory;
+		_gestureDetector = gestureDetector;
 	}
 
 	@Nullable
@@ -47,6 +51,8 @@ public class BrowseFragment extends Fragment {
 			@Nullable ViewGroup container,
 			@Nullable Bundle savedInstanceState) {
 		_binding = FragmentBrowseBinding.inflate(inflater, container, false);
+		final RecyclerView _albumRecyclerView = _binding.browseRecyclerViewAlbum.getRoot();
+		_albumRecyclerView.addOnItemTouchListener(this);
 		return _binding.getRoot();
 	}
 
@@ -120,4 +126,24 @@ public class BrowseFragment extends Fragment {
 		// _queryViewModel.setSearchUri(Uri.EMPTY);
 		_binding = null;
 	}
+
+	@Override
+	public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+		final View view = rv.findChildViewUnder(e.getX(), e.getY());
+		if (view != null && _gestureDetector.onTouchEvent(e)) {
+			int index = rv.getChildAdapterPosition(view);
+			final String albumId = _browseViewModel.getAlbumMediaId(index);
+			BrowseFragmentDirections.ActionBrowseFragmentToBrowseFragment action =
+					BrowseFragmentDirections.actionBrowseFragmentToBrowseFragment(albumId);
+			final NavController navController = Navigation.findNavController(requireView());
+			navController.navigate(action);
+		}
+		return false;
+	}
+
+	@Override
+	public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {}
+
+	@Override
+	public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {}
 }

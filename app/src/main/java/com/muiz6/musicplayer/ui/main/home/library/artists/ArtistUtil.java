@@ -14,7 +14,7 @@ public abstract class ArtistUtil {
 		for (final MediaBrowserCompat.MediaItem artist: artistItemList) {
 			final ArtistItemModel model = new ArtistItemModel();
 			final MediaDescriptionCompat description = artist.getDescription();
-			model.setName(String.valueOf(description.getTitle()));
+			model.setArtist(String.valueOf(description.getTitle()));
 			newArtists.add(model);
 		}
 		return newArtists;

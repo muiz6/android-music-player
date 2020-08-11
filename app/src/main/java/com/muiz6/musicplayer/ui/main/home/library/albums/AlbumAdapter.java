@@ -33,7 +33,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<MyViewHolder> {
 	public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
 		final ItemAlbumBinding binding = ItemAlbumBinding.bind(holder.itemView);
 		final AlbumItemModel model = _albumList.get(position);
-		binding.itemAlbumTitle.setText(model.getAlbumTitle());
+		binding.itemAlbumTitle.setText(model.getAlbum());
 		binding.itemAlbumSubtitle.setText(model.getArtist());
 	}
 

@@ -16,7 +16,7 @@ public abstract class AlbumUtil {
 		for (final MediaBrowserCompat.MediaItem item : list) {
 			final AlbumItemModel model = new AlbumItemModel();
 			final Bundle extras = item.getDescription().getExtras();
-			model.setAlbumTitle(extras.getString(MediaMetadataCompat.METADATA_KEY_ALBUM));
+			model.setAlbum(extras.getString(MediaMetadataCompat.METADATA_KEY_ALBUM));
 			model.setArtist(extras.getString(MediaMetadataCompat.METADATA_KEY_ARTIST));
 
 			// todo: retrieve album art and song count

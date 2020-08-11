@@ -1,6 +1,7 @@
 package com.muiz6.musicplayer.ui.main.home;
 
 import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
 import androidx.lifecycle.LiveData;
@@ -50,5 +51,49 @@ public class HomeViewModel extends ViewModel {
 
 	public void onSkipPreviousBtnClicked() {
 		_connection.getTransportControls().skipToPrevious();
+	}
+
+	public void onRepeatBtnClicked() {
+		final int repeatMode = _connection.getMediaController().getRepeatMode();
+		final MediaControllerCompat.TransportControls transportControls =
+				_connection.getTransportControls();
+		switch (repeatMode) {
+			case PlaybackStateCompat.REPEAT_MODE_NONE:
+				transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE);
+				break;
+			case PlaybackStateCompat.REPEAT_MODE_ONE:
+				transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL);
+				break;
+			case PlaybackStateCompat.REPEAT_MODE_ALL:
+				transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_NONE);
+				break;
+		}
+	}
+
+	public void onShuffleBtnClicked() {
+		final int shuffleMode = _connection.getMediaController().getShuffleMode();
+		if (shuffleMode == PlaybackStateCompat.SHUFFLE_MODE_ALL) {
+			_connection.getTransportControls()
+					.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_NONE);
+		}
+		else {
+			_connection.getTransportControls().setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL);
+		}
+	}
+
+	/**
+	 * updates with PlaybackStateCompat so call when observing playback state
+	 * @return current repeat mode of media session
+	 */
+	public int getRepeatMode() {
+		return _connection.getMediaController().getRepeatMode();
+	}
+
+	/**
+	 * updates with PlaybackStateCompat so call when observing playback state
+	 * @return current shuffle mode of media session
+	 */
+	public int getShuffleMode() {
+		return _connection.getMediaController().getShuffleMode();
 	}
 }

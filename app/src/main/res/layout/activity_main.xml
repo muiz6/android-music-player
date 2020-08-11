@@ -8,7 +8,7 @@
 	tools:context=".ui.main.MainActivity">
 
 	<!--does not work with scroll view behaviour-->
-	<fragment
+	<androidx.fragment.app.FragmentContainerView
 		android:id="@+id/main_nav_host_fragment"
 		android:name="androidx.navigation.fragment.NavHostFragment"
 		android:layout_width="match_parent"

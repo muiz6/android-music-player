@@ -4,32 +4,14 @@ import android.graphics.Bitmap;
 
 import androidx.annotation.Nullable;
 
-public class AlbumItemModel {
+import com.muiz6.musicplayer.data.db.pojos.AlbumPojo;
+
+public class AlbumItemModel extends AlbumPojo {
 
 	public static final int UNDEFINED = -1;
 
-	private String _album;
-	private String _artist;
 	private Bitmap _albumArt;
 	private int _songCount = UNDEFINED;
-
-	public void setAlbumTitle(@Nullable String album) {
-		_album = album;
-	}
-
-	public void setArtist(@Nullable String artist) {
-		_artist = artist;
-	}
-
-	@Nullable
-	public String getAlbumTitle() {
-		return _album;
-	}
-
-	@Nullable
-	public String getArtist() {
-		return _artist;
-	}
 
 	@Nullable
 	public Bitmap getAlbumArt() {

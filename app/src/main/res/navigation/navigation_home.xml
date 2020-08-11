@@ -15,6 +15,10 @@
 		<action
 			android:id="@+id/action_libraryFragment_to_browseFragment"
 			app:destination="@id/browseFragment" />
+
+		<action
+			android:id="@+id/action_libraryFragment_to_queueFragment"
+			app:destination="@id/queueFragment" />
 	</fragment>
 
 	<fragment
@@ -25,5 +29,15 @@
 		<argument
 			android:name="parentMediaId"
 			app:argType="string" />
+
+		<action
+			android:id="@+id/action_browseFragment_to_browseFragment"
+			app:destination="@id/browseFragment" />
 	</fragment>
+
+	<fragment
+		android:id="@+id/queueFragment"
+		android:name="com.muiz6.musicplayer.ui.main.home.queue.QueueFragment"
+		android:label="Queue"
+		tools:layout="@layout/fragment_queue" />
 </navigation>

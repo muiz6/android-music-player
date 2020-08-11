@@ -11,7 +11,7 @@ import com.muiz6.musicplayer.di.main.browse.BrowseComponent;
 import com.muiz6.musicplayer.di.main.genres.GenreComponent;
 import com.muiz6.musicplayer.di.main.home.HomeComponent;
 import com.muiz6.musicplayer.di.main.library.LibraryComponent;
-import com.muiz6.musicplayer.di.main.nowplaying.PlayerComponent;
+import com.muiz6.musicplayer.di.main.queue.QueueComponent;
 import com.muiz6.musicplayer.di.main.songs.SongComponent;
 import com.muiz6.musicplayer.di.scope.ActivityScope;
 import com.muiz6.musicplayer.ui.main.MainActivity;
@@ -38,11 +38,11 @@ public interface MainComponent {
 
 	GenreComponent.Factory getGenreComponent();
 
-	PlayerComponent.Factory getPlayerComponent();
-
 	LibraryComponent.Factory getExploreComponent();
 
 	BrowseComponent.Factory getBrowseComponent();
+
+	QueueComponent.Factory getQueueComponent();
 
 	@Subcomponent.Factory
 	interface Factory {

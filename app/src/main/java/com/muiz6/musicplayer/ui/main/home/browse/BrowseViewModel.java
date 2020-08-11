@@ -10,6 +10,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
+import com.muiz6.musicplayer.data.MediaIdPojo;
 import com.muiz6.musicplayer.data.MusicRepository;
 import com.muiz6.musicplayer.media.MediaRunnable;
 import com.muiz6.musicplayer.media.MusicServiceConnection;
@@ -56,15 +57,16 @@ public class BrowseViewModel extends AndroidViewModel {
 							for (final MediaBrowserCompat.MediaItem item : getMediaItemList()) {
 								final Bundle extras = item.getDescription().getExtras();
 								final String type = extras
-										.getString(MusicRepository.KEY_EXTRAS_MEDIA_TYPE);
-								if (type.equals(MusicRepository.MEDIA_TYPE_ALBUM)) {
+										.getString(MusicRepository.KEY_EXTRAS_MEDIA_CATEGORY);
+								if (type.equals(MediaIdPojo.CATEGORY_ALBUM)) {
 									albumList.add(item);
 								}
-								else if (type.equals(MusicRepository.MEDIA_TYPE_SONG)) {
+								else if (type.equals(MediaIdPojo.CATEGORY_SONG)) {
 									songList.add(item);
 								}
 								// else ignore
 							}
+							_albumMediaList = albumList;
 							_albumList.postValue(AlbumUtil.getAlbumList(albumList,
 									getApplication().getApplicationContext()));
 							_songList.postValue(SongUtil.getSongList(songList,
@@ -74,6 +76,7 @@ public class BrowseViewModel extends AndroidViewModel {
 				}
 			};
 	private final MusicServiceConnection _connection;
+	private List<MediaBrowserCompat.MediaItem> _albumMediaList;
 	private String _parentMediaId;
 
 	@Inject
@@ -92,8 +95,7 @@ public class BrowseViewModel extends AndroidViewModel {
 	public void setParentMediaId(String parentMediaId) {
 		if (!parentMediaId.equals(_parentMediaId)) {
 			_parentMediaId = parentMediaId;
-			_fragmentTitle.postValue(_parentMediaId.substring(_parentMediaId
-					.lastIndexOf(MusicRepository.SEPARATOR_MEDIA_ID) + 1));
+			_fragmentTitle.postValue(MusicRepository.getTitleFromMediaId(parentMediaId));
 			_connection.isConnected().observeForever(_connectionObserver);
 		}
 	}
@@ -108,5 +110,9 @@ public class BrowseViewModel extends AndroidViewModel {
 
 	public LiveData<List<SongItemModel>> getSongList() {
 		return _songList;
+	}
+
+	public String getAlbumMediaId(int index) {
+		return _albumMediaList.get(index).getMediaId();
 	}
 }

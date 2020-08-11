@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -30,12 +31,14 @@ public class MusicServiceConnection
 
 	private static final String _TAG = "MusicServiceConnection";
 	private final MutableLiveData<Boolean> _isConnected = new MutableLiveData<>(false);
+	private final MutableLiveData<PlaybackStateCompat> _playbackState = new MutableLiveData<>();
+	private final MutableLiveData<MediaMetadataCompat> _metadata = new MutableLiveData<>();
+	private final MutableLiveData<List<MediaSessionCompat.QueueItem>> _playQueue =
+			new MutableLiveData<>(Collections.<MediaSessionCompat.QueueItem>emptyList());
 	private final Context _context;
 	private final MediaBrowserCompat _mediaBrowser;
 	private final MediaConnectionCallback _connectionCallback;
 	private final MediaControllerCallback _controllerCallback;
-	private final MutableLiveData<PlaybackStateCompat> _playbackState = new MutableLiveData<>();
-	private final MutableLiveData<MediaMetadataCompat> _metadata = new MutableLiveData<>();
 	private MediaControllerCompat _mediaController;
 
 	@Inject
@@ -111,7 +114,9 @@ public class MusicServiceConnection
 	public void onSessionEvent(String event, Bundle extras) {}
 
 	@Override
-	public void onQueueChanged(List<MediaSessionCompat.QueueItem> queue) {}
+	public void onQueueChanged(List<MediaSessionCompat.QueueItem> queue) {
+		_playQueue.postValue(queue);
+	}
 
 	@Override
 	public void onQueueTitleChanged(CharSequence title) {}
@@ -165,5 +170,9 @@ public class MusicServiceConnection
 	@Nullable
 	public MediaControllerCompat getMediaController() {
 		return _mediaController;
+	}
+
+	public LiveData<List<MediaSessionCompat.QueueItem>> getQueue() {
+		return _playQueue;
 	}
 }

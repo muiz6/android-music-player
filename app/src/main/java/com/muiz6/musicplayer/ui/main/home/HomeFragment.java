@@ -13,7 +13,6 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
@@ -24,51 +23,30 @@ import androidx.fragment.app.FragmentFactory;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
-import androidx.navigation.NavDestination;
+import androidx.navigation.Navigation;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.muiz6.musicplayer.R;
 import com.muiz6.musicplayer.databinding.BottomSheetPlayerBinding;
 import com.muiz6.musicplayer.databinding.FragmentHomeBinding;
 import com.muiz6.musicplayer.ui.ThemeUtil;
+import com.muiz6.musicplayer.ui.main.home.library.LibraryFragmentDirections;
 
 import javax.inject.Inject;
 
-public class HomeFragment extends Fragment implements View.OnClickListener,
-		NavController.OnDestinationChangedListener {
+public class HomeFragment extends Fragment implements View.OnClickListener {
 
 	private final BottomSheetBehavior.BottomSheetCallback _bottomSheetCallback =
 			new BottomSheetBehavior.BottomSheetCallback() {
 
 				@Override
-				public void onStateChanged(@NonNull View bottomSheet, int newState) {
-					if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
-						_binding.homeBg.setVisibility(View.GONE);
-						_bindingBottomSheet.bottomSheetCollapsedViewBtnExpandCollapse
-								.setImageDrawable(_drawableUpArrow);
-						_bindingBottomSheet.bottomSheetCollapsedViewBtnPrevious
-								.setVisibility(View.VISIBLE);
-						_bindingBottomSheet.bottomSheetCollapsedViewBtnPlayPause
-								.setVisibility(View.VISIBLE);
-						_bindingBottomSheet.bottomSheetCollapsedViewBtnNext
-								.setVisibility(View.VISIBLE);
-					}
-					if (newState == BottomSheetBehavior.STATE_EXPANDED) {
-						_bindingBottomSheet.bottomSheetCollapsedViewBtnExpandCollapse
-								.setImageDrawable(_drawabledownArrow);
-						_bindingBottomSheet.bottomSheetCollapsedViewBtnPrevious
-								.setVisibility(View.GONE);
-						_bindingBottomSheet.bottomSheetCollapsedViewBtnPlayPause
-								.setVisibility(View.GONE);
-						_bindingBottomSheet.bottomSheetCollapsedViewBtnNext
-								.setVisibility(View.GONE);
-					}
-				}
+				public void onStateChanged(@NonNull View bottomSheet, int newState) {}
 
 				@Override
 				public void onSlide(@NonNull View bottomSheet, float slideOffset) {
 					_binding.homeBg.setVisibility(View.VISIBLE);
 					_binding.homeBg.setAlpha(slideOffset);
+					_bindingBottomSheet.bottomSheetCollapsedView.setAlpha(1 - slideOffset);
 				}
 			};
 	private final FragmentFactory _fragmentFactory;
@@ -76,15 +54,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener,
 	private HomeViewModel _viewModel;
 	private FragmentHomeBinding _binding; // only available on runtime
 	private BottomSheetPlayerBinding _bindingBottomSheet;
-	private Drawable _drawableUpArrow;
-	private Drawable _drawabledownArrow;
 	private Drawable _drawableCollapseArrowPlay;
 	private Drawable _drawableArrowPlay;
 	private Drawable _drawableCollapsePause;
 	private Drawable _drawablePause;
 	private int _colorSecondary;
 	private int _colorOnSurface;
-	private BottomSheetBehavior _behaviourBottomSheet;
+	private BottomSheetBehavior<View> _behaviourBottomSheet;
 
 	// arged ctor for fragment factory
 	@Inject
@@ -102,8 +78,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener,
 
 		// initialize reusable resources
 		final Activity activity = requireActivity();
-		_drawableUpArrow = activity.getDrawable(R.drawable.ic_keyboard_arrow_up);
-		_drawabledownArrow = activity.getDrawable(R.drawable.ic_keyboard_arrow_down);
 		_drawableCollapseArrowPlay = activity.getDrawable(R.drawable.ic_play_arrow);
 		_drawableArrowPlay = activity.getDrawable(R.drawable.ic_play_arrow);
 		_drawableCollapsePause = activity.getDrawable(R.drawable.ic_pause);
@@ -151,18 +125,27 @@ public class HomeFragment extends Fragment implements View.OnClickListener,
 					}
 				});
 
-		// build transport controls
-		_bindingBottomSheet.bottomSheetCollapsedViewBtnPlayPause.setOnClickListener(this);
-		_bindingBottomSheet.bottomSheetCollapsedViewBtnNext.setOnClickListener(this);
-		_bindingBottomSheet.bottomSheetCollapsedViewBtnPrevious.setOnClickListener(this);
-		_bindingBottomSheet.bottomSheetCollapsedViewBtnExpandCollapse.setOnClickListener(this);
-
 		// setup bottom sheet
-		_behaviourBottomSheet = BottomSheetBehavior.from(_bindingBottomSheet.getRoot());
+		_behaviourBottomSheet = BottomSheetBehavior.<View>from(_bindingBottomSheet.getRoot());
 		_behaviourBottomSheet.addBottomSheetCallback(_bottomSheetCallback);
 
 		// needed for marquee text
 		_bindingBottomSheet.bottomSheetCollapsedViewSongTitle.setSelected(true);
+
+		// hide view if bottom sheet is expanded by default after config change
+		if (_behaviourBottomSheet.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+			_bindingBottomSheet.bottomSheetCollapsedView.setAlpha(0);
+		}
+
+		// build transport controls
+		_bindingBottomSheet.bottomSheetCollapsedViewBtnPlayPause.setOnClickListener(this);
+		_bindingBottomSheet.bottomSheetCollapsedViewBtnExpandCollapse.setOnClickListener(this);
+		_bindingBottomSheet.bottomSheetBtnPlayPause.setOnClickListener(this);
+		_bindingBottomSheet.bottomSheetBtnNext.setOnClickListener(this);
+		_bindingBottomSheet.bottomSheetBtnPrevious.setOnClickListener(this);
+		_bindingBottomSheet.bottomSheetBtnShuffle.setOnClickListener(this);
+		_bindingBottomSheet.bottomSheetBtnRepeat.setOnClickListener(this);
+		_bindingBottomSheet.bottomSheetFab.setOnClickListener(this);
 	}
 
 	@Override
@@ -235,17 +218,23 @@ public class HomeFragment extends Fragment implements View.OnClickListener,
 		// 	DrawableCompat.setTint(btn.getDrawable(), color);
 		// 	DrawableCompat.setTint(btn2.getDrawable(), color);
 		// }
+
+		_updateFromRepeatMode(_viewModel.getRepeatMode());
+		_updateFromShuffleMode(_viewModel.getShuffleMode());
 	}
 
 	@Override
 	public void onClick(View view) {
-		if (view == _bindingBottomSheet.bottomSheetCollapsedViewBtnPlayPause) {
+
+		// todo: avoid long if statements for performance
+		if (view == _bindingBottomSheet.bottomSheetCollapsedViewBtnPlayPause
+			|| view == _bindingBottomSheet.bottomSheetBtnPlayPause) {
 			_viewModel.onPlayPauseBtnClicked();
 		}
-		else if (view == _bindingBottomSheet.bottomSheetCollapsedViewBtnNext) {
+		else if (view == _bindingBottomSheet.bottomSheetBtnNext) {
 			_viewModel.onSkipNextBtnClicked();
 		}
-		else if (view == _bindingBottomSheet.bottomSheetCollapsedViewBtnPrevious) {
+		else if (view == _bindingBottomSheet.bottomSheetBtnPrevious) {
 			_viewModel.onSkipPreviousBtnClicked();
 		}
 		else if (view == _bindingBottomSheet.bottomSheetCollapsedViewBtnExpandCollapse) {
@@ -257,18 +246,52 @@ public class HomeFragment extends Fragment implements View.OnClickListener,
 				_behaviourBottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
 			}
 		}
+		else if (view == _bindingBottomSheet.bottomSheetBtnShuffle) {
+			_viewModel.onShuffleBtnClicked();
+		}
+		else if (view == _bindingBottomSheet.bottomSheetBtnRepeat) {
+			_viewModel.onRepeatBtnClicked();
+		}
+		else if (view == _bindingBottomSheet.bottomSheetFab) {
+			final NavController navController = Navigation
+					.findNavController(_binding.homeNavHostFragment);
+			navController.navigate(LibraryFragmentDirections
+					.actionLibraryFragmentToQueueFragment());
+			_behaviourBottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
+		}
 		// else if (view == _binding.mainBottomBarSongTitle) {
 		// 	final NavController navController = Navigation.findNavController(getView());
 		// 	navController.navigate(R.id.main_player_fragment);
 		// }
 	}
 
-	@Override
-	public void onDestinationChanged(@NonNull NavController controller,
-			@NonNull NavDestination destination,
-			@Nullable Bundle arguments) {
-		final InputMethodManager imm = (InputMethodManager) getActivity()
-				.getSystemService(Context.INPUT_METHOD_SERVICE);
-		imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
+	private void _updateFromRepeatMode(int repeatMode) {
+		if (repeatMode == PlaybackStateCompat.REPEAT_MODE_ALL) {
+			_bindingBottomSheet.bottomSheetBtnRepeat
+					.setImageDrawable(getContext().getDrawable(R.drawable.ic_repeat));
+			DrawableCompat.setTint(_bindingBottomSheet.bottomSheetBtnRepeat.getDrawable(),
+					_colorSecondary);
+		}
+		else if (repeatMode == PlaybackStateCompat.REPEAT_MODE_ONE) {
+			_bindingBottomSheet.bottomSheetBtnRepeat
+					.setImageDrawable(getContext().getDrawable(R.drawable.exo_controls_repeat_one));
+		}
+		else {
+			_bindingBottomSheet.bottomSheetBtnRepeat
+					.setImageDrawable(getContext().getDrawable(R.drawable.ic_repeat));
+			DrawableCompat.setTint(_bindingBottomSheet.bottomSheetBtnRepeat.getDrawable(),
+					_colorOnSurface);
+		}
+	}
+
+	private void _updateFromShuffleMode(int shuffleMode) {
+		if (shuffleMode == PlaybackStateCompat.SHUFFLE_MODE_ALL) {
+			DrawableCompat.setTint(_bindingBottomSheet.bottomSheetBtnShuffle.getDrawable(),
+					_colorSecondary);
+		}
+		else {
+			DrawableCompat.setTint(_bindingBottomSheet.bottomSheetBtnShuffle.getDrawable(),
+					_colorOnSurface);
+		}
 	}
 }

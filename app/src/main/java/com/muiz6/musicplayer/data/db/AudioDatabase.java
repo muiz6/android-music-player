@@ -87,6 +87,16 @@ public abstract class AudioDatabase extends RoomDatabase {
 		_context = context;
 	}
 
+	/**
+	 * Set callback to be called after database operations such as scanning music library.
+	 * You must handle the thread yourself. By default callback will be called in background
+	 * thread.
+	 * @param callback callback to be called after database operations
+	 */
+	public void setCallback(@Nullable Callback callback) {
+		_callback = callback;
+	}
+
 	private void _addRow(final Cursor cursor, Context context) {
 		final String path = cursor.getString(0);
 		final String displayName = cursor.getString(1);
@@ -114,18 +124,13 @@ public abstract class AudioDatabase extends RoomDatabase {
 		getAudioDao().insert(audioEntity);
 	}
 
-	/**
-	 * Set callback to be called after database operations such as scanning music library.
-	 * You must handle the thread yourself. By default callback will be called in background
-	 * thread.
-	 * @param callback callback to be called after database operations
-	 */
-	public void setCallback(@Nullable Callback callback) {
-		_callback = callback;
-	}
-
 	public interface Callback {
 
+		/**
+		 * A callback called when the requested Room db operation has completed. You must handle
+		 * the thread yourself. By default the callback will be called in background thread.
+		 * @param success true if operation was successful, false otherwise
+		 */
 		void onCompletion(boolean success);
 	}
 }

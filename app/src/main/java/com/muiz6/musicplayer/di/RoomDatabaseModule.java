@@ -16,12 +16,6 @@ import dagger.Provides;
 @Module
 public abstract class RoomDatabaseModule {
 
-	// todo: erase this from here upon successful build
-	// @Provides
-	// static ContentResolver provideContentResolver(@Named("Application") Context context) {
-	// 	return context.getContentResolver();
-	// }
-
 	@Provides
 	@Singleton
 	static AudioDatabase provideRoomDatabase(@Named("Application") Context context,
