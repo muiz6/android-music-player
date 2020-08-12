@@ -14,13 +14,13 @@
 		android:layout_width="0dp"
 		android:layout_height="0dp"
 		android:layout_margin="@dimen/margin_m"
-		app:cardBackgroundColor="@android:color/transparent"
+		app:cardBackgroundColor="@color/color_surface_active"
 		app:cardCornerRadius="@dimen/radius_s"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintDimensionRatio="1:1"
 		app:layout_constraintStart_toStartOf="parent"
 		app:layout_constraintTop_toTopOf="parent"
-		app:strokeColor="@color/color_text_primary_dark">
+		app:strokeColor="?attr/colorOnSurface">
 
 		<ImageView
 			android:id="@+id/row_song_item_icon"

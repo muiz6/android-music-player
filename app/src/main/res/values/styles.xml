@@ -6,8 +6,8 @@
 		<item name="colorPrimary">@color/colorYellow600</item>
 		<item name="colorPrimaryVariant">@color/colorYellow500</item>
 		<item name="colorOnPrimary">@color/colorGrey900</item>
-		<item name="android:textColor">@color/color_text_primary_dark</item>
-		<item name="android:textColorSecondary">@color/color_text_secondary_dark</item>
+		<item name="android:textColor">?attr/colorOnSurface</item>
+		<item name="android:textColorSecondary">@color/colorGrey300</item>
 
 		<!--color at the back of icon buttons-->
 		<item name="backgroundTint">@android:color/transparent</item>
@@ -47,11 +47,11 @@
 		<item name="android:background">?android:attr/colorBackground</item>
 	</style>
 
+	<!--transparent card background color may not display correctly in some devices-->
 	<style name="Widget.App.CardView.Outlined" parent="Widget.MaterialComponents.CardView">
 		<item name="strokeWidth">@dimen/stroke_m</item>
 		<item name="strokeColor">?attr/colorOnSurface</item>
 		<item name="cardCornerRadius">@dimen/radius_s</item>
-		<item name="cardBackgroundColor">@android:color/transparent</item>
 		<item name="cardForegroundColor">@null</item>
 		<item name="android:layout_margin">@dimen/margin_m</item>
 	</style>

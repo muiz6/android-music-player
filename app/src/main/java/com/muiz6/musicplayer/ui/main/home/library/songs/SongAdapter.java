@@ -1,7 +1,6 @@
 package com.muiz6.musicplayer.ui.main.home.library.songs;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
@@ -11,8 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.muiz6.musicplayer.R;
@@ -83,10 +80,7 @@ public class SongAdapter extends RecyclerView.Adapter {
 				final Context context = binding.getRoot().getContext();
 				final Drawable drawable = binding.getRoot().getContext()
 						.getDrawable(R.drawable.ic_music_note);
-				final ColorStateList colorStateList = ContextCompat
-						.getColorStateList(context, R.color.color_text_primary_dark);
 				binding.rowSongItemIcon.setImageDrawable(drawable);
-				DrawableCompat.setTintList(binding.rowSongItemIcon.getDrawable(), colorStateList);
 				binding.rowSongItemIcon.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
 				final int dim = context.getResources().getDimensionPixelSize(R.dimen.stroke_m);
 				binding.rowSongItemIconContainer.setStrokeWidth(dim);

@@ -24,7 +24,7 @@
 		android:id="@+id/bottom_sheet_collapsed_view"
 		android:layout_width="match_parent"
 		android:layout_height="?attr/behavior_peekHeight"
-		android:background="@drawable/color_surface_8dp_elevation"
+		android:background="@color/colorBlueGrey800"
 		app:layout_constraintTop_toTopOf="parent">
 
 		<ImageButton
@@ -91,6 +91,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:background="?attr/colorSurface"
+		android:paddingBottom="@dimen/padding_m"
 		app:layout_constraintBottom_toBottomOf="parent">
 
 		<SeekBar

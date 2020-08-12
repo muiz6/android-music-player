@@ -28,7 +28,7 @@ public abstract class SongUtil {
 			model.setDuration(duration);
 			newSongList.add(model);
 		}
-		new Thread(new _AsyncFetch(list, newSongList, context)).start();
+		// new Thread(new _AsyncFetch(list, newSongList, context)).start();
 		return newSongList;
 	}
 

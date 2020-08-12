@@ -31,7 +31,7 @@ public class MyApp extends Application {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			final NotificationChannel serviceChannel = new NotificationChannel(
 					NOTIFICATION_CHANNEL_ID,
-					"My Service Channel",
+					"Music Playback",
 					NotificationManager.IMPORTANCE_DEFAULT
 			);
 

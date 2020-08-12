@@ -1,10 +1,9 @@
 package com.muiz6.musicplayer.data.db;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
-import android.media.MediaMetadataRetriever;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
@@ -15,6 +14,7 @@ import androidx.room.Database;
 import androidx.room.RoomDatabase;
 
 import com.muiz6.musicplayer.R;
+import com.muiz6.musicplayer.permission.PermissionManager;
 
 import java.util.concurrent.TimeUnit;
 
@@ -26,6 +26,7 @@ public abstract class AudioDatabase extends RoomDatabase {
 	private final Handler _handler = new Handler(Looper.getMainLooper());
 	private Callback _callback;
 	private Context _context;
+	private PermissionManager _permissionManager;
 
 	public abstract AudioDao getAudioDao();
 
@@ -33,6 +34,36 @@ public abstract class AudioDatabase extends RoomDatabase {
 	 * deletes previous library data and rescans music library
 	 */
 	public void scanMusicLibrary() {
+		// _actuallyScanLibrary();
+		_permissionManager.requestPermissionWhenReady(Manifest.permission.READ_EXTERNAL_STORAGE,
+				new PermissionManager.Callback() {
+
+					@Override
+					public void onRequestPermissionResult(boolean granted) {
+
+						if (granted) {
+							_actuallyScanLibrary();
+						}
+					}
+				});
+	}
+
+	public void setArguments(Context context, PermissionManager manager) {
+		_context = context;
+		_permissionManager = manager;
+	}
+
+	/**
+	 * Set callback to be called after database operations such as scanning music library.
+	 * You must handle the thread yourself. By default callback will be called in background
+	 * thread.
+	 * @param callback callback to be called after database operations
+	 */
+	public void setCallback(@Nullable Callback callback) {
+		_callback = callback;
+	}
+
+	private void _actuallyScanLibrary() {
 		_handler.post(new Runnable() {
 
 			@Override
@@ -83,20 +114,6 @@ public abstract class AudioDatabase extends RoomDatabase {
 		}).start();
 	}
 
-	public void setContext(Context context) {
-		_context = context;
-	}
-
-	/**
-	 * Set callback to be called after database operations such as scanning music library.
-	 * You must handle the thread yourself. By default callback will be called in background
-	 * thread.
-	 * @param callback callback to be called after database operations
-	 */
-	public void setCallback(@Nullable Callback callback) {
-		_callback = callback;
-	}
-
 	private void _addRow(final Cursor cursor, Context context) {
 		final String path = cursor.getString(0);
 		final String displayName = cursor.getString(1);
@@ -109,17 +126,17 @@ public abstract class AudioDatabase extends RoomDatabase {
 		final int duration = cursor.getInt(5);
 
 		// extract genre
-		final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-		retriever.setDataSource(context, Uri.parse(path));
-		final String genre = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE);
-		retriever.getEmbeddedPicture();
+		// final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+		// retriever.setDataSource(context, Uri.parse(path));
+		// final String genre = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE);
+		// retriever.getEmbeddedPicture();
 
 		final AudioEntity audioEntity = new AudioEntity(path, displayName);
 		audioEntity.setTitle(title);
 		audioEntity.setAlbum(album);
 		audioEntity.setArtist(artist);
 		audioEntity.setDuration(duration);
-		audioEntity.setGenre(genre);
+		// audioEntity.setGenre(genre);
 
 		getAudioDao().insert(audioEntity);
 	}
