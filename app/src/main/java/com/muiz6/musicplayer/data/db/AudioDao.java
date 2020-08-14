@@ -20,34 +20,31 @@ public interface AudioDao {
 	@Query("DELETE FROM audio_table;")
 	void deleteAll();
 
-	@Query("SELECT path, display_name, title, artist, duration FROM audio_table ORDER BY display_name ASC;")
+	@Query("SELECT path, display_name, title, artist, duration, rowid FROM audio_table ORDER BY display_name ASC;")
 	List<SongPojo> getAllSongList();
 
 	// group by artist and not album because different artist may share same album name
-	@Query("SELECT album, artist FROM audio_table GROUP BY artist;")
+	@Query("SELECT album, artist, album_id FROM audio_table GROUP BY album_id;")
 	List<AlbumPojo> getAllAlbumList();
 
-	@Query("Select artist FROM audio_table WHERE artist IS NOT NULL GROUP BY artist;")
+	@Query("Select artist, artist_id FROM audio_table WHERE artist IS NOT NULL GROUP BY artist_id;")
 	List<ArtistPojo> getAllArtistList();
 
-	@Query("Select genre FROM audio_table WHERE genre IS NOT NULL GROUP BY genre;")
-	List<GenrePojo> getGenreList();
+	@Query("Select genre, genre_id FROM audio_table WHERE genre IS NOT NULL GROUP BY genre;")
+	List<GenrePojo> getAllGenreList();
 
-	@Query("SELECT path, display_name, title, artist, duration FROM audio_table WHERE artist=:artist ORDER BY display_name ASC;")
-	List<SongPojo> getSongListByArtist(String artist);
+	@Query("SELECT path, display_name, title, artist, duration, rowid FROM audio_table WHERE artist_id=:id ORDER BY display_name ASC;")
+	List<SongPojo> getSongListByArtistId(int id);
 
-	@Query("SELECT path, display_name, title, artist, duration FROM audio_table WHERE genre=:genre ORDER BY display_name ASC;")
-	List<SongPojo> getSongListByGenre(String genre);
+	@Query("SELECT path, display_name, title, artist, duration, rowid FROM audio_table WHERE genre_id=:id ORDER BY display_name ASC;")
+	List<SongPojo> getSongListByGenreId(int id);
 
-	@Query("SELECT artist FROM audio_table WHERE genre=:genre AND artist IS NOT NULL GROUP BY artist;")
-	List<ArtistPojo> getArtistListByGenre(String genre);
+	@Query("SELECT path, display_name, title, artist, duration, rowid FROM audio_table WHERE album_id=:id ORDER BY display_name ASC;")
+	List<SongPojo> getSongListByAlbumId(int id);
 
-	@Query("SELECT album, artist FROM audio_table WhERE artist=:artist GROUP BY artist;")
-	List<AlbumPojo> getAlbumListByArtist(String artist);
+	@Query("SELECT album, artist, album_id FROM audio_table WhERE artist_id=:id GROUP BY artist;")
+	List<AlbumPojo> getAlbumListByArtistId(int id);
 
-	@Query("SELECT album, artist FROM audio_table WhERE genre=:genre GROUP BY artist;")
-	List<AlbumPojo> getAlbumListByGenre(String genre);
-
-	@Query("SELECT path, display_name, title, artist, duration FROM audio_table WHERE album=:album ORDER BY display_name ASC;")
-	List<SongPojo> getSongListByAlbum(String album);
+	@Query("SELECT album, artist, album_id FROM audio_table WhERE genre_id=:id GROUP BY artist;")
+	List<AlbumPojo> getAlbumListByGenreId(int id);
 }

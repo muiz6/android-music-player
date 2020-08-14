@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.muiz6.musicplayer.data.MusicRepository;
 import com.muiz6.musicplayer.media.MediaRunnable;
 import com.muiz6.musicplayer.media.MusicServiceConnection;
+import com.muiz6.musicplayer.permission.PermissionManager;
 
 import java.util.Collections;
 import java.util.List;
@@ -44,7 +45,8 @@ public class SongViewModel extends AndroidViewModel {
 
 							// to convert media item list to song item model list
 							_songList.postValue(SongUtil.getSongList(getMediaItemList(),
-									getApplication().getApplicationContext()));
+									getApplication().getApplicationContext(),
+									_permissionManager));
 						}
 					}).start();
 				}
@@ -68,29 +70,33 @@ public class SongViewModel extends AndroidViewModel {
 				public void onChanged(MediaMetadataCompat mediaMetadataCompat) {
 					if (mediaMetadataCompat != null) {
 						final String mediaId = mediaMetadataCompat.getDescription().getMediaId();
-						if (mediaId != null) {
-
-							// set last active item as inactive
-							final int oldIndex = _playingItemIndex.getValue();
-							if (oldIndex != RecyclerView.NO_POSITION) {
-								_songList.getValue().get(oldIndex).setActive(false);
-							}
-							final int newIndex = MusicRepository.getIndexFromMediaId(mediaId);
-
-							// set new active item as active
-							_songList.getValue().get(newIndex).setActive(true);
-							_playingItemIndex.postValue(newIndex);
-						}
+						// if (mediaId != null) {
+						//
+						// 	// set last active item as inactive
+						// 	// final int oldIndex = _playingItemIndex.getValue();
+						// 	// if (oldIndex != RecyclerView.NO_POSITION) {
+						// 	// 	_songList.getValue().get(oldIndex).setActive(false);
+						// 	// }
+						// 	// final int newIndex = MusicRepository.getIndexFromMediaId(mediaId);
+						//
+						// 	// set new active item as active
+						// 	// _songList.getValue().get(newIndex).setActive(true);
+						// 	// _playingItemIndex.postValue(newIndex);
+						// }
 					}
 				}
 			};
 	private final MusicServiceConnection _connection;
+	private final PermissionManager _permissionManager;
 	private List<MediaBrowserCompat.MediaItem> _mediaSongList;
 
 	@Inject
-	public SongViewModel(Application application, MusicServiceConnection connection) {
+	public SongViewModel(Application application,
+			MusicServiceConnection connection,
+			PermissionManager permissionManager) {
 		super(application);
 		_connection = connection;
+		_permissionManager = permissionManager;
 		_connection.isConnected().observeForever(_connectionObserver);
 	}
 

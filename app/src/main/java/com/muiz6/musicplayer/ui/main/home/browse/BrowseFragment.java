@@ -53,6 +53,8 @@ public class BrowseFragment extends Fragment implements RecyclerView.OnItemTouch
 		_binding = FragmentBrowseBinding.inflate(inflater, container, false);
 		final RecyclerView _albumRecyclerView = _binding.browseRecyclerViewAlbum.getRoot();
 		_albumRecyclerView.addOnItemTouchListener(this);
+		final RecyclerView _songRecyclerView = _binding.browseRecyclerViewSong.getRoot();
+		_songRecyclerView.addOnItemTouchListener(this);
 		return _binding.getRoot();
 	}
 
@@ -64,22 +66,11 @@ public class BrowseFragment extends Fragment implements RecyclerView.OnItemTouch
 		// set toolbar
 		final NavController navController = Navigation.findNavController(requireView());
 		NavigationUI.setupWithNavController(_binding.browseToolbar, navController);
+		_binding.browseToolbar.setTitle(_arguments.getParentTitle());
 
 		// send id to viewmodel
 		_browseViewModel = new ViewModelProvider(this, _viewModelFactory).get(BrowseViewModel.class);
 		_browseViewModel.setParentMediaId(_arguments.getParentMediaId());
-
-		// get fragment title
-		_browseViewModel.getFragmentTitle().observe(getViewLifecycleOwner(),
-				new Observer<String>() {
-
-					@Override
-					public void onChanged(String title) {
-						if (title != null) {
-							_binding.browseToolbar.setTitle(title);
-						}
-					}
-				});
 
 		// setup album grid layout
 		_binding.browseRecyclerViewAlbum.getRoot()
@@ -131,12 +122,21 @@ public class BrowseFragment extends Fragment implements RecyclerView.OnItemTouch
 	public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
 		final View view = rv.findChildViewUnder(e.getX(), e.getY());
 		if (view != null && _gestureDetector.onTouchEvent(e)) {
-			int index = rv.getChildAdapterPosition(view);
-			final String albumId = _browseViewModel.getAlbumMediaId(index);
-			BrowseFragmentDirections.ActionBrowseFragmentToBrowseFragment action =
-					BrowseFragmentDirections.actionBrowseFragmentToBrowseFragment(albumId);
-			final NavController navController = Navigation.findNavController(requireView());
-			navController.navigate(action);
+			final int index = rv.getChildAdapterPosition(view);
+			if (rv == _binding.browseRecyclerViewAlbum.getRoot()) {
+				final String albumId = _browseViewModel.getAlbumMediaId(index);
+				final String album = _browseViewModel.getAlbumTitle(index);
+				BrowseFragmentDirections.ActionBrowseFragmentToBrowseFragment action =
+						BrowseFragmentDirections.actionBrowseFragmentToBrowseFragment(albumId,
+								album);
+				final NavController navController = Navigation.findNavController(requireView());
+				navController.navigate(action);
+			}
+			else if (rv == _binding.browseRecyclerViewSong.getRoot()) {
+
+				// -1 tos sync because first item is header
+				_browseViewModel.onSongItemClicked(index - 1);
+			}
 		}
 		return false;
 	}

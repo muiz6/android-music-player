@@ -85,9 +85,10 @@ public class AlbumFragment extends Fragment implements RecyclerView.OnItemTouchL
 		if (view != null && _gestureDetector.onTouchEvent(e)) {
 			int index = rv.getChildAdapterPosition(view);
 			final String albumId = _viewModel.getAlbumMediaId(index);
+			final String album = _viewModel.getAlbumTitle(index);
 			final LibraryFragmentDirections.ActionLibraryFragmentToBrowseFragment action =
 					LibraryFragmentDirections
-							.actionLibraryFragmentToBrowseFragment(albumId);
+							.actionLibraryFragmentToBrowseFragment(albumId, album);
 			final NavController navController = Navigation.findNavController(requireView());
 			navController.navigate(action);
 		}

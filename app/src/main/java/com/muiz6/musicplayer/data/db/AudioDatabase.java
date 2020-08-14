@@ -4,9 +4,12 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
+import android.media.MediaMetadataRetriever;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -23,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 		exportSchema = false)
 public abstract class AudioDatabase extends RoomDatabase {
 
+	private static final String _TAG = "AudioDatabase";
 	private final Handler _handler = new Handler(Looper.getMainLooper());
 	private Callback _callback;
 	private Context _context;
@@ -57,6 +61,7 @@ public abstract class AudioDatabase extends RoomDatabase {
 	 * Set callback to be called after database operations such as scanning music library.
 	 * You must handle the thread yourself. By default callback will be called in background
 	 * thread.
+	 *
 	 * @param callback callback to be called after database operations
 	 */
 	public void setCallback(@Nullable Callback callback) {
@@ -79,13 +84,15 @@ public abstract class AudioDatabase extends RoomDatabase {
 				getAudioDao().deleteAll();
 
 				// these constants do work on api-21
-				@SuppressLint("InlinedApi") final String[] projection =
-						{MediaStore.Audio.AudioColumns.DATA,
-								MediaStore.Audio.AudioColumns.DISPLAY_NAME,
-								MediaStore.Audio.AudioColumns.TITLE,
-								MediaStore.Audio.AudioColumns.ALBUM,
-								MediaStore.Audio.AudioColumns.ARTIST,
-								MediaStore.Audio.AudioColumns.DURATION};
+				@SuppressLint("InlinedApi") final String[] projection = {
+						MediaStore.Audio.AudioColumns.DATA,
+						MediaStore.Audio.AudioColumns.DISPLAY_NAME,
+						MediaStore.Audio.AudioColumns.TITLE,
+						MediaStore.Audio.AudioColumns.ALBUM,
+						MediaStore.Audio.AudioColumns.ARTIST,
+						MediaStore.Audio.AudioColumns.DURATION,
+						MediaStore.Audio.AudioColumns.ALBUM_ID,
+						MediaStore.Audio.AudioColumns.ARTIST_ID};
 
 				// ignore 30s and shorter tracks
 				// todo: get ignore duration from shared preferences
@@ -124,20 +131,34 @@ public abstract class AudioDatabase extends RoomDatabase {
 			artist = null;
 		}
 		final int duration = cursor.getInt(5);
+		final int albumId = cursor.getInt(6);
+		final int artistId = cursor.getInt(7);
 
 		// extract genre
-		// final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-		// retriever.setDataSource(context, Uri.parse(path));
-		// final String genre = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE);
-		// retriever.getEmbeddedPicture();
+		String genre = null;
+		try {
+			final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+			retriever.setDataSource(context, Uri.parse(path));
+			genre = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE);
+			retriever.getEmbeddedPicture();
+		}
+		catch (Exception e) {
+			Log.e(_TAG, "Exception caught!", e);
+		}
 
 		final AudioEntity audioEntity = new AudioEntity(path, displayName);
 		audioEntity.setTitle(title);
 		audioEntity.setAlbum(album);
 		audioEntity.setArtist(artist);
 		audioEntity.setDuration(duration);
-		// audioEntity.setGenre(genre);
+		audioEntity.setGenre(genre);
+		audioEntity.setAlbumId(albumId);
+		audioEntity.setArtistId(artistId);
+		if (genre != null) {
 
+			// todo: hashcode collisions may cause ambiguity
+			audioEntity.setGenreId(genre.hashCode());
+		}
 		getAudioDao().insert(audioEntity);
 	}
 
@@ -146,6 +167,7 @@ public abstract class AudioDatabase extends RoomDatabase {
 		/**
 		 * A callback called when the requested Room db operation has completed. You must handle
 		 * the thread yourself. By default the callback will be called in background thread.
+		 *
 		 * @param success true if operation was successful, false otherwise
 		 */
 		void onCompletion(boolean success);

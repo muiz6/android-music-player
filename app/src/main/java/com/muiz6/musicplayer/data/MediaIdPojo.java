@@ -1,5 +1,9 @@
 package com.muiz6.musicplayer.data;
 
+import androidx.annotation.NonNull;
+
+import com.google.gson.Gson;
+
 public class MediaIdPojo {
 
 	public static final String CATEGORY_ROOT = "category.root";
@@ -8,26 +12,29 @@ public class MediaIdPojo {
 	public static final String CATEGORY_ALBUM = "category.album";
 	public static final String CATEGORY_ARTIST = "category.artist";
 	public static final String CATEGORY_GENRE = "category.genre";
-	public static final String VALUE_ROOT = "value.root";
-	public static final String VALUE_LIBRARY_SONGS = "value.library.song";
-	public static final String VALUE_LIBRARY_ALBUMS = "value.library.album";
-	public static final String VALUE_LIBRARY_ARTISTS = "value.library.artist";
-	public static final String VALUE_LIBRARY_GENRES = "value.library.genre";
+	public static final int ID_ROOT = 0;
+	public static final int ID_LIBRARY_SONGS = 1;
+	public static final int ID_LIBRARY_ALBUMS = 2;
+	public static final int ID_LIBRARY_ARTISTS = 3;
+	public static final int ID_LIBRARY_GENRES = 4;
 
+	private static final Gson _GSON = new Gson();
 	private String _parentCategory;
-	private String _parentValue;
+	private int _parentId;
 	private String _category;
-	private String _value;
-	private int _index;
+	private int _id;
 
 	public MediaIdPojo() {}
 
-	public MediaIdPojo(String category, String value, int index, String parentCategory, String parentValue) {
+	public MediaIdPojo(String category, int id, String parentCategory, int parentId) {
 		_category = category;
-		_value = value;
-		_index = index;
+		_id = id;
 		_parentCategory = parentCategory;
-		_parentValue = parentValue;
+		_parentId = parentId;
+	}
+
+	public static MediaIdPojo fromString(@NonNull String mediaId) {
+		return _GSON.fromJson(mediaId, MediaIdPojo.class);
 	}
 
 	public String getParentCategory() {
@@ -38,12 +45,12 @@ public class MediaIdPojo {
 		this._parentCategory = parentCategory;
 	}
 
-	public String getParentValue() {
-		return _parentValue;
+	public int getParentId() {
+		return _parentId;
 	}
 
-	public void setParentValue(String parentValue) {
-		this._parentValue = parentValue;
+	public void setParentId(int parentId) {
+		this._parentId = parentId;
 	}
 
 	public String getCategory() {
@@ -54,19 +61,17 @@ public class MediaIdPojo {
 		this._category = category;
 	}
 
-	public String getValue() {
-		return _value;
+	public int getId() {
+		return _id;
 	}
 
-	public void setValue(String value) {
-		this._value = value;
+	public void setId(int id) {
+		this._id = id;
 	}
 
-	public int getIndex() {
-		return _index;
-	}
-
-	public void setIndex(int index) {
-		_index = index;
+	@NonNull
+	@Override
+	public String toString() {
+		return _GSON.toJson(this);
 	}
 }

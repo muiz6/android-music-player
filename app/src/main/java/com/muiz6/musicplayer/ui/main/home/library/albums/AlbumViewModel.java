@@ -74,4 +74,8 @@ public class AlbumViewModel extends AndroidViewModel {
 	public String getAlbumMediaId(int index) {
 		return _albumMediaList.get(index).getMediaId();
 	}
+
+	public String getAlbumTitle(int index) {
+		return String.valueOf(_albumMediaList.get(index).getDescription().getTitle());
+	}
 }

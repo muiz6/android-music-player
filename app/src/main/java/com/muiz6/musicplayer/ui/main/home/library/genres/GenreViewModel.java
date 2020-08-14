@@ -71,4 +71,8 @@ public class GenreViewModel extends ViewModel {
 	public String getGenreId(int index) {
 		return _genreMediaList.get(index).getMediaId();
 	}
+
+	public String getGenreTitle(int index) {
+		return String.valueOf(_genreMediaList.get(index).getDescription().getTitle());
+	}
 }

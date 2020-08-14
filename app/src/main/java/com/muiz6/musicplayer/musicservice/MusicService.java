@@ -26,7 +26,6 @@ import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.ui.PlayerNotificationManager;
 import com.muiz6.musicplayer.MyApp;
 import com.muiz6.musicplayer.data.MusicRepository;
-import com.muiz6.musicplayer.data.QueueManager;
 
 import java.util.List;
 
@@ -36,7 +35,7 @@ import javax.inject.Named;
 // overriding onBind() may result in media browser not binding to service
 public class MusicService extends MediaBrowserServiceCompat
 		implements MediaSessionConnector.PlaybackPreparer,
-		MusicRepository.Listener {
+		MusicRepository.Callback {
 
 	@Inject MusicRepository musicRepository;
 	@Inject PlayerNotificationManager notificationMgr;
@@ -44,6 +43,7 @@ public class MusicService extends MediaBrowserServiceCompat
 	@Inject MediaSessionCompat session;
 	@Inject MediaSessionConnector.QueueNavigator queueNavigator;
 	@Inject QueueManager queueManager;
+	@Inject BrowseManager browseManager;
 	@Inject
 	@Named("NoisyReceiver")
 	BroadcastReceiver noisyReceiver;
@@ -58,7 +58,9 @@ public class MusicService extends MediaBrowserServiceCompat
 	public void onCreate() {
 		((MyApp) getApplication()).getAppComponent().getMusicServiceComponent().create()
 				.inject(this);
-		musicRepository.setListener(this);
+
+		// callback used to notify service subscribers if there has been a data change
+		musicRepository.setCallback(this);
 		super.onCreate();
 
 		// connect service to media session
@@ -93,7 +95,7 @@ public class MusicService extends MediaBrowserServiceCompat
 	@Override
 	public void onLoadChildren(@NonNull String parentId,
 			@NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
-		musicRepository.loadChildren(parentId, result);
+		browseManager.loadChildren(parentId, result);
 	}
 
 	@Override
@@ -101,7 +103,7 @@ public class MusicService extends MediaBrowserServiceCompat
 
 		// cancel notification when application unbinds
 		NotificationManagerCompat.from(this).cancelAll();
-		musicRepository.setListener(null);
+		musicRepository.setCallback(null);
 		return super.onUnbind(intent);
 	}
 
@@ -111,7 +113,7 @@ public class MusicService extends MediaBrowserServiceCompat
 		// stop playback and related processes
 		session.getController().getTransportControls().stop();
 		NotificationManagerCompat.from(this).cancelAll();
-		musicRepository.setListener(null);
+		musicRepository.setCallback(null);
 		super.onDestroy();
 	}
 
@@ -134,7 +136,7 @@ public class MusicService extends MediaBrowserServiceCompat
 		queueManager.getQueueBytMediaId(mediaId, new QueueManager.Callback() {
 
 			@Override
-			public void onCompletion(ConcatenatingMediaSource queue) {
+			public void onCompletion(@NonNull ConcatenatingMediaSource queue, int windowIndex) {
 				if (queue.getSize() > 0) {
 					session.setActive(true);
 
@@ -149,7 +151,7 @@ public class MusicService extends MediaBrowserServiceCompat
 					notificationMgr.setPlayer(_player);
 
 					_player.prepare(queue);
-					_player.seekTo(MusicRepository.getIndexFromMediaId(mediaId), 0);
+					_player.seekTo(windowIndex, 0);
 					_player.setPlayWhenReady(playWhenReady);
 
 					final IntentFilter intentFilter =

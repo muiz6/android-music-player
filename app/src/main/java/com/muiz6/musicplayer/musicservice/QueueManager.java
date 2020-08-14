@@ -1,4 +1,4 @@
-package com.muiz6.musicplayer.data;
+package com.muiz6.musicplayer.musicservice;
 
 import android.content.Context;
 import android.os.Handler;
@@ -17,9 +17,10 @@ import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MediaSourceFactory;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.muiz6.musicplayer.data.db.AudioDao;
-import com.muiz6.musicplayer.data.db.AudioDatabase;
+import com.muiz6.musicplayer.data.MediaIdPojo;
+import com.muiz6.musicplayer.data.MusicRepository;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -31,25 +32,23 @@ public class QueueManager {
 
 	private final Handler _handler = new Handler(Looper.getMainLooper());
 	private final Context _context;
-	private final AudioDao _dao;
+	private final MusicRepository _repository;
 	private List<MediaBrowserCompat.MediaItem> _queue;
-	// private final MusicRepository _repository;
 
 	@Inject
-	public QueueManager(@Named("Application") Context context, AudioDatabase db) {
+	public QueueManager(@Named("Application") Context context, MusicRepository repository) {
 		_context = context;
-		_dao = db.getAudioDao();
+		_repository = repository;
 	}
 
 	public void getQueueBytMediaId(@NonNull String mediaId, Callback callback)
 		throws IllegalArgumentException {
 
-		final MediaIdPojo mediaIdPojo = MusicRepository.getMediaId(mediaId);
-		if (mediaIdPojo == null) {
-			throw new IllegalArgumentException("Invalid media id!");
+		final MediaIdPojo mediaIdPojo = MediaIdPojo.fromString(mediaId);
+		if (mediaIdPojo == null && mediaIdPojo.getCategory().equals(MediaIdPojo.CATEGORY_SONG)) {
+			throw new IllegalArgumentException("Invalid media id! "
+					+ "Media Id should be of a playable media Item");
 		}
-
-		// todo: use media id to provide queue
 		new Thread(new _AsyncPrepare(mediaIdPojo, callback)).start();
 	}
 
@@ -64,7 +63,7 @@ public class QueueManager {
 	}
 
 	public interface Callback {
-		void onCompletion(ConcatenatingMediaSource queue);
+		void onCompletion(@NonNull ConcatenatingMediaSource queue, int windowIndex);
 	}
 
 	private class _AsyncPrepare implements Runnable {
@@ -79,11 +78,43 @@ public class QueueManager {
 
 		@Override
 		public void run() {
-			_queue = MusicRepository.getSongMediaItems(_dao.getAllSongList());
+
+			// provided media item is sibling of to be generated media items
+			final String parentCategory = _mediaIdPojo.getParentCategory();
+			final int parentId = _mediaIdPojo.getParentId();
+			final MediaIdPojo parentMediaId = new MediaIdPojo();
+			parentMediaId.setCategory(parentCategory);
+			parentMediaId.setId(parentId);
+			switch (parentCategory) {
+				case MediaIdPojo.CATEGORY_LIBRARY:
+					_queue = _repository.getAllSongList();
+					break;
+				case MediaIdPojo.CATEGORY_ARTIST:
+					_queue = _repository.getSongListByArtist(parentMediaId);
+					break;
+				case MediaIdPojo.CATEGORY_ALBUM:
+					_queue = _repository.getSongListByAlbum(parentMediaId);
+					break;
+				case MediaIdPojo.CATEGORY_GENRE:
+					_queue = _repository.getSongListByGenre(parentMediaId);
+					break;
+				default:
+					_queue = Collections.emptyList();
+			}
+
+			// song list is not sorted by id sadly
+			int i = 0;
+			for (; i < _queue.size(); i++) {
+				final int id = MediaIdPojo.fromString(_queue.get(i).getMediaId()).getId();
+				if (_mediaIdPojo.getId() == id) {
+					break;
+				}
+			}
+			final int windowIndex = i;
 			final MediaSource[] sources = new MediaSource[_queue.size()];
 			final MediaSourceFactory factory = new ProgressiveMediaSource
 					.Factory(new DefaultDataSourceFactory(_context, "exoplayer-codelab"));
-			int i = 0;
+			i = 0;
 			for (final MediaBrowserCompat.MediaItem mediaItem : _queue) {
 				sources[i++] = factory.createMediaSource(mediaItem.getDescription().getMediaUri());
 			}
@@ -91,7 +122,7 @@ public class QueueManager {
 
 				@Override
 				public void run() {
-					_callback.onCompletion(new ConcatenatingMediaSource(sources));
+					_callback.onCompletion(new ConcatenatingMediaSource(sources), windowIndex);
 				}
 			});
 		}

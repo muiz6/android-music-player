@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,12 +31,14 @@ import com.muiz6.musicplayer.R;
 import com.muiz6.musicplayer.databinding.BottomSheetPlayerBinding;
 import com.muiz6.musicplayer.databinding.FragmentHomeBinding;
 import com.muiz6.musicplayer.ui.ThemeUtil;
+import com.muiz6.musicplayer.ui.main.home.browse.BrowseFragmentDirections;
 import com.muiz6.musicplayer.ui.main.home.library.LibraryFragmentDirections;
 
 import javax.inject.Inject;
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
 
+	private static final String _TAG = "HomeFragment";
 	private final BottomSheetBehavior.BottomSheetCallback _bottomSheetCallback =
 			new BottomSheetBehavior.BottomSheetCallback() {
 
@@ -158,12 +161,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 	}
 
 	private void _updateFromMetadata(MediaMetadataCompat metadata) {
-
-		// make bottom appbar visible if metadata exists
-		// if (_binding.mainBottomBar.getVisibility() != View.VISIBLE) {
-		// 	_binding.mainBottomBarSongTitle.setSelected(true); // for marquee text
-		// 	_binding.mainBottomBar.setVisibility(View.VISIBLE);
-		// }
 		final String title = metadata.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE);
 		if (title != null) {
 			_bindingBottomSheet.bottomSheetCollapsedViewSongTitle.setText(title);
@@ -171,12 +168,21 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
 		final Uri mediaUri = metadata.getDescription().getMediaUri();
 		if (mediaUri!= null) {
-			final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-			retriever.setDataSource(requireContext(), mediaUri);
-			final byte[] byteArr = retriever.getEmbeddedPicture();
+			byte[] byteArr = null;
+			try {
+				final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+				retriever.setDataSource(requireContext(), mediaUri);
+				byteArr = retriever.getEmbeddedPicture();
+			}
+			catch (Exception e) {
+				Log.e(_TAG, "Exception caught!", e);
+			}
 			if (byteArr != null) {
 				final Bitmap albumArt = BitmapFactory.decodeByteArray(byteArr, 0, byteArr.length);
 				_bindingBottomSheet.bottomSheetAlbumArt.setImageBitmap(albumArt);
+			}
+			else {
+				_bindingBottomSheet.bottomSheetAlbumArt.setImageBitmap(null);
 			}
 		}
 	}
@@ -255,8 +261,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 		else if (view == _bindingBottomSheet.bottomSheetFab) {
 			final NavController navController = Navigation
 					.findNavController(_binding.homeNavHostFragment);
-			navController.navigate(LibraryFragmentDirections
-					.actionLibraryFragmentToQueueFragment());
+			int destination = navController.getCurrentDestination().getId();
+			if (destination == R.id.browseFragment) {
+				navController.navigate(BrowseFragmentDirections
+						.actionBrowseFragmentToQueueFragment());
+			}
+			else {
+				navController.navigate(LibraryFragmentDirections
+						.actionLibraryFragmentToQueueFragment());
+			}
 			_behaviourBottomSheet.setState(BottomSheetBehavior.STATE_COLLAPSED);
 		}
 		// else if (view == _binding.mainBottomBarSongTitle) {

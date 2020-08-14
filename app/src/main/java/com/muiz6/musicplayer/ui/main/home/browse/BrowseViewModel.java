@@ -14,6 +14,7 @@ import com.muiz6.musicplayer.data.MediaIdPojo;
 import com.muiz6.musicplayer.data.MusicRepository;
 import com.muiz6.musicplayer.media.MediaRunnable;
 import com.muiz6.musicplayer.media.MusicServiceConnection;
+import com.muiz6.musicplayer.permission.PermissionManager;
 import com.muiz6.musicplayer.ui.main.home.library.albums.AlbumItemModel;
 import com.muiz6.musicplayer.ui.main.home.library.albums.AlbumUtil;
 import com.muiz6.musicplayer.ui.main.home.library.songs.SongItemModel;
@@ -67,21 +68,28 @@ public class BrowseViewModel extends AndroidViewModel {
 								// else ignore
 							}
 							_albumMediaList = albumList;
+							_songMediaList = songList;
 							_albumList.postValue(AlbumUtil.getAlbumList(albumList,
 									getApplication().getApplicationContext()));
 							_songList.postValue(SongUtil.getSongList(songList,
-									getApplication().getApplicationContext()));
+									getApplication().getApplicationContext(),
+									_permissionManager));
 						}
 					}).start();
 				}
 			};
 	private final MusicServiceConnection _connection;
+	private final PermissionManager _permissionManager;
 	private List<MediaBrowserCompat.MediaItem> _albumMediaList;
+	private List<MediaBrowserCompat.MediaItem> _songMediaList;
 	private String _parentMediaId;
 
 	@Inject
-	public BrowseViewModel(@NonNull Application application, MusicServiceConnection connection) {
+	public BrowseViewModel(@NonNull Application application,
+			MusicServiceConnection connection,
+			PermissionManager permissionManager) {
 		super(application);
+		_permissionManager = permissionManager;
 		_connection = connection;
 	}
 
@@ -95,13 +103,9 @@ public class BrowseViewModel extends AndroidViewModel {
 	public void setParentMediaId(String parentMediaId) {
 		if (!parentMediaId.equals(_parentMediaId)) {
 			_parentMediaId = parentMediaId;
-			_fragmentTitle.postValue(MusicRepository.getTitleFromMediaId(parentMediaId));
+			_fragmentTitle.postValue(parentMediaId);
 			_connection.isConnected().observeForever(_connectionObserver);
 		}
-	}
-
-	public LiveData<String> getFragmentTitle() {
-		return _fragmentTitle;
 	}
 
 	public LiveData<List<AlbumItemModel>> getAlbumList() {
@@ -114,5 +118,14 @@ public class BrowseViewModel extends AndroidViewModel {
 
 	public String getAlbumMediaId(int index) {
 		return _albumMediaList.get(index).getMediaId();
+	}
+
+	public void onSongItemClicked(int index) {
+		_connection.getTransportControls()
+				.playFromMediaId(_songMediaList.get(index).getMediaId(), null);
+	}
+
+	public String getAlbumTitle(int index) {
+		return String.valueOf(_albumMediaList.get(index).getDescription().getTitle());
 	}
 }

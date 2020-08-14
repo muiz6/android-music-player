@@ -24,7 +24,9 @@ public class AudioEntity {
 	@ColumnInfo(name = "artist") private String _artist;
 	@ColumnInfo(name = "duration") private int _duration;
 	@ColumnInfo(name = "genre") private String _genre;
-	// @ColumnInfo(name = "album_art") private String _albumArt;
+	@ColumnInfo(name = "album_id") private int _albumId;
+	@ColumnInfo(name = "artist_id") private int _artistId;
+	@ColumnInfo(name = "genre_id") private int _genreId;
 
 	public AudioEntity(@NonNull String path, @NonNull String displayName) {
 		_path = path;
@@ -95,5 +97,29 @@ public class AudioEntity {
 
 	public void setGenre(String genre) {
 		this._genre = genre;
+	}
+
+	public void setAlbumId(int albumId) {
+		_albumId = albumId;
+	}
+
+	public int getAlbumId() {
+		return _albumId;
+	}
+
+	public void setArtistId(int artistId) {
+		_artistId = artistId;
+	}
+
+	public int getArtistId() {
+		return _artistId;
+	}
+
+	public void setGenreId(int genreId) {
+		_genreId = genreId;
+	}
+
+	public int getGenreId() {
+		return _genreId;
 	}
 }

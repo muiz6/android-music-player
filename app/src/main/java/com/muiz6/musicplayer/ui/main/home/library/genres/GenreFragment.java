@@ -84,9 +84,10 @@ public class GenreFragment extends Fragment implements RecyclerView.OnItemTouchL
 		if (view != null && _gestureDetector.onTouchEvent(e)) {
 			int index = rv.getChildAdapterPosition(view);
 			final String genreId = _viewModel.getGenreId(index);
+			final String genre = _viewModel.getGenreTitle(index);
 			final LibraryFragmentDirections.ActionLibraryFragmentToBrowseFragment action =
 					LibraryFragmentDirections
-							.actionLibraryFragmentToBrowseFragment(genreId);
+							.actionLibraryFragmentToBrowseFragment(genreId, genre);
 			final NavController navController = Navigation.findNavController(requireView());
 			navController.navigate(action);
 		}

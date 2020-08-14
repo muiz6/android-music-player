@@ -70,4 +70,8 @@ public class ArtistViewModel extends ViewModel {
 	public String getArtistMediaId(int index) {
 		return _artistMediaList.get(index).getMediaId();
 	}
+
+	public String getArtistTitle(int index) {
+		return String.valueOf(_artistMediaList.get(index).getDescription().getTitle());
+	}
 }

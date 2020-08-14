@@ -30,14 +30,21 @@
 			android:name="parentMediaId"
 			app:argType="string" />
 
+		<argument
+			android:name="parentTitle"
+			app:argType="string"/>
+
 		<action
 			android:id="@+id/action_browseFragment_to_browseFragment"
 			app:destination="@id/browseFragment" />
+		<action
+			android:id="@+id/action_browseFragment_to_queueFragment"
+			app:destination="@id/queueFragment" />
 	</fragment>
 
 	<fragment
 		android:id="@+id/queueFragment"
 		android:name="com.muiz6.musicplayer.ui.main.home.queue.QueueFragment"
-		android:label="Queue"
+		android:label="@string/play_queue"
 		tools:layout="@layout/fragment_queue" />
 </navigation>

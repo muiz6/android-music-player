@@ -82,9 +82,10 @@ public class ArtistFragment extends Fragment implements RecyclerView.OnItemTouch
 		if (view != null && _gestureDetector.onTouchEvent(e)) {
 			int index = rv.getChildAdapterPosition(view);
 			final String artistId = _viewModel.getArtistMediaId(index);
+			final String artist = _viewModel.getArtistTitle(index);
 			final LibraryFragmentDirections.ActionLibraryFragmentToBrowseFragment action =
 					LibraryFragmentDirections
-							.actionLibraryFragmentToBrowseFragment(artistId);
+							.actionLibraryFragmentToBrowseFragment(artistId, artist);
 			final NavController navController = Navigation.findNavController(requireView());
 			navController.navigate(action);
 		}
