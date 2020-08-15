@@ -79,6 +79,7 @@ public abstract class SongUtil {
 					Log.e(_TAG, "Exception caught!", e);
 				}
 			}
+			retriever.release();
 		}
 	}
 }

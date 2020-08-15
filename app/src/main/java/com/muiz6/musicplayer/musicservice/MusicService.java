@@ -41,7 +41,6 @@ public class MusicService extends MediaBrowserServiceCompat
 	@Inject PlayerNotificationManager notificationMgr;
 	@Inject MediaSessionConnector sessionConnector;
 	@Inject MediaSessionCompat session;
-	@Inject MediaSessionConnector.QueueNavigator queueNavigator;
 	@Inject QueueManager queueManager;
 	@Inject BrowseManager browseManager;
 	@Inject
@@ -69,7 +68,6 @@ public class MusicService extends MediaBrowserServiceCompat
 		// connect media session with exoplayer
 		sessionConnector.setPlaybackPreparer(this);
 		sessionConnector.setQueueNavigator(queueManager.getQueueNavigator(session));
-		// sessionConnector.setQueueNavigator(queueNavigator);
 
 		// to stop playback when headphones are removed
 		noisyReceiver = new NoisyReceiver(session.getController());

@@ -10,6 +10,7 @@
 	<dimen name="size_text_small">14sp</dimen>
 
 	<dimen name="size_icon_now_playing">50dp</dimen>
+	<dimen name="size_notification_img">260dp</dimen>
 
     <dimen name="radius_l">25dp</dimen>
 	<dimen name="radius_m">18dp</dimen>

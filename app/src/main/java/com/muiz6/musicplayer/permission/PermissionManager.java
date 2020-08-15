@@ -66,6 +66,11 @@ public class PermissionManager {
 		}
 	}
 
+	/**
+	 * Checks if given permission is available or not. Does not request permission if unavailable.
+	 * @param permission the permission needed to be checked
+	 * @return state if specified permission is already granted or not
+	 */
 	public boolean hasPermission(String permission) {
 		if (_activity != null) {
 			return ActivityCompat.checkSelfPermission(_activity, permission) ==

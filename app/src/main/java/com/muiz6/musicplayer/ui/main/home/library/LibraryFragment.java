@@ -66,7 +66,7 @@ public class LibraryFragment extends Fragment {
 		super.onViewCreated(view, savedInstanceState);
 
 		// setup toolbar
-		((AppCompatActivity) getActivity()).setSupportActionBar(_binding.mainToolbar);
+		((AppCompatActivity) getActivity()).setSupportActionBar(_binding.libraryToolbar);
 		// final NavController navController = Navigation.findNavController(view);
 		// final AppBarConfiguration appBarConfiguration =
 		// 		new AppBarConfiguration.Builder(navController.getGraph()).build();
@@ -75,11 +75,11 @@ public class LibraryFragment extends Fragment {
 		// 		appBarConfiguration);
 
 		// setup tab layout
-		_binding.mainViewPager.setAdapter(new LibraryPagerAdapter(this,
+		_binding.libraryViewPager.setAdapter(new LibraryPagerAdapter(this,
 				getActivity().getClassLoader(),
 				_fragmentFactory));
-		new TabLayoutMediator(_binding.mainTabLayout,
-				_binding.mainViewPager,
+		new TabLayoutMediator(_binding.libraryTabLayout,
+				_binding.libraryViewPager,
 				_tabMediatorStrategy).attach();
 	}
 

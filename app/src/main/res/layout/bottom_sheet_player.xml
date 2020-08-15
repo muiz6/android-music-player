@@ -51,7 +51,8 @@
 			android:id="@+id/bottom_sheet_collapsed_view_btn_play_pause"
 			android:layout_width="50dp"
 			android:layout_height="match_parent"
-			android:src="@drawable/ic_play_arrow" />
+			android:src="@drawable/ic_play_arrow"
+			app:tint="@color/color_toggleable_button" />
 	</LinearLayout>
 
 	<com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -107,6 +108,7 @@
 			android:layout_height="@dimen/size_icon_now_playing"
 			android:scaleType="fitXY"
 			android:src="@drawable/ic_shuffle"
+			app:tint="@color/color_toggleable_button"
 			app:layout_constraintBottom_toBottomOf="@id/bottom_sheet_btn_play_pause"
 			app:layout_constraintStart_toStartOf="parent" />
 
@@ -126,6 +128,7 @@
 			android:layout_height="@dimen/size_icon_now_playing"
 			android:scaleType="fitXY"
 			android:src="@drawable/ic_play_arrow"
+			app:tint="@color/color_toggleable_button"
 			app:layout_constraintBottom_toBottomOf="parent"
 			app:layout_constraintEnd_toStartOf="@id/bottom_sheet_btn_repeat"
 			app:layout_constraintStart_toEndOf="@id/bottom_sheet_btn_shuffle" />
@@ -146,6 +149,7 @@
 			android:layout_height="@dimen/size_icon_now_playing"
 			android:scaleType="fitXY"
 			android:src="@drawable/ic_repeat"
+			app:tint="@color/color_toggleable_button"
 			app:layout_constraintBottom_toBottomOf="@id/bottom_sheet_btn_play_pause"
 			app:layout_constraintEnd_toEndOf="parent" />
 	</androidx.constraintlayout.widget.ConstraintLayout>

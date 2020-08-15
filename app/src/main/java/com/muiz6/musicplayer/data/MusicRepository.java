@@ -87,19 +87,6 @@ public class MusicRepository implements AudioDatabase.Callback {
 		return new BrowserRoot(MEDIA_ID_ROOT, null);
 	}
 
-	// todo: erase this when not needed
-	// @NonNull
-	// public static String getTitleFromMediaId(@NonNull String parentId) {
-	// 	final MediaIdPojo objMediaId = _GSON.fromJson(parentId, MediaIdPojo.class);
-	// 	if (objMediaId != null) {
-	// 		final String  value = objMediaId.getValue();
-	// 		if (value != null) {
-	// 			return value;
-	// 		}
-	// 	}
-	// 	return parentId;
-	// }
-
 	public void scanMusicLibrary() {
 		_db.scanMusicLibrary();
 	}

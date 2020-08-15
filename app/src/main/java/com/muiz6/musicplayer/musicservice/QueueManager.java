@@ -19,15 +19,15 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.muiz6.musicplayer.data.MediaIdPojo;
 import com.muiz6.musicplayer.data.MusicRepository;
+import com.muiz6.musicplayer.di.scope.ActivityScope;
 
 import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Singleton;
 
-@Singleton
+@ActivityScope
 public class QueueManager {
 
 	private final Handler _handler = new Handler(Looper.getMainLooper());
@@ -56,7 +56,9 @@ public class QueueManager {
 		return new TimelineQueueNavigator(session) {
 
 			@Override
-			public MediaDescriptionCompat getMediaDescription(Player player, int windowIndex) {
+			@NonNull
+			public MediaDescriptionCompat getMediaDescription(@NonNull Player player,
+					int windowIndex) {
 				return _queue.get(windowIndex).getDescription();
 			}
 		};

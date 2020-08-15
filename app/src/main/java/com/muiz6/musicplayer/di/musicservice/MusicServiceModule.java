@@ -4,17 +4,12 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.graphics.Color;
-import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 
-import androidx.annotation.NonNull;
 import androidx.navigation.NavDeepLinkBuilder;
 
-import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector;
-import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator;
 import com.google.android.exoplayer2.ui.PlayerNotificationManager;
 import com.muiz6.musicplayer.MyApp;
 import com.muiz6.musicplayer.R;
@@ -82,28 +77,5 @@ public abstract class MusicServiceModule {
 		manager.setFastForwardIncrementMs(0);
 		manager.setRewindIncrementMs(0);
 		return manager;
-	}
-
-	@Provides
-	static MediaSessionConnector.QueueNavigator provideQueueNavigator(MediaSessionCompat session) {
-		return new TimelineQueueNavigator(session) {
-
-			private final Timeline.Window _window = new Timeline.Window();
-
-			@NonNull
-			@Override
-			public MediaDescriptionCompat getMediaDescription(@NonNull Player player,
-					int windowIndex) {
-				final Timeline.Window window = player
-						.getCurrentTimeline()
-						.getWindow(windowIndex, _window);
-				if (window.tag != null) {
-					return (MediaDescriptionCompat) window.tag;
-				}
-
-				// else
-				return new MediaDescriptionCompat.Builder().build();
-			}
-		};
 	}
 }
