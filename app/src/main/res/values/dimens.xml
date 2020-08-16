@@ -25,6 +25,7 @@
 	<dimen name="padding_xl">25dp</dimen>
 	<dimen name="padding_l">16dp</dimen>
 	<dimen name="padding_m">10dp</dimen>
+	<dimen name="padding_s">5dp</dimen>
 
 	<!--todo: remove when not needed-->
 	<dimen name="padding_bottom_home_view_pager">56dp</dimen>

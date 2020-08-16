@@ -20,6 +20,65 @@
 		app:layout_constraintBottom_toTopOf="@id/bottom_sheet_container_controls"
 		app:layout_constraintTop_toTopOf="parent" />
 
+	<androidx.constraintlayout.widget.ConstraintLayout
+		android:id="@+id/bottom_sheet_expanded_view"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingHorizontal="@dimen/padding_m"
+		android:paddingTop="@dimen/padding_m"
+		android:visibility="gone"
+		app:layout_constraintTop_toTopOf="parent">
+
+		<RelativeLayout
+			android:layout_width="wrap_content"
+			android:layout_height="0dp"
+			android:background="@drawable/bg_button"
+			app:layout_constraintDimensionRatio="1:1"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintTop_toTopOf="parent">
+
+			<ImageButton
+				android:id="@+id/bottom_sheet_expanded_view_btn_expand_collapse"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_centerInParent="true"
+				android:src="@drawable/ic_keyboard_arrow_down" />
+		</RelativeLayout>
+
+		<androidx.constraintlayout.widget.Guideline
+			android:id="@+id/bottom_sheet_guide_expanded_view"
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:orientation="vertical"
+			app:layout_constraintGuide_percent="0.66" />
+
+		<TextView
+			android:id="@+id/bottom_sheet_expanded_view_album"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			app:layout_constraintEnd_toStartOf="@id/bottom_sheet_guide_expanded_view"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toTopOf="parent" />
+
+		<TextView
+			android:id="@+id/bottom_sheet_expanded_view_artist"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="@dimen/margin_s"
+			app:layout_constraintEnd_toStartOf="@id/bottom_sheet_guide_expanded_view"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toBottomOf="@id/bottom_sheet_expanded_view_album" />
+
+		<TextView
+			android:id="@+id/bottom_sheet_expanded_view_title"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="@dimen/margin_s"
+			app:layout_constraintEnd_toStartOf="@id/bottom_sheet_guide_expanded_view"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toBottomOf="@+id/bottom_sheet_expanded_view_artist" />
+	</androidx.constraintlayout.widget.ConstraintLayout>
+
 	<LinearLayout
 		android:id="@+id/bottom_sheet_collapsed_view"
 		android:layout_width="match_parent"
@@ -65,34 +124,12 @@
 		app:layout_constraintEnd_toEndOf="parent"
 		app:layout_constraintTop_toTopOf="parent" />
 
-	<!--<TextView-->
-	<!--	android:id="@+id/bottom_sheet_title"-->
-	<!--	android:layout_width="match_parent"-->
-	<!--	android:layout_height="wrap_content"-->
-	<!--	android:padding="@dimen/padding_m"-->
-	<!--	app:layout_constraintBottom_toTopOf="@id/bottom_sheet_artist" />-->
-
-	<!--<TextView-->
-	<!--	android:id="@+id/bottom_sheet_artist"-->
-	<!--	android:layout_width="match_parent"-->
-	<!--	android:layout_height="wrap_content"-->
-	<!--	android:paddingHorizontal="@dimen/padding_m"-->
-	<!--	app:layout_constraintBottom_toTopOf="@id/bottom_sheet_album" />-->
-
-	<!--<TextView-->
-	<!--	android:id="@+id/bottom_sheet_album"-->
-	<!--	android:layout_width="match_parent"-->
-	<!--	android:layout_height="wrap_content"-->
-	<!--	android:paddingHorizontal="@dimen/padding_m"-->
-	<!--	android:paddingTop="@dimen/padding_m"-->
-	<!--	app:layout_constraintBottom_toTopOf="@id/bottom_sheet_seek_bar" />-->
-
 	<androidx.constraintlayout.widget.ConstraintLayout
 		android:id="@+id/bottom_sheet_container_controls"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:background="?attr/colorSurface"
-		android:paddingBottom="@dimen/padding_m"
+		android:paddingBottom="@dimen/padding_s"
 		app:layout_constraintBottom_toBottomOf="parent">
 
 		<SeekBar
@@ -100,7 +137,23 @@
 			style="@style/Widget.AppCompat.ProgressBar.Horizontal"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			app:layout_constraintBottom_toTopOf="@id/bottom_sheet_btn_play_pause" />
+			app:layout_constraintBottom_toTopOf="@id/bottom_sheet_duration_current" />
+
+		<TextView
+			android:id="@+id/bottom_sheet_duration_current"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginStart="@dimen/margin_l"
+			app:layout_constraintBottom_toTopOf="@id/bottom_sheet_btn_play_pause"
+			app:layout_constraintStart_toStartOf="@id/bottom_sheet_seek_bar" />
+
+		<TextView
+			android:id="@+id/bottom_sheet_duration_max"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginEnd="@dimen/margin_l"
+			app:layout_constraintBottom_toTopOf="@id/bottom_sheet_btn_play_pause"
+			app:layout_constraintEnd_toEndOf="@id/bottom_sheet_seek_bar" />
 
 		<ImageButton
 			android:id="@+id/bottom_sheet_btn_shuffle"
@@ -108,9 +161,9 @@
 			android:layout_height="@dimen/size_icon_now_playing"
 			android:scaleType="fitXY"
 			android:src="@drawable/ic_shuffle"
-			app:tint="@color/color_toggleable_button"
 			app:layout_constraintBottom_toBottomOf="@id/bottom_sheet_btn_play_pause"
-			app:layout_constraintStart_toStartOf="parent" />
+			app:layout_constraintStart_toStartOf="parent"
+			app:tint="@color/color_toggleable_button" />
 
 		<ImageButton
 			android:id="@+id/bottom_sheet_btn_previous"
@@ -128,10 +181,10 @@
 			android:layout_height="@dimen/size_icon_now_playing"
 			android:scaleType="fitXY"
 			android:src="@drawable/ic_play_arrow"
-			app:tint="@color/color_toggleable_button"
 			app:layout_constraintBottom_toBottomOf="parent"
 			app:layout_constraintEnd_toStartOf="@id/bottom_sheet_btn_repeat"
-			app:layout_constraintStart_toEndOf="@id/bottom_sheet_btn_shuffle" />
+			app:layout_constraintStart_toEndOf="@id/bottom_sheet_btn_shuffle"
+			app:tint="@color/color_toggleable_button" />
 
 		<ImageButton
 			android:id="@+id/bottom_sheet_btn_next"
@@ -149,8 +202,8 @@
 			android:layout_height="@dimen/size_icon_now_playing"
 			android:scaleType="fitXY"
 			android:src="@drawable/ic_repeat"
-			app:tint="@color/color_toggleable_button"
 			app:layout_constraintBottom_toBottomOf="@id/bottom_sheet_btn_play_pause"
-			app:layout_constraintEnd_toEndOf="parent" />
+			app:layout_constraintEnd_toEndOf="parent"
+			app:tint="@color/color_toggleable_button" />
 	</androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

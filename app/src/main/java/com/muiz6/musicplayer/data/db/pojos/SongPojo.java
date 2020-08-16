@@ -13,6 +13,7 @@ public class SongPojo {
 	@ColumnInfo(name = "rowid") private int _rowId;
 	@ColumnInfo(name = "title") private String _title; // title defined in file's metadata
 	@ColumnInfo(name = "artist") private String _artist;
+	@ColumnInfo(name = "album") private String _album;
 	@ColumnInfo(name = "duration") private int _duration;
 
 	public SongPojo(String path, @NonNull String displayName) {
@@ -67,4 +68,13 @@ public class SongPojo {
 	public void setRowId(int rowId) {
 		this._rowId = rowId;
 	}
+
+	public void setAlbum(String album) {
+		_album = album;
+	}
+
+	public String getAlbum() {
+		return _album;
+	}
+
 }

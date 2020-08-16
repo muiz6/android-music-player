@@ -20,7 +20,7 @@ public interface AudioDao {
 	@Query("DELETE FROM audio_table;")
 	void deleteAll();
 
-	@Query("SELECT path, display_name, title, artist, duration, rowid FROM audio_table ORDER BY display_name ASC;")
+	@Query("SELECT path, display_name, title, artist, duration, rowid, album FROM audio_table ORDER BY display_name ASC;")
 	List<SongPojo> getAllSongList();
 
 	// group by artist and not album because different artist may share same album name
@@ -33,13 +33,13 @@ public interface AudioDao {
 	@Query("Select genre, genre_id FROM audio_table WHERE genre IS NOT NULL GROUP BY genre;")
 	List<GenrePojo> getAllGenreList();
 
-	@Query("SELECT path, display_name, title, artist, duration, rowid FROM audio_table WHERE artist_id=:id ORDER BY display_name ASC;")
+	@Query("SELECT path, display_name, title, artist, duration, rowid, album FROM audio_table WHERE artist_id=:id ORDER BY display_name ASC;")
 	List<SongPojo> getSongListByArtistId(int id);
 
-	@Query("SELECT path, display_name, title, artist, duration, rowid FROM audio_table WHERE genre_id=:id ORDER BY display_name ASC;")
+	@Query("SELECT path, display_name, title, artist, duration, rowid, album FROM audio_table WHERE genre_id=:id ORDER BY display_name ASC;")
 	List<SongPojo> getSongListByGenreId(int id);
 
-	@Query("SELECT path, display_name, title, artist, duration, rowid FROM audio_table WHERE album_id=:id ORDER BY display_name ASC;")
+	@Query("SELECT path, display_name, title, artist, duration, rowid, album FROM audio_table WHERE album_id=:id ORDER BY display_name ASC;")
 	List<SongPojo> getSongListByAlbumId(int id);
 
 	@Query("SELECT album, artist, album_id FROM audio_table WhERE artist_id=:id GROUP BY artist;")

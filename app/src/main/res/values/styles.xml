@@ -54,6 +54,7 @@
 		<item name="cardCornerRadius">@dimen/radius_s</item>
 		<item name="cardForegroundColor">@null</item>
 		<item name="android:layout_margin">@dimen/margin_m</item>
+		<item name="cardElevation">0dp</item>
 	</style>
 
 	<style name="Widget.App.BottomSheet" parent="Widget.MaterialComponents.BottomSheet">

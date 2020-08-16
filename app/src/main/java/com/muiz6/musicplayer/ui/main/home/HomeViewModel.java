@@ -29,16 +29,20 @@ import javax.inject.Inject;
 public class HomeViewModel extends AndroidViewModel {
 
 	private static final String _TAG = "HomeViewModel";
+	private boolean _continueUpdatingDuration = false;
+	private boolean _isPlaying = false;
 	private final Handler _handler = new Handler(Looper.getMainLooper());
-	private final MutableLiveData<Integer> _seekBarMax = new MutableLiveData<>(0);
+	private final MutableLiveData<Integer> _maxDuration = new MutableLiveData<>(0);
 	private final MutableLiveData<Integer> _playPauseIconResId =
 			new MutableLiveData<>(R.drawable.ic_play_arrow);
 	private final MutableLiveData<Boolean> _shuffleState = new MutableLiveData<>(false);
 	private final MutableLiveData<Pair<Integer, Boolean>> _repeatIcon =
 			new MutableLiveData<>(new Pair<>(R.drawable.ic_repeat, false));
-	private final MutableLiveData<Integer> _seekBarPosition = new MutableLiveData<>(0);
+	private final MutableLiveData<Integer> _duration = new MutableLiveData<>(0);
 	private final MutableLiveData<String> _songTitle = new MutableLiveData<>();
 	private final MutableLiveData<Bitmap> _albumArt = new MutableLiveData<>();
+	private final MutableLiveData<String> _artist = new MutableLiveData<>();
+	private final MutableLiveData<String> _album = new MutableLiveData<>();
 	private final Observer<MediaMetadataCompat> _observerMetadata =
 			new Observer<MediaMetadataCompat>() {
 
@@ -46,19 +50,23 @@ public class HomeViewModel extends AndroidViewModel {
 				public void onChanged(MediaMetadataCompat metadata) {
 					if (metadata != null) {
 						final MediaDescriptionCompat description = metadata.getDescription();
+
+						// extras put in media item description are put in this bundle by
+						// the exoplayer MediaSessionConnector
+						final Bundle extras = metadata.getBundle();
 						_songTitle.postValue(String.valueOf(description.getTitle()));
+						_artist.postValue(String.valueOf(description.getSubtitle()));
+						_album.postValue(String.valueOf(extras
+								.getString(MediaMetadataCompat.METADATA_KEY_ALBUM)));
 						final Uri uri = description.getMediaUri();
 						if (uri != null) {
 							new Thread(new _AsyncLoadBitmap(uri)).start();
 						}
 
-						// metadata.getDescription().getExtras is always null, possibly some
-						// issue in exoplayer implementation, but duration can be got from
-						// metadata.getBundle()
-						final Bundle extras = metadata.getBundle();
+						// duration is put by exoplayer MediaSessionConnector by default as long
 						final int duration = (int) extras.getLong(MediaMetadataCompat
 								.METADATA_KEY_DURATION);
-						_seekBarMax.postValue(duration);
+						_maxDuration.postValue(duration);
 					}
 				}
 			};
@@ -68,13 +76,21 @@ public class HomeViewModel extends AndroidViewModel {
 				@Override
 				public void onChanged(PlaybackStateCompat playbackState) {
 					if (playbackState!=null) {
+						final MediaControllerCompat controller = _connection.getMediaController();
 						if (playbackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
 							_playPauseIconResId.postValue(R.drawable.ic_pause);
+							_isPlaying = true;
+							activateDuration(_continueUpdatingDuration);
 						}
 						else {
 							_playPauseIconResId.postValue(R.drawable.ic_play_arrow);
+							_isPlaying = false;
+
+							// seek bar does not update if playback is paused before activating it
+							// this ensures that it is updated whenever playback is paused
+							_duration.postValue((int) controller
+									.getPlaybackState().getPosition());
 						}
-						final MediaControllerCompat controller = _connection.getMediaController();
 						int shuffleMode = controller.getShuffleMode();
 						if (shuffleMode == PlaybackStateCompat.SHUFFLE_MODE_ALL) {
 							_shuffleState.postValue(true);
@@ -108,12 +124,14 @@ public class HomeViewModel extends AndroidViewModel {
 				final PlaybackStateCompat pbState = _connection.getMediaController()
 						.getPlaybackState();
 				if (pbState != null) {
-					_seekBarPosition.postValue((int) pbState.getPosition());
+					_duration.postValue((int) pbState.getPosition());
 				}
 			}
 
-			// todo: stop this when media is not playing for performance
-			_handler.postDelayed(this, 40); // 25Hz
+			// only continue updating when seek bar is visible and music is playing
+			if (_continueUpdatingDuration && _isPlaying) {
+				_handler.postDelayed(this, 40); // 25Hz
+			}
 		}
 	};
 	private final MusicServiceConnection _connection;
@@ -124,14 +142,12 @@ public class HomeViewModel extends AndroidViewModel {
 		_connection = connection;
 		_connection.getMetadata().observeForever(_observerMetadata);
 		_connection.getPlaybackState().observeForever(_observerPlaybackState);
-
-		//
-		_handler.post(_updateSeekBarRunnable);
 	}
 
 	@Override
 	protected void onCleared() {
 		super.onCleared();
+		_continueUpdatingDuration = false;
 		_connection.getMetadata().removeObserver(_observerMetadata);
 		_connection.getPlaybackState().removeObserver(_observerPlaybackState);
 	}
@@ -201,8 +217,8 @@ public class HomeViewModel extends AndroidViewModel {
 		return _playPauseIconResId;
 	}
 
-	public LiveData<Integer> getSeekBarMaxValue() {
-		return _seekBarMax;
+	public LiveData<Integer> getMaxDuration() {
+		return _maxDuration;
 	}
 
 	public LiveData<Boolean> getShuffleState() {
@@ -211,6 +227,27 @@ public class HomeViewModel extends AndroidViewModel {
 
 	public LiveData<Pair<Integer, Boolean>> getRepeatIcon() {
 		return _repeatIcon;
+	}
+
+	public LiveData<Integer> getCurrentDuration() {
+		return _duration;
+	}
+
+	public void activateDuration(boolean state) {
+		_continueUpdatingDuration = state;
+
+		// only start updating when seek bar is visible and music is playing
+		if (_continueUpdatingDuration && _isPlaying) {
+			_handler.post(_updateSeekBarRunnable);
+		}
+	}
+
+	public LiveData<String> getArtist() {
+		return _artist;
+	}
+
+	public LiveData<String> getAlbum() {
+		return _album;
 	}
 
 	private class _AsyncLoadBitmap implements Runnable {
@@ -239,9 +276,5 @@ public class HomeViewModel extends AndroidViewModel {
 			}
 			metadataRetriever.release();
 		}
-	}
-
-	public LiveData<Integer> getSeekBarPosition() {
-		return  _seekBarPosition;
 	}
 }

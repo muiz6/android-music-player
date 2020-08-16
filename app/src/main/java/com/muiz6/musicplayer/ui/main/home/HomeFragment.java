@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.style.BackgroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +28,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.muiz6.musicplayer.R;
 import com.muiz6.musicplayer.databinding.BottomSheetPlayerBinding;
 import com.muiz6.musicplayer.databinding.FragmentHomeBinding;
+import com.muiz6.musicplayer.ui.Util;
 import com.muiz6.musicplayer.ui.main.home.browse.BrowseFragmentDirections;
 import com.muiz6.musicplayer.ui.main.home.library.LibraryFragmentDirections;
 
@@ -38,22 +41,41 @@ public class HomeFragment extends Fragment implements View.OnClickListener,
 			new BottomSheetBehavior.BottomSheetCallback() {
 
 				@Override
-				public void onStateChanged(@NonNull View bottomSheet, int newState) {}
+				public void onStateChanged(@NonNull View bottomSheet, int newState) {
+					if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+						_viewModel.activateDuration(false);
+					}
+					else {
+						_viewModel.activateDuration(true);
+					}
+				}
 
 				@Override
 				public void onSlide(@NonNull View bottomSheet, float slideOffset) {
 					_binding.homeBg.setVisibility(View.VISIBLE);
 					_binding.homeBg.setAlpha(slideOffset);
-					_bindingBottomSheet.bottomSheetCollapsedView.setAlpha(1 - slideOffset);
+					if (slideOffset > 0.5) {
+						_bindingBottomSheet.bottomSheetCollapsedView.setVisibility(View.GONE);
+						_bindingBottomSheet.bottomSheetExpandedView.setVisibility(View.VISIBLE);
+					}
+					else {
+						_bindingBottomSheet.bottomSheetExpandedView.setVisibility(View.GONE);
+						_bindingBottomSheet.bottomSheetCollapsedView.setVisibility(View.VISIBLE);
+					}
+					_bindingBottomSheet.bottomSheetCollapsedView.setAlpha(1 - 2 * slideOffset);
+					_bindingBottomSheet.bottomSheetExpandedView.setAlpha(2 * slideOffset - 1);
 				}
 			};
-	private final Observer<Integer> _observerSeekBarPosition = new Observer<Integer>() {
+	private final Observer<Integer> _observerCurrentDuration = new Observer<Integer>() {
 
 		@Override
 		public void onChanged(Integer position) {
 			_bindingBottomSheet.bottomSheetSeekBar.setProgress(position);
+			_bindingBottomSheet.bottomSheetDurationCurrent.setText(Util.millisecondToString(position));
 		}
 	};
+	private final BackgroundColorSpan _bgColorSpan = new BackgroundColorSpan(0xAA000000);
+	private final Spannable.Factory _spannableFactory = Spannable.Factory.getInstance();
 	private final FragmentFactory _fragmentFactory;
 	private final ViewModelProvider.Factory _viewModelFactory;
 	private HomeViewModel _viewModel;
@@ -107,11 +129,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener,
 		// sync ui with playback
 		_observe();
 
-		// hide view if bottom sheet is expanded by default after config change
-		// if (_behaviourBottomSheet.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-		// 	_bindingBottomSheet.bottomSheetCollapsedView.setAlpha(0);
-		// }
-
 		// build transport controls
 		_bindingBottomSheet.bottomSheetCollapsedViewBtnPlayPause.setOnClickListener(this);
 		_bindingBottomSheet.bottomSheetCollapsedViewBtnExpandCollapse.setOnClickListener(this);
@@ -122,6 +139,18 @@ public class HomeFragment extends Fragment implements View.OnClickListener,
 		_bindingBottomSheet.bottomSheetBtnRepeat.setOnClickListener(this);
 		_bindingBottomSheet.bottomSheetFab.setOnClickListener(this);
 		_bindingBottomSheet.bottomSheetSeekBar.setOnSeekBarChangeListener(this);
+		_bindingBottomSheet.bottomSheetExpandedViewBtnExpandCollapse.setOnClickListener(this);
+	}
+
+	@Override
+	public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+		super.onViewStateRestored(savedInstanceState);
+
+		// hide view if bottom sheet is expanded by default after config change
+		if (_behaviourBottomSheet.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+			_bindingBottomSheet.bottomSheetCollapsedView.setVisibility(View.GONE);
+			_bindingBottomSheet.bottomSheetExpandedView.setVisibility(View.VISIBLE);
+		}
 	}
 
 	@Override
@@ -148,6 +177,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener,
 				_viewModel.onSkipPreviousBtnClicked();
 				break;
 			case R.id.bottom_sheet_collapsed_view_btn_expand_collapse:
+			case R.id.bottom_sheet_expanded_view_btn_expand_collapse:
 				final int sheetState = _behaviourBottomSheet.getState();
 				if (sheetState == BottomSheetBehavior.STATE_COLLAPSED) {
 					_behaviourBottomSheet.setState(BottomSheetBehavior.STATE_EXPANDED);
@@ -191,14 +221,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener,
 	public void onStartTrackingTouch(SeekBar seekBar) {
 
 		// stop updating seek bar progress on ui
-		_viewModel.getSeekBarPosition().removeObserver(_observerSeekBarPosition);
+		_viewModel.getCurrentDuration().removeObserver(_observerCurrentDuration);
 	}
 
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
 
 		// resume updating seek bar progress on ui
-		_viewModel.getSeekBarPosition().observe(getViewLifecycleOwner(), _observerSeekBarPosition);
+		_viewModel.getCurrentDuration().observe(getViewLifecycleOwner(), _observerCurrentDuration);
 	}
 
 	private void _observe() {
@@ -215,6 +245,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener,
 			@Override
 			public void onChanged(String s) {
 				_bindingBottomSheet.bottomSheetCollapsedViewSongTitle.setText(s);
+
+				// highlight the text in black
+				final Spannable spannable = _spannableFactory.newSpannable(s);
+				spannable.setSpan(_bgColorSpan, 0, s.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				_bindingBottomSheet.bottomSheetExpandedViewTitle.setText(spannable);
 			}
 		});
 		_viewModel.getPlayPauseIconResId().observe(lifecycleOwner,
@@ -261,13 +296,32 @@ public class HomeFragment extends Fragment implements View.OnClickListener,
 				_bindingBottomSheet.bottomSheetBtnRepeat.setActivated(state.second);
 			}
 		});
-		_viewModel.getSeekBarMaxValue().observe(lifecycleOwner, new Observer<Integer>() {
+		_viewModel.getMaxDuration().observe(lifecycleOwner, new Observer<Integer>() {
 
 			@Override
 			public void onChanged(Integer max) {
 				_bindingBottomSheet.bottomSheetSeekBar.setMax(max);
+				_bindingBottomSheet.bottomSheetDurationMax.setText(Util.millisecondToString(max));
 			}
 		});
-		_viewModel.getSeekBarPosition().observe(lifecycleOwner, _observerSeekBarPosition);
+		_viewModel.getCurrentDuration().observe(lifecycleOwner, _observerCurrentDuration);
+		_viewModel.getArtist().observe(lifecycleOwner, new Observer<String>() {
+
+			@Override
+			public void onChanged(String s) {
+				final Spannable spannable = _spannableFactory.newSpannable(s);
+				spannable.setSpan(_bgColorSpan, 0, s.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				_bindingBottomSheet.bottomSheetExpandedViewArtist.setText(spannable);
+			}
+		});
+		_viewModel.getAlbum().observe(lifecycleOwner, new Observer<String>() {
+
+			@Override
+			public void onChanged(String s) {
+				final Spannable spannable = _spannableFactory.newSpannable(s);
+				spannable.setSpan(_bgColorSpan, 0, s.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				_bindingBottomSheet.bottomSheetExpandedViewAlbum.setText(spannable);
+			}
+		});
 	}
 }

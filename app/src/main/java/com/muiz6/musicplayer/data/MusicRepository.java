@@ -165,6 +165,7 @@ public class MusicRepository implements AudioDatabase.Callback {
 					audio.getTitle());
 			extras.putString(MediaMetadataCompat.METADATA_KEY_ARTIST, audio.getArtist());
 			extras.putInt(MediaMetadataCompat.METADATA_KEY_DURATION, audio.getDuration());
+			extras.putString(MediaMetadataCompat.METADATA_KEY_ALBUM, audio.getAlbum());
 			final MediaDescriptionCompat description = builder
 					.setMediaId(objMediaId.toString())
 					.setMediaUri(Uri.parse(audio.getPath()))
