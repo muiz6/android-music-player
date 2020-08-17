@@ -26,24 +26,19 @@
 		android:layout_height="wrap_content"
 		android:paddingHorizontal="@dimen/padding_m"
 		android:paddingTop="@dimen/padding_m"
+		android:theme="@style/AppTheme.Dark.NoElevationOverlay"
 		android:visibility="gone"
 		app:layout_constraintTop_toTopOf="parent">
 
-		<RelativeLayout
+		<com.google.android.material.floatingactionbutton.FloatingActionButton
+			android:id="@+id/bottom_sheet_expanded_view_btn_expand_collapse"
+			style="@style/AppTheme.Fab.Surface"
 			android:layout_width="wrap_content"
-			android:layout_height="0dp"
-			android:background="@drawable/bg_button"
-			app:layout_constraintDimensionRatio="1:1"
+			android:layout_height="wrap_content"
+			android:src="@drawable/ic_keyboard_arrow_down"
+			app:fabSize="mini"
 			app:layout_constraintEnd_toEndOf="parent"
-			app:layout_constraintTop_toTopOf="parent">
-
-			<ImageButton
-				android:id="@+id/bottom_sheet_expanded_view_btn_expand_collapse"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_centerInParent="true"
-				android:src="@drawable/ic_keyboard_arrow_down" />
-		</RelativeLayout>
+			app:layout_constraintTop_toTopOf="parent" />
 
 		<androidx.constraintlayout.widget.Guideline
 			android:id="@+id/bottom_sheet_guide_expanded_view"

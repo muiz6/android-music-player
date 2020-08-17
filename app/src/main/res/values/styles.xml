@@ -63,4 +63,15 @@
 		<!--peekHeight not working if not redefined here-->
 		<item name="behavior_peekHeight">?attr/actionBarSize</item>
 	</style>
+
+	<style name="AppTheme.Fab.Surface" parent="Widget.MaterialComponents.FloatingActionButton">
+
+		<item name="backgroundTint">?attr/colorSurface</item>
+
+		<item name="tint">?attr/colorOnSurface</item>
+	</style>
+
+	<style name="AppTheme.Dark.NoElevationOverlay">
+		<item name="elevationOverlayEnabled">false</item>
+	</style>
 </resources>

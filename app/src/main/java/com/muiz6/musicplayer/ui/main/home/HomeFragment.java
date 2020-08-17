@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Spannable;
 import android.text.style.BackgroundColorSpan;
 import android.view.LayoutInflater;
@@ -71,13 +73,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener,
 		@Override
 		public void onChanged(Integer position) {
 			_bindingBottomSheet.bottomSheetSeekBar.setProgress(position);
-			_bindingBottomSheet.bottomSheetDurationCurrent.setText(Util.millisecondToString(position));
 		}
 	};
 	private final BackgroundColorSpan _bgColorSpan = new BackgroundColorSpan(0xAA000000);
 	private final Spannable.Factory _spannableFactory = Spannable.Factory.getInstance();
+	private final Handler _handler = new Handler(Looper.getMainLooper());
 	private final FragmentFactory _fragmentFactory;
 	private final ViewModelProvider.Factory _viewModelFactory;
+	private boolean _trackingTouch = false;
 	private HomeViewModel _viewModel;
 	private FragmentHomeBinding _binding; // only available on runtime
 	private BottomSheetPlayerBinding _bindingBottomSheet;
@@ -212,13 +215,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener,
 
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int position, boolean fromUser) {
-		if (fromUser) {
+		_bindingBottomSheet.bottomSheetDurationCurrent.setText(Util.millisecondToString(position));
+		if (!_trackingTouch && fromUser) {
 			_viewModel.onSeek(position);
 		}
 	}
 
 	@Override
 	public void onStartTrackingTouch(SeekBar seekBar) {
+		_trackingTouch = true;
 
 		// stop updating seek bar progress on ui
 		_viewModel.getCurrentDuration().removeObserver(_observerCurrentDuration);
@@ -226,9 +231,21 @@ public class HomeFragment extends Fragment implements View.OnClickListener,
 
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
+		_trackingTouch = false;
+
+		// make sure on progress change is called after stopping tracking touch
+		onProgressChanged(seekBar, seekBar.getProgress(), true);
 
 		// resume updating seek bar progress on ui
-		_viewModel.getCurrentDuration().observe(getViewLifecycleOwner(), _observerCurrentDuration);
+		// delay for better chances that asynchronous seek is complete
+		_handler.postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				_viewModel.getCurrentDuration().observe(getViewLifecycleOwner(),
+						_observerCurrentDuration);
+			}
+		}, 500); // half second delay
 	}
 
 	private void _observe() {

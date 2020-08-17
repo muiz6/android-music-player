@@ -12,6 +12,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.muiz6.musicplayer.R;
 import com.muiz6.musicplayer.permission.PermissionManager;
 
 import java.util.ArrayList;
@@ -28,7 +29,13 @@ public abstract class SongUtil {
 			final SongItemModel model = new SongItemModel();
 			final MediaDescriptionCompat description = mediaItem.getDescription();
 			model.setTitle(String.valueOf(description.getTitle()));
-			model.setArtist(String.valueOf(description.getSubtitle()));
+			if (description.getSubtitle() != null) {
+				model.setArtist(String.valueOf(description.getSubtitle()));
+			}
+			else {
+				final String altArtist = context.getResources().getString(R.string.unknown_artist);
+				model.setArtist(altArtist);
+			}
 			final int duration = description.getExtras()
 					.getInt(MediaMetadataCompat.METADATA_KEY_DURATION);
 			model.setDuration(duration);

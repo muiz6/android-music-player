@@ -7,9 +7,10 @@ import java.util.Date;
 
 public abstract class Util {
 
+	private static final SimpleDateFormat _FORMAT = new SimpleDateFormat("mm:ss");
+
 	@NonNull
 	public static String millisecondToString(int millis) {
-		final SimpleDateFormat format = new SimpleDateFormat("mm:ss");
-		return format.format(new Date(millis));
+		return _FORMAT.format(new Date(millis));
 	}
 }

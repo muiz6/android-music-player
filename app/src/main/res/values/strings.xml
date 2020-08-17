@@ -8,8 +8,6 @@
 	<string name="unknown_album">Unknown Album</string>
 	<string name="scanning_music_library">Scanning Music Library…</string>
 	<string name="unknown_title">Unknown Title</string>
-	<string name="search">Search…</string>
-	<string name="artists">Artists</string>
-	<string name="albums">Albums</string>
 	<string name="rescan_library">Rescan Library</string>
+	<string name="music_playback">Music Playback</string>
 </resources>

@@ -72,10 +72,10 @@ public class NotificationDescriptionAdapter
 	@Nullable
 	@Override
 	public CharSequence getCurrentSubText(Player player) {
-		final String descritption = _mediaController.getMetadata()
-				.getString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION);
-		if (descritption != null) {
-			return descritption;
+		final String album = _mediaController.getMetadata().getBundle()
+				.getString(MediaMetadataCompat.METADATA_KEY_ALBUM);
+		if (album != null) {
+			return album;
 		}
 		return _context.getString(R.string.unknown_album);
 	}
