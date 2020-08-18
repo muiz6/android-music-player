@@ -71,9 +71,16 @@ public class BrowseViewModel extends AndroidViewModel {
 							_songMediaList = songList;
 							_albumList.postValue(AlbumUtil.getAlbumList(albumList,
 									getApplication().getApplicationContext()));
-							_songList.postValue(SongUtil.getSongList(songList,
+							SongUtil.getSongList(songList,
 									getApplication().getApplicationContext(),
-									_permissionManager));
+									_permissionManager,
+									new SongUtil.Callback() {
+
+										@Override
+										public void onResult(List<SongItemModel> resultList) {
+											_songList.postValue(resultList);
+										}
+									});
 						}
 					}).start();
 				}

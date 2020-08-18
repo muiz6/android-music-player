@@ -42,11 +42,16 @@ public class SongViewModel extends AndroidViewModel {
 
 						@Override
 						public void run() {
-
-							// to convert media item list to song item model list
-							_songList.postValue(SongUtil.getSongList(getMediaItemList(),
+							SongUtil.getSongList(getMediaItemList(),
 									getApplication().getApplicationContext(),
-									_permissionManager));
+									_permissionManager,
+									new SongUtil.Callback() {
+
+										@Override
+										public void onResult(List<SongItemModel> resultList) {
+											_songList.postValue(resultList);
+										}
+									});
 						}
 					}).start();
 				}

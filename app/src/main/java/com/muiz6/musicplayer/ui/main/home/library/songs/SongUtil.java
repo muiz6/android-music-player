@@ -22,8 +22,10 @@ public abstract class SongUtil {
 
 	private static final String _TAG = "SongUtil";
 
-	public static List<SongItemModel> getSongList(@NonNull List<MediaBrowserCompat.MediaItem> list,
-			@NonNull Context context, PermissionManager permissionManager) {
+	public static void getSongList(@NonNull List<MediaBrowserCompat.MediaItem> list,
+			@NonNull Context context,
+			@NonNull PermissionManager permissionManager,
+			@NonNull Callback callback) {
 		final List<SongItemModel> newSongList = new ArrayList<>();
 		for (final MediaBrowserCompat.MediaItem mediaItem : list) {
 			final SongItemModel model = new SongItemModel();
@@ -41,42 +43,20 @@ public abstract class SongUtil {
 			model.setDuration(duration);
 			newSongList.add(model);
 		}
+		callback.onResult(newSongList);
+
+		// retrieve album art asynchronously
 		if (permissionManager.hasPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-			new Thread(new _AsyncFetch(list, newSongList, context)).start();
-		}
-		return newSongList;
-	}
-
-	// public interface Callback {
-	// 	void onItemChange(int index);
-	// }
-
-	private static class _AsyncFetch implements Runnable {
-
-		private final List<MediaBrowserCompat.MediaItem> _mediaItemList;
-		private final List<SongItemModel> _songItemList;
-		private final Context _context;
-
-		public _AsyncFetch(List<MediaBrowserCompat.MediaItem> mediaItemList,
-				List<SongItemModel> songItems,
-				Context context) {
-			_mediaItemList = mediaItemList;
-			_songItemList = songItems;
-			_context = context;
-		}
-
-		@Override
-		public void run() {
 			final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-			for (int i = 0; i < _songItemList.size(); i++) {
+			for (int i = 0; i < newSongList.size(); i++) {
 
 				// retrieve album art and add in model
 				try {
-					final MediaDescriptionCompat description = _mediaItemList.get(i).getDescription();
-					retriever.setDataSource(_context, description.getMediaUri());
+					final MediaDescriptionCompat description = list.get(i).getDescription();
+					retriever.setDataSource(context, description.getMediaUri());
 					byte[] byteArr = retriever.getEmbeddedPicture();
 					if (byteArr != null) {
-						final SongItemModel model = _songItemList.get(i);
+						final SongItemModel model = newSongList.get(i);
 						final Bitmap bmp = BitmapFactory.decodeByteArray(byteArr, 0, byteArr.length);
 						model.setAlbumArt(Bitmap
 								.createScaledBitmap(bmp, 70, 70, false));
@@ -86,7 +66,16 @@ public abstract class SongUtil {
 					Log.e(_TAG, "Exception caught!", e);
 				}
 			}
+			callback.onResult(newSongList);
 			retriever.release();
 		}
+	}
+
+	/**
+	 * A callback that is called when data is first ready to initially displayed,
+	 * and called again when images have been loaded
+	 */
+	public interface Callback {
+		void onResult(List<SongItemModel> resultList);
 	}
 }
