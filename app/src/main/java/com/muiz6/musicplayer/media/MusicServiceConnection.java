@@ -1,6 +1,7 @@
 package com.muiz6.musicplayer.media;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.v4.media.MediaBrowserCompat;
@@ -12,6 +13,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -39,17 +41,20 @@ public class MusicServiceConnection
 	private final MediaBrowserCompat _mediaBrowser;
 	private final MediaConnectionCallback _connectionCallback;
 	private final MediaControllerCallback _controllerCallback;
+	private final Intent _musicServiceIntent;
 	private MediaControllerCompat _mediaController;
 
 	@Inject
 	public MusicServiceConnection(@Named("Application") Context context,
 			MediaBrowserCompat mediaBrowser,
 			MediaConnectionCallback connectionCallback,
-			MediaControllerCallback controllerCallback) {
+			MediaControllerCallback controllerCallback,
+			@Named("MusicServiceIntent") Intent musicServiceIntent) {
 		_context = context;
 		_mediaBrowser = mediaBrowser;
 		_connectionCallback = connectionCallback;
 		_controllerCallback = controllerCallback;
+		_musicServiceIntent = musicServiceIntent;
 	}
 
 	// di shall call this method right after constructor
@@ -58,7 +63,8 @@ public class MusicServiceConnection
 		_connectionCallback.addListener(this);
 		_controllerCallback.addListener(this);
 
-		// bind to music service
+		// start and bind to music service
+		ContextCompat.startForegroundService(_context, _musicServiceIntent);
 		_mediaBrowser.connect();
 	}
 

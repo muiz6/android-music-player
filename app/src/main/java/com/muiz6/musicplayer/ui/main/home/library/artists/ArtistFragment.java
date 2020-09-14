@@ -16,26 +16,30 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.muiz6.musicplayer.databinding.FragmentListBinding;
+import com.muiz6.musicplayer.databinding.RvLinearBinding;
 import com.muiz6.musicplayer.ui.main.home.library.LibraryFragmentDirections;
 
 import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 public class ArtistFragment extends Fragment implements RecyclerView.OnItemTouchListener {
 
 	private final ViewModelProvider.Factory _viewModelFactory;
+	private final GestureDetector _gestureDetector;
+	private final RecyclerView.ItemDecoration _itemDecoration;
 	private ArtistViewModel _viewModel;
-	private FragmentListBinding _binding;
-	private GestureDetector _gestureDetector;
+	private RvLinearBinding _binding;
 
 	@Inject
 	public ArtistFragment(ViewModelProvider.Factory viewModelFactory,
-			GestureDetector gestureDetector) {
+			GestureDetector gestureDetector,
+			@Named("List") RecyclerView.ItemDecoration listItemDecoration) {
 		_viewModelFactory = viewModelFactory;
 		_gestureDetector = gestureDetector;
+		_itemDecoration = listItemDecoration;
 	}
 
 	@Override
@@ -49,10 +53,11 @@ public class ArtistFragment extends Fragment implements RecyclerView.OnItemTouch
 	public View onCreateView(@NonNull LayoutInflater inflater,
 			@Nullable ViewGroup container,
 			@Nullable Bundle savedInstanceState) {
-		_binding = FragmentListBinding.inflate(inflater, container, false);
+		_binding = RvLinearBinding.inflate(inflater, container, false);
 		final RecyclerView recyclerView = _binding.getRoot();
 		recyclerView.setAdapter(new ArtistAdapter(
 				Collections.<ArtistItemModel>emptyList()));
+		recyclerView.addItemDecoration(_itemDecoration);
 		recyclerView.addOnItemTouchListener(this);
 		return recyclerView;
 	}
@@ -81,13 +86,15 @@ public class ArtistFragment extends Fragment implements RecyclerView.OnItemTouch
 		final View view = rv.findChildViewUnder(e.getX(), e.getY());
 		if (view != null && _gestureDetector.onTouchEvent(e)) {
 			int index = rv.getChildAdapterPosition(view);
-			final String artistId = _viewModel.getArtistMediaId(index);
-			final String artist = _viewModel.getArtistTitle(index);
-			final LibraryFragmentDirections.ActionLibraryFragmentToBrowseFragment action =
-					LibraryFragmentDirections
-							.actionLibraryFragmentToBrowseFragment(artistId, artist);
-			final NavController navController = Navigation.findNavController(requireView());
-			navController.navigate(action);
+			if (index > 0) {
+				final String artistId = _viewModel.getArtistMediaId(index - 1);
+				final String artist = _viewModel.getArtistTitle(index);
+				final LibraryFragmentDirections.ActionLibraryFragmentToBrowseFragment action =
+						LibraryFragmentDirections
+								.actionLibraryFragmentToBrowseFragment(artistId, artist);
+				final NavController navController = Navigation.findNavController(requireView());
+				navController.navigate(action);
+			}
 		}
 		return false;
 	}

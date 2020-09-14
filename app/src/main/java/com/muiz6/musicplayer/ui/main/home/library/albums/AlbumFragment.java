@@ -17,26 +17,30 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.muiz6.musicplayer.databinding.FragmentGridBinding;
+import com.muiz6.musicplayer.databinding.RvGridBinding;
 import com.muiz6.musicplayer.ui.main.home.library.LibraryFragmentDirections;
 
 import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 public class AlbumFragment extends Fragment implements RecyclerView.OnItemTouchListener {
 
 	private final ViewModelProvider.Factory _viewModelFactory;
 	private final GestureDetector _gestureDetector;
+	private final RecyclerView.ItemDecoration _itemDecoration;
 	private AlbumViewModel _viewModel;
-	private FragmentGridBinding _binding;
+	private RvGridBinding _binding;
 
 	@Inject
 	public AlbumFragment(ViewModelProvider.Factory viewModelFactory,
-			GestureDetector gestureDetector) {
+			GestureDetector gestureDetector,
+			@Named("Grid") RecyclerView.ItemDecoration gridItemDecoration) {
 		_viewModelFactory = viewModelFactory;
 		_gestureDetector = gestureDetector;
+		_itemDecoration = gridItemDecoration;
 	}
 
 	@Override
@@ -51,10 +55,11 @@ public class AlbumFragment extends Fragment implements RecyclerView.OnItemTouchL
 	public View onCreateView(@NonNull LayoutInflater inflater,
 			@Nullable ViewGroup container,
 			@Nullable Bundle savedInstanceState) {
-		_binding = FragmentGridBinding.inflate(inflater, container, false);
+		_binding = RvGridBinding.inflate(inflater, container, false);
 		final RecyclerView recyclerView = _binding.getRoot();
 		recyclerView.setLayoutManager(new GridLayoutManager(recyclerView.getContext(), 3));
 		recyclerView.setAdapter(new AlbumAdapter(Collections.<AlbumItemModel>emptyList()));
+		recyclerView.addItemDecoration(_itemDecoration);
 		recyclerView.addOnItemTouchListener(this);
 		return recyclerView;
 	}

@@ -4,8 +4,6 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
-	android:layout_marginHorizontal="@dimen/margin_m"
-	android:layout_marginVertical="@dimen/margin_m"
 	android:background="@drawable/bg_item">
 
 	<!--stroke width is defined in SongAdapter class-->
@@ -16,6 +14,7 @@
 		android:layout_margin="@dimen/margin_m"
 		app:cardBackgroundColor="@color/color_surface_active"
 		app:cardCornerRadius="@dimen/radius_s"
+		app:cardElevation="0dp"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintDimensionRatio="1:1"
 		app:layout_constraintStart_toStartOf="parent"

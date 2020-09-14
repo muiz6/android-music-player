@@ -30,13 +30,13 @@
 
 			<include
 				android:id="@+id/browse_recycler_view_album"
-				layout="@layout/fragment_list"
+				layout="@layout/rv_linear"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content" />
 
 			<include
 				android:id="@+id/browse_recycler_view_song"
-				layout="@layout/fragment_list"
+				layout="@layout/rv_linear"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content" />
 		</LinearLayout>

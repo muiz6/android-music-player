@@ -14,7 +14,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
-import com.muiz6.musicplayer.databinding.FragmentQueueBinding;
+import com.muiz6.musicplayer.databinding.FragmentListBinding;
 import com.muiz6.musicplayer.ui.main.home.library.songs.SongAdapter;
 import com.muiz6.musicplayer.ui.main.home.library.songs.SongItemModel;
 
@@ -26,7 +26,7 @@ public class QueueFragment extends Fragment {
 
 	private final ViewModelProvider.Factory _viewModelFactory;
 	private QueueViewModel _viewModel;
-	private FragmentQueueBinding _binding;
+	private FragmentListBinding _binding;
 
 	@Inject
 	public QueueFragment(ViewModelProvider.Factory viewModelFactory) {
@@ -44,7 +44,7 @@ public class QueueFragment extends Fragment {
 	public View onCreateView(@NonNull LayoutInflater inflater,
 			@Nullable ViewGroup container,
 			@Nullable Bundle savedInstanceState) {
-		_binding = FragmentQueueBinding.inflate(inflater, container, false);
+		_binding = FragmentListBinding.inflate(inflater, container, false);
 		return _binding.getRoot();
 	}
 
@@ -54,14 +54,13 @@ public class QueueFragment extends Fragment {
 
 		// setup toolbar
 		final NavController navController = Navigation.findNavController(view);
-		NavigationUI.setupWithNavController(
-				_binding.queueToolbar, navController);
+		NavigationUI.setupWithNavController(_binding.listToolbar, navController);
 
 		_viewModel.getQueue().observe(getViewLifecycleOwner(), new Observer<List<SongItemModel>>() {
 
 			@Override
 			public void onChanged(List<SongItemModel> songItemModels) {
-				_binding.queueFragmentList.getRoot().setAdapter(new SongAdapter(songItemModels));
+				_binding.listBody.getRoot().setAdapter(new SongAdapter(songItemModels));
 			}
 		});
 	}

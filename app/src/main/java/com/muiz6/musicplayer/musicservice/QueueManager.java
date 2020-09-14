@@ -19,7 +19,7 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.muiz6.musicplayer.data.MediaIdPojo;
 import com.muiz6.musicplayer.data.MusicRepository;
-import com.muiz6.musicplayer.di.scope.ActivityScope;
+import com.muiz6.musicplayer.di.scope.ServiceScope;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +27,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-@ActivityScope
+@ServiceScope
 public class QueueManager {
 
 	private final Handler _handler = new Handler(Looper.getMainLooper());

@@ -44,7 +44,6 @@ public abstract class AudioDatabase extends RoomDatabase {
 
 					@Override
 					public void onRequestPermissionResult(boolean granted) {
-
 						if (granted) {
 							_actuallyScanLibrary();
 						}
@@ -100,8 +99,7 @@ public abstract class AudioDatabase extends RoomDatabase {
 				final String[] selectionArgs = {String.valueOf(TimeUnit.MILLISECONDS.convert(30,
 						TimeUnit.SECONDS))};
 
-				// fetch external storage content
-				// todo: add permission request here
+				// fetch downloaded media content
 				final Cursor cursor = _context.getContentResolver()
 						.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
 								projection,

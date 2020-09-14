@@ -1,7 +1,9 @@
 package com.muiz6.musicplayer.di.main;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.muiz6.musicplayer.R;
 import com.muiz6.musicplayer.di.main.albums.AlbumComponent;
 import com.muiz6.musicplayer.di.main.artists.ArtistComponent;
 import com.muiz6.musicplayer.di.main.browse.BrowseComponent;
@@ -13,6 +15,10 @@ import com.muiz6.musicplayer.di.main.songs.SongComponent;
 import com.muiz6.musicplayer.ui.main.home.HomeFragment;
 import com.muiz6.musicplayer.ui.main.home.browse.BrowseFragment;
 import com.muiz6.musicplayer.ui.main.home.queue.QueueFragment;
+import com.muiz6.musicplayer.ui.recyclerviewutil.GridItemDecoration;
+import com.muiz6.musicplayer.ui.recyclerviewutil.ListItemDecoration;
+
+import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
@@ -48,5 +54,17 @@ public abstract class MainModule {
 	@ClassKey(QueueFragment.class)
 	static Fragment provideQueueFragment(QueueComponent.Factory factory) {
 		return factory.create().getQueueFragment();
+	}
+
+	@Provides
+	@Named("List")
+	static RecyclerView.ItemDecoration provideListItemDecoration() {
+		return new ListItemDecoration(R.dimen.margin_m);
+	}
+
+	@Provides
+	@Named("Grid")
+	static RecyclerView.ItemDecoration provideGridItemDecoration() {
+		return new GridItemDecoration(R.dimen.margin_m);
 	}
 }

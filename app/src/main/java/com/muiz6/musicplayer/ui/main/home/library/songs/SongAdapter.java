@@ -4,55 +4,47 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.core.content.ContextCompat;
 
 import com.muiz6.musicplayer.R;
+import com.muiz6.musicplayer.databinding.RowListHeaderBinding;
 import com.muiz6.musicplayer.databinding.RowSongBinding;
-import com.muiz6.musicplayer.databinding.RowSongItemFirstBinding;
+import com.muiz6.musicplayer.ui.main.home.library.TitledRecyclerAdapter;
+import com.muiz6.musicplayer.ui.recyclerviewutil.DefaultViewHolder;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class SongAdapter extends RecyclerView.Adapter {
+public class SongAdapter extends TitledRecyclerAdapter<DefaultViewHolder> {
 
-	public static final int VIEW_TYPE_ROW_TITLE = 0;
-	public static final int VIEW_TYPE_ROW_ITEM = 1;
+	@NonNull private List<SongItemModel> _songList;
 
-	private List<SongItemModel> _songList;
-
-	public SongAdapter(List<SongItemModel> list) {
+	public SongAdapter(@NonNull List<SongItemModel> list) {
 		_songList = list;
 	}
 
 	@NonNull
 	@Override
-	public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-		final Context context = parent.getContext();
-		final LayoutInflater inflator = LayoutInflater.from(context);
-		View view;
-		if (viewType == VIEW_TYPE_ROW_TITLE) {
-			view = inflator.inflate(R.layout.row_song_item_first, parent, false);
+	public DefaultViewHolder onCreateViewHolder(@NonNull LayoutInflater inflater,
+			@NonNull ViewGroup parent,
+			int viewType) {
+		if (viewType != R.layout.row_list_header) {
+			return new DefaultViewHolder(inflater.inflate(R.layout.row_song, parent, false));
 		}
-		else {
-			view = inflator.inflate(R.layout.row_song, parent, false);
-		}
-		final RecyclerView.ViewHolder holder = new RecyclerView.ViewHolder(view) {
-		};
-		return holder;
+		return super.onCreateViewHolder(inflater, parent, viewType);
 	}
 
 	@Override
-	public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
-		if (position == 0) {
-			final RowSongItemFirstBinding binding = RowSongItemFirstBinding.bind(holder.itemView);
+	public void onBindViewHolder(@NonNull DefaultViewHolder holder, final int position) {
+		final int viewType = getItemViewType(position);
+		if (viewType == R.layout.row_list_header) {
+			final RowListHeaderBinding binding = RowListHeaderBinding.bind(holder.itemView);
 			binding.getRoot().setText(holder.itemView.getContext().getString(R.string.all_songs));
 		}
 		else {
@@ -78,8 +70,8 @@ public class SongAdapter extends RecyclerView.Adapter {
 
 				// reset default drawable for other indices
 				final Context context = binding.getRoot().getContext();
-				final Drawable drawable = binding.getRoot().getContext()
-						.getDrawable(R.drawable.ic_music_note);
+				final Drawable drawable = ContextCompat.getDrawable(context,
+						R.drawable.ic_music_note);
 				binding.rowSongItemIcon.setImageDrawable(drawable);
 				binding.rowSongItemIcon.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
 				final int dim = context.getResources().getDimensionPixelSize(R.dimen.stroke_m);
@@ -94,14 +86,6 @@ public class SongAdapter extends RecyclerView.Adapter {
 				binding.getRoot().setActivated(false);
 			}
 		}
-	}
-
-	@Override
-	public int getItemViewType(int position) {
-		if (position == 0) {
-			return VIEW_TYPE_ROW_TITLE;
-		}
-		return VIEW_TYPE_ROW_ITEM;
 	}
 
 	@Override

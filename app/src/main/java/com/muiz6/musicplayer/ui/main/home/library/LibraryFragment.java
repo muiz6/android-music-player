@@ -15,6 +15,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentFactory;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.muiz6.musicplayer.R;
@@ -93,8 +95,11 @@ public class LibraryFragment extends Fragment {
 	public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 		if (item.getItemId() == R.id.action_rescan_library) {
 			_viewModel.onRescanLibraryAction();
+			return true;
 		}
-		return super.onOptionsItemSelected(item);
+		return NavigationUI.onNavDestinationSelected(item,
+				Navigation.findNavController(requireView()))
+				|| super.onOptionsItemSelected(item);
 	}
 
 	@Override

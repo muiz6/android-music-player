@@ -10,4 +10,7 @@
 	<string name="unknown_title">Unknown Title</string>
 	<string name="rescan_library">Rescan Library</string>
 	<string name="music_playback">Music Playback</string>
+	<string name="edit_tags">Edit Tags</string>
+	<string name="all_genres">All Genres</string>
+	<string name="all_artists">All Artists</string>
 </resources>
