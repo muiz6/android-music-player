@@ -2,8 +2,15 @@
 
 My Music Player for Android.
 
-## Naming Convention:
-- identifiers must be in camelCase
-- private variable must have a leading underscore '_'
-- private constants must also have a leading underscore eg: _TAG
-- package private classes must have a leading underscore eg: '_MyClass'
+Supports shuffle play, loop and implements Media Session API.
+
+## Technologies Used
+
+- Material Design
+- Androidx
+- Exoplayer
+- Dagger 2
+- ROOM
+
+## Screenshots
+![Home](docs/images/home.png) ![Now Playing](docs/images/now_playing.png)
