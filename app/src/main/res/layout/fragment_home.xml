@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--need to specify coordinator layout id to preserve toolbar state on config changes-->
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:id="@+id/home_root"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+
+	<androidx.fragment.app.FragmentContainerView
+		android:id="@+id/home_nav_host_fragment"
+		android:name="androidx.navigation.fragment.NavHostFragment"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:paddingBottom="?attr/actionBarSize"
+		app:defaultNavHost="true"
+		app:layout_anchor="@id/home_bottom_sheet"
+		app:navGraph="@navigation/navigation_home" />
+
+	<!--needed to create fade effect when dragging bottom sheet-->
+	<View
+		android:id="@+id/home_bg"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:background="#99000000"
+		android:visibility="gone" />
+
+	<include
+		android:id="@+id/home_bottom_sheet"
+		layout="@layout/bottom_sheet_player" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="transparent">#00000000</color>
+	<color name="colorGrey300">#CDCDCC</color>
+	<color name="colorGrey850">#1F1F1F</color>
+	<color name="colorGrey900">#0F0F0E</color>
 
-    <color name="primary">#000000</color>
-    <color name="secondary">#171717</color>
+	<color name="colorBlueGrey800">#404a50</color>
+	<color name="colorBlueGrey900">#263238</color>
 
-    <color name="accent">#22E3BC</color>
-
-    <color name="textPrimary">#FFFFFF</color>
-    <color name="textSecondary">#DDDDDD</color>
-
-<!--    default-->
-    <color name="colorPrimary">#000000</color>
-    <color name="colorPrimaryDark">#202020</color>
-    <color name="colorAccent">#22E3BC</color>
+	<color name="colorYellow500">#fCE300</color>
+	<color name="colorYellow600">#FFD600</color>
 </resources>

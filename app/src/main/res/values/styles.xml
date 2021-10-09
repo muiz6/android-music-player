@@ -1,20 +1,77 @@
 <resources>
+	<style name="AppTheme.Dark" parent="Theme.MaterialComponents.NoActionBar">
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/secondary</item>
-        <item name="colorAccent">@color/accent</item>
-    </style>
+		<item name="android:colorBackground">@color/colorGrey900</item>
+		<item name="colorOnBackground">@android:color/white</item>
+		<item name="colorPrimary">@color/colorYellow600</item>
+		<item name="colorPrimaryVariant">@color/colorYellow500</item>
+		<item name="colorOnPrimary">@color/colorGrey900</item>
+		<item name="android:textColor">?attr/colorOnSurface</item>
+		<item name="android:textColorSecondary">@color/colorGrey300</item>
 
-    <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
+		<!--color at the back of icon buttons-->
+		<item name="backgroundTint">@android:color/transparent</item>
+		<item name="android:scrollbarThumbVertical">@drawable/thumb_scrollbar</item>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+		<!--in dark theme color surface also defines toolbar bg color-->
+		<item name="colorSurface">@color/colorBlueGrey900</item>
+		<item name="colorOnSurface">@android:color/white</item>
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+		<!--attr used by @color/color_tab_icon-->
+		<item name="tabIconTint">@color/colorGrey300</item>
+		<item name="tabStyle">@style/Widget.App.TabLayout.Background</item>
+		<item name="appBarLayoutStyle">@style/Widget.App.AppBar.Background</item>
 
+		<!--system toolbar icon tint-->
+		<item name="iconTint">?attr/colorOnBackground</item>
+
+		<!--bottom sheet styling-->
+		<!--bottom sheet will cause crash without peekHeight attribute here-->
+		<item name="behavior_peekHeight">?attr/actionBarSize</item>
+		<item name="bottomSheetStyle">@style/Widget.App.BottomSheet</item>
+
+		<!--accent colors-->
+		<item name="colorSecondary">?attr/colorPrimary</item>
+		<item name="colorSecondaryVariant">?attr/colorPrimaryVariant</item>
+		<item name="colorOnSecondary">?attr/colorOnPrimary</item>
+	</style>
+
+	<style name="Widget.App.AppBar.Background"
+		parent="Widget.MaterialComponents.AppBarLayout.Surface">
+
+		<item name="elevationOverlayEnabled">false</item>
+		<item name="android:background">?android:attr/colorBackground</item>
+	</style>
+
+	<style name="Widget.App.TabLayout.Background" parent="Widget.MaterialComponents.TabLayout">
+		<item name="android:background">?android:attr/colorBackground</item>
+	</style>
+
+	<!--transparent card background color may not display correctly in some devices-->
+	<style name="Widget.App.CardView.Outlined" parent="Widget.MaterialComponents.CardView">
+		<item name="strokeWidth">@dimen/stroke_m</item>
+		<item name="strokeColor">?attr/colorOnSurface</item>
+		<item name="cardCornerRadius">@dimen/radius_s</item>
+		<item name="cardForegroundColor">@null</item>
+		<item name="android:layout_margin">@dimen/margin_m</item>
+		<item name="cardElevation">0dp</item>
+	</style>
+
+	<style name="Widget.App.BottomSheet" parent="Widget.MaterialComponents.BottomSheet">
+		<item name="behavior_hideable">false</item>
+
+		<!--peekHeight not working if not redefined here-->
+		<item name="behavior_peekHeight">?attr/actionBarSize</item>
+	</style>
+
+	<style name="AppTheme.Fab.Surface" parent="Widget.MaterialComponents.FloatingActionButton">
+
+		<item name="backgroundTint">?attr/colorSurface</item>
+
+		<item name="tint">?attr/colorOnSurface</item>
+	</style>
+
+	<style name="AppTheme.Dark.NoElevationOverlay">
+		<item name="elevationOverlayEnabled">false</item>
+	</style>
 </resources>

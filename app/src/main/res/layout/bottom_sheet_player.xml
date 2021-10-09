@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--need to specify style here explicitly for it to work.
+	also need to set clickable attribute to true to avoid clicking through bottom sheet-->
+<androidx.constraintlayout.widget.ConstraintLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	style="@style/Widget.App.BottomSheet"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:clickable="true"
+	android:focusable="true"
+	app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+	<ImageView
+		android:id="@+id/bottom_sheet_album_art"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:scaleType="centerCrop"
+		app:layout_constraintBottom_toTopOf="@id/bottom_sheet_container_controls"
+		app:layout_constraintTop_toTopOf="parent" />
+
+	<androidx.constraintlayout.widget.ConstraintLayout
+		android:id="@+id/bottom_sheet_expanded_view"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingHorizontal="@dimen/padding_m"
+		android:paddingTop="@dimen/padding_m"
+		android:theme="@style/AppTheme.Dark.NoElevationOverlay"
+		android:visibility="gone"
+		app:layout_constraintTop_toTopOf="parent">
+
+		<com.google.android.material.floatingactionbutton.FloatingActionButton
+			android:id="@+id/bottom_sheet_expanded_view_btn_expand_collapse"
+			style="@style/AppTheme.Fab.Surface"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:src="@drawable/ic_keyboard_arrow_down"
+			app:fabSize="mini"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:layout_constraintTop_toTopOf="parent" />
+
+		<androidx.constraintlayout.widget.Guideline
+			android:id="@+id/bottom_sheet_guide_expanded_view"
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:orientation="vertical"
+			app:layout_constraintGuide_percent="0.66" />
+
+		<TextView
+			android:id="@+id/bottom_sheet_expanded_view_album"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			app:layout_constraintEnd_toStartOf="@id/bottom_sheet_guide_expanded_view"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toTopOf="parent" />
+
+		<TextView
+			android:id="@+id/bottom_sheet_expanded_view_artist"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="@dimen/margin_s"
+			app:layout_constraintEnd_toStartOf="@id/bottom_sheet_guide_expanded_view"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toBottomOf="@id/bottom_sheet_expanded_view_album" />
+
+		<TextView
+			android:id="@+id/bottom_sheet_expanded_view_title"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="@dimen/margin_s"
+			app:layout_constraintEnd_toStartOf="@id/bottom_sheet_guide_expanded_view"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toBottomOf="@+id/bottom_sheet_expanded_view_artist" />
+	</androidx.constraintlayout.widget.ConstraintLayout>
+
+	<LinearLayout
+		android:id="@+id/bottom_sheet_collapsed_view"
+		android:layout_width="match_parent"
+		android:layout_height="?attr/behavior_peekHeight"
+		android:background="@color/colorBlueGrey800"
+		app:layout_constraintTop_toTopOf="parent">
+
+		<ImageButton
+			android:id="@+id/bottom_sheet_collapsed_view_btn_expand_collapse"
+			android:layout_width="50dp"
+			android:layout_height="match_parent"
+			android:src="@drawable/ic_keyboard_arrow_up" />
+
+		<TextView
+			android:id="@+id/bottom_sheet_collapsed_view_song_title"
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
+			android:ellipsize="marquee"
+			android:fadingEdge="horizontal"
+			android:gravity="center"
+
+			android:marqueeRepeatLimit="marquee_forever"
+			android:paddingStart="@dimen/padding_m"
+			android:scrollHorizontally="true"
+			android:singleLine="true" />
+
+		<ImageButton
+			android:id="@+id/bottom_sheet_collapsed_view_btn_play_pause"
+			android:layout_width="50dp"
+			android:layout_height="match_parent"
+			android:src="@drawable/ic_play_arrow"
+			app:tint="@color/color_toggleable_button" />
+	</LinearLayout>
+
+	<com.google.android.material.floatingactionbutton.FloatingActionButton
+		android:id="@+id/bottom_sheet_fab"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginEnd="@dimen/margin_l"
+		android:src="@drawable/ic_playlist_play"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintTop_toTopOf="parent" />
+
+	<androidx.constraintlayout.widget.ConstraintLayout
+		android:id="@+id/bottom_sheet_container_controls"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:background="?attr/colorSurface"
+		android:paddingBottom="@dimen/padding_s"
+		app:layout_constraintBottom_toBottomOf="parent">
+
+		<SeekBar
+			android:id="@+id/bottom_sheet_seek_bar"
+			style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			app:layout_constraintBottom_toTopOf="@id/bottom_sheet_duration_current" />
+
+		<TextView
+			android:id="@+id/bottom_sheet_duration_current"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginStart="@dimen/margin_l"
+			app:layout_constraintBottom_toTopOf="@id/bottom_sheet_btn_play_pause"
+			app:layout_constraintStart_toStartOf="@id/bottom_sheet_seek_bar" />
+
+		<TextView
+			android:id="@+id/bottom_sheet_duration_max"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginEnd="@dimen/margin_l"
+			app:layout_constraintBottom_toTopOf="@id/bottom_sheet_btn_play_pause"
+			app:layout_constraintEnd_toEndOf="@id/bottom_sheet_seek_bar" />
+
+		<ImageButton
+			android:id="@+id/bottom_sheet_btn_shuffle"
+			android:layout_width="@dimen/size_icon_now_playing"
+			android:layout_height="@dimen/size_icon_now_playing"
+			android:scaleType="fitXY"
+			android:src="@drawable/ic_shuffle"
+			app:layout_constraintBottom_toBottomOf="@id/bottom_sheet_btn_play_pause"
+			app:layout_constraintStart_toStartOf="parent"
+			app:tint="@color/color_toggleable_button" />
+
+		<ImageButton
+			android:id="@+id/bottom_sheet_btn_previous"
+			android:layout_width="@dimen/size_icon_now_playing"
+			android:layout_height="@dimen/size_icon_now_playing"
+			android:scaleType="fitXY"
+			android:src="@drawable/ic_skip_previous"
+			app:layout_constraintBottom_toBottomOf="@id/bottom_sheet_btn_play_pause"
+			app:layout_constraintEnd_toStartOf="@id/bottom_sheet_btn_play_pause"
+			app:layout_constraintStart_toEndOf="@id/bottom_sheet_btn_shuffle" />
+
+		<ImageButton
+			android:id="@+id/bottom_sheet_btn_play_pause"
+			android:layout_width="@dimen/size_icon_now_playing"
+			android:layout_height="@dimen/size_icon_now_playing"
+			android:scaleType="fitXY"
+			android:src="@drawable/ic_play_arrow"
+			app:layout_constraintBottom_toBottomOf="parent"
+			app:layout_constraintEnd_toStartOf="@id/bottom_sheet_btn_repeat"
+			app:layout_constraintStart_toEndOf="@id/bottom_sheet_btn_shuffle"
+			app:tint="@color/color_toggleable_button" />
+
+		<ImageButton
+			android:id="@+id/bottom_sheet_btn_next"
+			android:layout_width="@dimen/size_icon_now_playing"
+			android:layout_height="@dimen/size_icon_now_playing"
+			android:scaleType="fitXY"
+			android:src="@drawable/ic_skip_next"
+			app:layout_constraintBottom_toBottomOf="@id/bottom_sheet_btn_play_pause"
+			app:layout_constraintEnd_toStartOf="@id/bottom_sheet_btn_repeat"
+			app:layout_constraintStart_toEndOf="@id/bottom_sheet_btn_play_pause" />
+
+		<ImageButton
+			android:id="@+id/bottom_sheet_btn_repeat"
+			android:layout_width="@dimen/size_icon_now_playing"
+			android:layout_height="@dimen/size_icon_now_playing"
+			android:scaleType="fitXY"
+			android:src="@drawable/ic_repeat"
+			app:layout_constraintBottom_toBottomOf="@id/bottom_sheet_btn_play_pause"
+			app:layout_constraintEnd_toEndOf="parent"
+			app:tint="@color/color_toggleable_button" />
+	</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

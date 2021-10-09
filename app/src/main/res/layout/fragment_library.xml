@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:id="@+id/library_root"
+	xmlns:app="http://schemas.android.com/apk/res-auto">
+
+	<com.google.android.material.appbar.AppBarLayout
+		android:id="@+id/library_app_bar"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
+		<com.google.android.material.appbar.MaterialToolbar
+			android:id="@+id/library_toolbar"
+			android:layout_width="match_parent"
+			android:layout_height="?attr/actionBarSize"
+			app:layout_scrollFlags="scroll|snap|enterAlways" />
+
+		<com.google.android.material.tabs.TabLayout
+			android:id="@+id/library_tab_layout"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			app:tabGravity="fill"
+			app:tabMode="fixed" />
+	</com.google.android.material.appbar.AppBarLayout>
+
+	<!--viewpager1 is causing a crash with navigation component-->
+	<androidx.viewpager2.widget.ViewPager2
+		android:id="@+id/library_view_pager"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

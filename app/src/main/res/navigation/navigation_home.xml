@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/navigation_home"
+	app:startDestination="@id/libraryFragment">
+
+	<fragment
+		android:id="@+id/libraryFragment"
+		android:name="com.muiz6.musicplayer.ui.main.home.library.LibraryFragment"
+		android:label="@string/app_name"
+		tools:layout="@layout/fragment_library">
+
+		<action
+			android:id="@+id/action_libraryFragment_to_browseFragment"
+			app:destination="@id/browseFragment" />
+
+		<action
+			android:id="@+id/action_libraryFragment_to_queueFragment"
+			app:destination="@id/queueFragment" />
+	</fragment>
+
+	<fragment
+		android:id="@+id/browseFragment"
+		android:name="com.muiz6.musicplayer.ui.main.home.browse.BrowseFragment"
+		tools:layout="@layout/fragment_browse">
+
+		<argument
+			android:name="parentMediaId"
+			app:argType="string" />
+
+		<argument
+			android:name="parentTitle"
+			app:argType="string"/>
+
+		<action
+			android:id="@+id/action_browseFragment_to_browseFragment"
+			app:destination="@id/browseFragment" />
+		<action
+			android:id="@+id/action_browseFragment_to_queueFragment"
+			app:destination="@id/queueFragment" />
+	</fragment>
+
+	<fragment
+		android:id="@+id/queueFragment"
+		android:name="com.muiz6.musicplayer.ui.main.home.queue.QueueFragment"
+		android:label="@string/play_queue"
+		tools:layout="@layout/fragment_queue" />
+</navigation>
